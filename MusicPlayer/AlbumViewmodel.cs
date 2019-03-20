@@ -81,7 +81,7 @@ namespace MusicPlayer
 
             if (id != null)
             {
-                var thumbnail = await this.library.GetImage(id, 300, cancellationToken);
+                var thumbnail = await this.library.GetImageRetryAsync(id, 300, cancellationToken);
                 if (thumbnail != null)
                 {
                     var bitmapImage = new BitmapImage();

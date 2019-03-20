@@ -24,29 +24,20 @@ namespace MusicPlayer
         public async Task<StorageItemThumbnail> GetImage(string id, int size, CancellationToken cancellationToken)
         {
 
-            // we will try multuple times
-            for (int i = 0; i < 3; i++)
+            await this.imageSemaphore.WaitAsync();
+            try
             {
-                await Task.Delay(TimeSpan.FromSeconds(5 * i));
                 if (cancellationToken.IsCancellationRequested)
                     return null;
-                await this.imageSemaphore.WaitAsync();
-                try
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        return null;
-                    var file = await StorageFile.GetFileFromPathAsync(id);
-                    var thumbnail = await file.GetThumbnailAsync(Windows.Storage.FileProperties.ThumbnailMode.MusicView, (uint)size, ThumbnailOptions.UseCurrentScale);
-
-                    if (thumbnail.Type == ThumbnailType.Image && !cancellationToken.IsCancellationRequested)
-                        return thumbnail;
-                }
-                finally
-                {
-                    this.imageSemaphore.Release();
-                }
+                var file = await StorageFile.GetFileFromPathAsync(id);
+                var thumbnail = await file.GetThumbnailAsync(Windows.Storage.FileProperties.ThumbnailMode.MusicView, (uint)size, ThumbnailOptions.UseCurrentScale);
+                if (thumbnail.Type == ThumbnailType.Image && !cancellationToken.IsCancellationRequested)
+                    return thumbnail;
             }
-
+            finally
+            {
+                this.imageSemaphore.Release();
+            }
 
             return null;
 
@@ -81,8 +72,7 @@ namespace MusicPlayer
                         var discNumber = discNumberPropertie.Value as int?;
                         var componosts = (await Task.WhenAll(properties.Composers.Select(x => store.GetOrCreateArtist(x, token)))).ToList();
                         var title = properties.Title;
-
-                        var artist = (await Task.WhenAll(artistString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => store.GetOrCreateArtist(x, token)))).ToList();
+                        var artist = (await Task.WhenAll(artistString.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => store.GetOrCreateArtist(x.Trim(), token)))).ToList();
                         var genres = (await Task.WhenAll(properties.Genre.Select(x => store.GetOrCreateGenre(x, token)))).ToList();
                         var s = new Song()
                         {

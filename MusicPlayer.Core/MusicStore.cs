@@ -21,6 +21,7 @@ namespace MusicPlayer.Core
         public IQueryable<Artist> Artists => this.artists.AsNoTracking();
         public IQueryable<Genre> Genre => this.genre.AsNoTracking();
 
+        public IQueryable<string> CoverIds(ILibrary library) => this.songs.Where(x => x.LibraryProvider == library.Id).Select(x => x.LibraryImageId);
 
         private readonly List<Action> notifyChanges = new List<Action>();
 

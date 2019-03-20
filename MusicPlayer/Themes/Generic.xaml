@@ -1,6 +1,7 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local2="using:MusicPlayer.Controls"
     xmlns:local="using:MusicPlayer">
 
     <Style TargetType="local:CustomTransportControl" >
@@ -531,4 +532,6 @@
     </Style>
 
 
+
+   
 </ResourceDictionary>
