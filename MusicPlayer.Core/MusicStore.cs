@@ -17,7 +17,12 @@ namespace MusicPlayer.Core
         private DbSet<Genre> genre { get; set; }
 
         public IQueryable<Song> Songs => this.songs.AsNoTracking();
-        public IQueryable<Album> Albums => this.albums.Include(c => c.Songs).AsNoTracking();
+        public IQueryable<Album> Albums => this.albums
+            .Include(c => c.Songs)
+                .ThenInclude((Song x) => x.Artist)
+            .Include(c => c.Songs)
+                .ThenInclude((Song x) => x.Composers)
+            .AsNoTracking();
         public IQueryable<Artist> Artists => this.artists.AsNoTracking();
         public IQueryable<Genre> Genre => this.genre.AsNoTracking();
 

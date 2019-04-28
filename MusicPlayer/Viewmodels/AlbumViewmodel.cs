@@ -12,17 +12,20 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace MusicPlayer
+namespace MusicPlayer.Viewmodels
 {
     public class AlbumCollectionViewmodel : DependencyObject
     {
-        private readonly LocalLibrary library = new LocalLibrary();
+
+        public static readonly AlbumCollectionViewmodel Instance = new AlbumCollectionViewmodel();
+
+        private readonly LocalLibrary library = LocalLibrary.Instance;
 
         private readonly ObservableCollection<AlbumViewmodel> albums = new ObservableCollection<AlbumViewmodel>();
 
         public ReadOnlyObservableCollection<AlbumViewmodel> Albums { get; }
 
-        public AlbumCollectionViewmodel()
+        private AlbumCollectionViewmodel()
         {
             this.Albums = new ReadOnlyObservableCollection<AlbumViewmodel>(this.albums);
             _ = this.InitilizeAsync();
@@ -67,11 +70,38 @@ namespace MusicPlayer
 
 
 
+        public IEnumerable<string> Interprets
+        {
+            get { return (IEnumerable<string>)this.GetValue(InterpretsProperty); }
+            set { this.SetValue(InterpretsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Interprets.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty InterpretsProperty =
+            DependencyProperty.Register("Interprets", typeof(IEnumerable<string>), typeof(AlbumViewmodel), new PropertyMetadata(new string[0]));
+
+
+
+
+        public IEnumerable<SongViewmodel> Songs
+        {
+            get { return (IEnumerable<SongViewmodel>)this.GetValue(SongsProperty); }
+            set { this.SetValue(SongsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Songs.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SongsProperty =
+            DependencyProperty.Register("Songs", typeof(IEnumerable<SongViewmodel>), typeof(AlbumViewmodel), new PropertyMetadata(new SongViewmodel[0]));
+
+
+
+        private WeakReference<BitmapImage> cover;
 
         public async Task<ImageSource> LoadCoverAsync(CancellationToken cancellationToken)
         {
-
-            String id;
+            if (this.cover != null && this.cover.TryGetTarget(out var target))
+                return target;
+            string id;
             if (this.item.LibraryImages.Any())
 
                 id = this.item.LibraryImages.FirstOrDefault();
@@ -86,6 +116,7 @@ namespace MusicPlayer
                 {
                     var bitmapImage = new BitmapImage();
                     await bitmapImage.SetSourceAsync(thumbnail);
+                    this.cover = new WeakReference<BitmapImage>(bitmapImage);
                     return bitmapImage;
                 }
             }
@@ -104,25 +135,32 @@ namespace MusicPlayer
             this.item = item;
             this.library = library;
             MusicStore.AlbumCollectionChanged += this.MusicStore_AlbumCollectionChanged;
-            _ = this.Initilize();
+            this.Initilize();
         }
 
-        private async Task Initilize()
+        private void Initilize()
         {
 
             this.Name = this.item.Name;
+
+            this.Interprets = this.item.Artists.Select(x => x.Name).ToArray();
+
+            this.Songs = this.item.Songs.Select(x => new SongViewmodel(x, this.library, this)).ToArray();
 
         }
 
         private void MusicStore_AlbumCollectionChanged(object sender, AlbumCollectionChangedEventArgs e)
         {
-            if (e.Action.HasFlag(AlbumChanges.ImageUpdated))
+            if (e.Album.Equals(this.item))
             {
-                _ = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                if (e.Action.HasFlag(AlbumChanges.ImageUpdated))
                 {
-                    this.item = e.Album;
-                    await this.Initilize();
-                });
+                    _ = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    {
+                        this.item = e.Album;
+                        this.Initilize();
+                    });
+                }
             }
         }
     }

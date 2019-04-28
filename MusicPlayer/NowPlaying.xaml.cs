@@ -34,7 +34,7 @@ namespace MusicPlayer
 
             using (var context = await MusicPlayer.Core.MusicStore.CreateContextAsync(default))
             {
-                var library = new LocalLibrary();
+                var library = LocalLibrary.Instance;
                 var covers = context.CoverIds(library).Select(x => new CoverData() { Id = x, Provider = library.Id });
                 this.backgroundLarge.Covers = covers;
             }

@@ -23,7 +23,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace MusicPlayer.Controls
 {
-    public sealed class BackgroundPanel : Panel
+    public sealed class TiledBackgroundPanel : Panel
     {
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace MusicPlayer.Controls
 
         // Using a DependencyProperty as the backing store for LargeSize.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty LargeSizeProperty =
-            DependencyProperty.Register("LargeSize", typeof(int), typeof(BackgroundPanel), new PropertyMetadata(4));
+            DependencyProperty.Register("LargeSize", typeof(int), typeof(TiledBackgroundPanel), new PropertyMetadata(4));
 
 
 
@@ -49,7 +49,7 @@ namespace MusicPlayer.Controls
 
         // Using a DependencyProperty as the backing store for TileSize.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TileSizeProperty =
-            DependencyProperty.Register("TileSize", typeof(double), typeof(BackgroundPanel), new PropertyMetadata(80.0));
+            DependencyProperty.Register("TileSize", typeof(double), typeof(TiledBackgroundPanel), new PropertyMetadata(80.0));
 
 
 
@@ -61,12 +61,12 @@ namespace MusicPlayer.Controls
 
         // Using a DependencyProperty as the backing store for Covers.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CoversProperty =
-            DependencyProperty.Register("Covers", typeof(IEnumerable<CoverData>), typeof(BackgroundPanel), new PropertyMetadata(null, CoversChanged));
+            DependencyProperty.Register("Covers", typeof(IEnumerable<CoverData>), typeof(TiledBackgroundPanel), new PropertyMetadata(null, CoversChanged));
 
         private RandomList<CoverData> covers;
         private static void CoversChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var me = d as BackgroundPanel;
+            var me = d as TiledBackgroundPanel;
             if (e.NewValue is IEnumerable<CoverData> covers)
                 me.covers = new RandomList<CoverData>(covers);
             else
@@ -83,7 +83,7 @@ namespace MusicPlayer.Controls
         private List<ImageInformation> targetTiles;
 
 
-        public BackgroundPanel()
+        public TiledBackgroundPanel()
         {
             this.RegisterPropertyChangedCallback(VisibilityProperty, this.VisibilityChanged);
             this.Loop();
@@ -118,7 +118,7 @@ namespace MusicPlayer.Controls
 
         private async void Loop()
         {
-            var library = new LocalLibrary();
+            var library = LocalLibrary.Instance;
             while (true)
             {
                 try
@@ -330,7 +330,7 @@ namespace MusicPlayer.Controls
                 foreach (var item in this.holder.Where(x => x.Key.x >= this.Width || x.Key.y >= this.Height).Distinct().ToArray())
                 {
                     var value = item.Value;
-                    var panel = value?.Image.Parent as BackgroundPanel;
+                    var panel = value?.Image.Parent as TiledBackgroundPanel;
                     panel?.Children.Remove(value.Image);
                     this.holder.Remove(item.Key);
                 }
@@ -433,7 +433,7 @@ namespace MusicPlayer.Controls
             };
             image.ImageFailed += async (sender, e) =>
             {
-                var library = new LocalLibrary();
+                var library = LocalLibrary.Instance;
                 StorageItemThumbnail thumbnail;
                 do
                 {
@@ -544,7 +544,7 @@ namespace MusicPlayer.Controls
             void SetTileInformation(ImageInformation information)
             {
                 var layout = this.targetLayout;
-                BackgroundPanel.SetTileInformation(information, layout);
+                TiledBackgroundPanel.SetTileInformation(information, layout);
             }
         }
 

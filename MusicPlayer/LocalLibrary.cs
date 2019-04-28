@@ -43,10 +43,29 @@ namespace MusicPlayer
 
         }
 
+        public static LocalLibrary Instance { get; } = new LocalLibrary();
+
+        private LocalLibrary()
+        {
+            LibraryRegistry.Register(this);
+        }
+
         public async Task<MediaSource> GetMediaSource(string id)
         {
             var file = await StorageFile.GetFileFromPathAsync(id);
-            return MediaSource.CreateFromStorageFile(file);
+            var mediaSource = MediaSource.CreateFromStorageFile(file);
+            using (var context = await MusicStore.CreateContextAsync(default))
+            {
+                var song = await context.Songs.ToAsyncEnumerable().Where(x => x.LibraryMediaId == id).First();
+                await mediaSource.OpenAsync();
+                //var musicProperties = mediaSource.MediaStreamSource.MusicProperties;
+
+                //musicProperties.Album = song.AlbumName;
+                //musicProperties.
+                
+            }
+
+            return mediaSource;
         }
 
         public async Task Update(CancellationToken token)

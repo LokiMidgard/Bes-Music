@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
+using MusicPlayer.Viewmodels;
 using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -17,6 +18,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -31,10 +33,11 @@ namespace MusicPlayer
 
         //private MediaPlayer player;
 
-        public AlbumCollectionViewmodel Albums => this.DataContext as AlbumCollectionViewmodel;
+        public AlbumCollectionViewmodel Albums => AlbumCollectionViewmodel.Instance;
 
         public MainPage()
         {
+            this.DataContext = this.Albums;
             this.InitializeComponent();
 
             //this.player = new MediaPlayer();
@@ -92,5 +95,41 @@ namespace MusicPlayer
             args.Handled = true;
 
         }
+
+        private void AlbumClicked(object sender, ItemClickEventArgs e)
+        {
+            var item = e.ClickedItem as AlbumViewmodel;
+            var container = this.toRender.ContainerFromItem(e.ClickedItem) as GridViewItem;
+
+
+            var root = container.ContentTemplateRoot as FrameworkElement;
+            var cover = root.FindName("cover") as UIElement;
+            var name = root.FindName("name") as UIElement;
+
+            ConnectedAnimationService.GetForCurrentView()
+                .PrepareToAnimate("forwardAnimationCover", cover);
+            ConnectedAnimationService.GetForCurrentView()
+                            .PrepareToAnimate("forwardAnimationName", name);
+
+            Services.NavigationService.Navigate<Pages.AlbumPage>(item);
+        }
+        private childItem FindVisualChild<childItem>(DependencyObject obj)
+            where childItem : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+                if (child != null && child is childItem)
+                    return (childItem)child;
+                else
+                {
+                    childItem childOfChild = this.FindVisualChild<childItem>(child);
+                    if (childOfChild != null)
+                        return childOfChild;
+                }
+            }
+            return null;
+        }
+
     }
 }

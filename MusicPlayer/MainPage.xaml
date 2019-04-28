@@ -5,17 +5,15 @@
     xmlns:local="using:MusicPlayer"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodel="using:MusicPlayer.Viewmodels"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-    <Page.DataContext>
-        <local:AlbumCollectionViewmodel/>
-    </Page.DataContext>
     <Grid>
 
 
-        <GridView  x:Name="toRender" ItemsSource="{x:Bind Albums.Albums}" ContainerContentChanging="ToRender_ContainerContentChanging">
+        <GridView  x:Name="toRender" ItemsSource="{x:Bind Albums.Albums}" ContainerContentChanging="ToRender_ContainerContentChanging" ItemClick="AlbumClicked" IsItemClickEnabled="True">
             <GridView.ItemTemplate>
-                <DataTemplate x:DataType="local:AlbumViewmodel" >
+                <DataTemplate x:DataType="viewmodel:AlbumViewmodel" >
                     <Border Margin="8">
                         <Grid>
                             <Grid.RowDefinitions>
@@ -24,7 +22,7 @@
                             </Grid.RowDefinitions>
 
                             <Image x:Name="cover" Width="300" Height="300"/>
-                            <TextBlock Text="{x:Bind Name}" Grid.Row="1" ></TextBlock>
+                            <TextBlock Text="{x:Bind Name}" x:Name="name" Grid.Row="1" ></TextBlock>
                         </Grid>
                     </Border>
                 </DataTemplate>

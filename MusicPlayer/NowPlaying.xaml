@@ -25,6 +25,6 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <controls:BackgroundPanel x:Name="backgroundLarge" Visibility="Collapsed"/>
+        <controls:TiledBackgroundPanel x:Name="backgroundLarge" Visibility="Collapsed"/>
     </Grid>
 </Page>
