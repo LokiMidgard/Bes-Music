@@ -4,13 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Microsoft.Graphics.Canvas.Effects;
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.Storage.FileProperties;
+using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
@@ -82,7 +85,35 @@ namespace MusicPlayer.Controls
 
         public BackgroundPanel()
         {
+            this.RegisterPropertyChangedCallback(VisibilityProperty, this.VisibilityChanged);
             this.Loop();
+            this.LoopChange();
+        }
+
+        private void VisibilityChanged(DependencyObject sender, DependencyProperty dp)
+        {
+            if (this.Visibility == Visibility.Collapsed)
+                this.CalculateTargetLayout(new Size(0, 0));
+            else
+                this.InvalidateMeasure();
+        }
+
+        private async void LoopChange()
+        {
+            var r = new Random();
+            var delay = TimeSpan.FromSeconds(10);
+            while (true)
+            {
+                await Task.Delay(delay);
+                if (this.currentLayout.Count > 0)
+                {
+                    var index = r.Next(this.currentLayout.Count - 1);
+                    var current = this.currentLayout[index];
+                    var information = new ImageInformation(current.Size, current.X, current.Y, true);
+                    this.targetTiles.Add(information);
+                    SetTileInformation(information, this.targetLayout);
+                }
+            }
         }
 
         private async void Loop()
@@ -94,6 +125,7 @@ namespace MusicPlayer.Controls
                 {
                     if (this.covers == null)
                         continue;
+
 
                     if (this.currentLayout.Height != this.targetLayout.Height
                         || this.currentLayout.Width != this.targetLayout.Width)
@@ -111,7 +143,8 @@ namespace MusicPlayer.Controls
                             if (this.currentLayout[x, y] == this.targetLayout[x, y])
                                 continue;
 
-                            if (this.targetLayout[x, y].Id is null && this.targetLayout[x, y].EqualsPosition(this.currentLayout[x, y]))
+
+                            if (this.targetLayout[x, y].Id is null && !this.targetLayout[x, y].IsReplacing && this.targetLayout[x, y].EqualsPosition(this.currentLayout[x, y]))
                             {
                                 // this will save us the image on a layout change.
                                 this.targetTiles.Remove(this.targetLayout[x, y]);
@@ -122,6 +155,7 @@ namespace MusicPlayer.Controls
                                 this.currentLayout[x, y]?.Remove();
 
                         }
+
 
                     for (int i = this.targetTiles.Count - 1; i >= 0; i--)
                     {
@@ -171,7 +205,8 @@ namespace MusicPlayer.Controls
                 }
                 finally
                 {
-                    await Task.Delay(5000);
+                    await Task.Delay(500);
+
                 }
             }
             void ResizeArray<T>(ref T[,] original, int x, int y)
@@ -187,9 +222,85 @@ namespace MusicPlayer.Controls
             }
         }
 
+        private void Effekt()
+        {
+            //        var compositor = ElementCompositionPreview.GetElementVisual(this).Compositor;
+
+            //        var surface = LoadedImageSurface.StartLoadFromStream();
+
+            //        var child = compositor.CreateContainerVisual()
+
+            //        compositor.CreateSurfaceBrush(_suerf)
+
+            //        var graphicsEffect = new GaussianBlurEffect()
+            //        {
+            //            Name = "Blur",
+            //            Source = new CompositionEffectSourceParameter("Backdrop"),
+            //            BlurAmount = 2,
+            //            BorderMode = EffectBorderMode.Hard,
+
+            //        };
+            //        CompositionImage f;
+
+            //        var blurEffectFactory = _compositor.CreateEffectFactory(graphicsEffect,
+            //new[] { "Blur.BlurAmount" });
+
+            //var  _brush = blurEffectFactory.CreateBrush();
+
+            //var backgroundBrush = compositor.CreateSurfaceBrush(_surface);
+            //backgroundBrush.Stretch = CompositionStretch.UniformToFill;
+
+            //var saturationEffect = new SaturationEffect
+            //{
+            //    Saturation = 0.0f,
+            //    Source = new CompositionEffectSourceParameter("mySource")
+            //};
+
+            //var saturationEffectFactory = compositor.CreateEffectFactory(saturationEffect);
+
+            //var bwEffect = saturationEffectFactory.CreateBrush();
+            //bwEffect.SetSourceParameter("mySource", backgroundBrush);
+
+            //_backgroundVisual = compositor.CreateSpriteVisual();
+            //_backgroundVisual.Brush = bwEffect;
+            //_backgroundVisual.Size = RootElement.RenderSize.ToVector2();
+
+
+            //_containerVisual = compositor.CreateContainerVisual();
+            //_containerVisual.Children.InsertAtBottom(_backgroundVisual);
+            //ElementCompositionPreview.SetElementChildVisual(RootElement, _containerVisual);
+
+            //// Text
+            //_surfaceFactory = SurfaceFactory.GetSharedSurfaceFactoryForCompositor(compositor);
+
+            //_textSurface = _surfaceFactory.CreateTextSurface("Weston Pass");
+            //_textSurface.ForegroundColor = Color.FromArgb(50, 255, 255, 255);
+            //_textSurface.FontSize = 150;
+            //var textSurfaceBrush = compositor.CreateSurfaceBrush(_textSurface.Surface);
+
+
+            //_textVisual = compositor.CreateSpriteVisual();
+            //_textVisual.Size = _textSurface.Size.ToVector2();
+            //_textVisual.RotationAngleInDegrees = 45f;
+            //_textVisual.AnchorPoint = new Vector2(0.5f);
+
+            //_textVisual.Brush = textSurfaceBrush;
+            //_textVisual.StartAnimation(nameof(Visual.Offset), CreateTextOffsetAnimation(
+            //    new Vector3((float)RootElement.ActualWidth / 2, (float)RootElement.ActualWidth / 2, 0)));
+
+            //_containerVisual.Children.InsertAtTop(_textVisual);
+
+            //AddLighting();
+
+            //StartLightingAnimationTimer();
+        }
+
         private class ImageHolder : IEnumerable<ImageInformation>
         {
             private readonly Dictionary<(int x, int y), ImageInformation> holder = new Dictionary<(int, int), ImageInformation>();
+            private int _width;
+            private int _height;
+
             public ImageInformation this[int x, int y]
             {
                 get
@@ -201,9 +312,42 @@ namespace MusicPlayer.Controls
                 set { this.holder[(x, y)] = value; }
             }
 
-            // TODO: remove items if hsize was reduced.
-            public int Width { get; set; }
-            public int Height { get; set; }
+            public ImageInformation this[int index] => this.holder.Skip(index).First().Value;
+
+            public int Width
+            {
+                get => this._width; set
+                {
+                    if (value < 0)
+                        throw new ArgumentOutOfRangeException();
+                    this._width = value;
+                    this.RemoveItemsNoLongerInBounds();
+                }
+            }
+
+            private void RemoveItemsNoLongerInBounds()
+            {
+                foreach (var item in this.holder.Where(x => x.Key.x >= this.Width || x.Key.y >= this.Height).Distinct().ToArray())
+                {
+                    var value = item.Value;
+                    var panel = value?.Image.Parent as BackgroundPanel;
+                    panel?.Children.Remove(value.Image);
+                    this.holder.Remove(item.Key);
+                }
+            }
+
+            public int Height
+            {
+                get => this._height; set
+                {
+                    if (value < 0)
+                        throw new ArgumentOutOfRangeException();
+                    this._height = value;
+                    this.RemoveItemsNoLongerInBounds();
+                }
+            }
+
+            public int Count => this.holder.Count;
 
             public IEnumerator<ImageInformation> GetEnumerator()
             {
@@ -219,10 +363,13 @@ namespace MusicPlayer.Controls
         }
 
 
+
         protected override Size MeasureOverride(Size availableSize)
         {
-            this.CalculateTargetLayout(availableSize);
-
+            if (this.Visibility != Visibility.Collapsed)
+                this.CalculateTargetLayout(availableSize);
+            else
+                this.CalculateTargetLayout(new Size(0, 0));
 
             foreach (var item in this.Children)
                 item.Measure(new Size(this.ActualTileSize, this.ActualTileSize));
@@ -307,7 +454,11 @@ namespace MusicPlayer.Controls
         private void CalculateTargetLayout(Size size)
         {
             if (size.Height == 0 || size.Width == 0)
+            {
+                this.targetTiles = new List<ImageInformation>();
+                this.targetLayout = new ImageHolder() { Width = 0, Height = 0 };
                 return;
+            }
             var r = new Random();
             // first calculate the Grid
             // we want to align perfekt left, right and top, but buttom can vanish 
@@ -329,29 +480,33 @@ namespace MusicPlayer.Controls
 
             this.targetTiles = new List<ImageInformation>();
 
-            // we will first create quarters of the available grid and generate one Tile as big as posibble (LargeSize) in that quarter
-            int rowsTop = this.numberOfTilesVertically / 2;
-            int rowsBottom = this.numberOfTilesVertically - rowsTop;
-            int columnsLeft = this.numberOfTilesHorizontal / 2;
-            int columnsRight = this.numberOfTilesHorizontal - columnsLeft;
-            var quadrants = new[]
+            // If we do not own enough space, we will not display big tiles.
+            if ((1 + this.LargeSize) * 2 < this.numberOfTilesHorizontal && (1 + this.LargeSize) * 2 < this.numberOfTilesVertically)
             {
+                // we will first create quarters of the available grid and generate one Tile as big as posibble (LargeSize) in that quarter
+                int rowsTop = this.numberOfTilesVertically / 2;
+                int rowsBottom = this.numberOfTilesVertically - rowsTop;
+                int columnsLeft = this.numberOfTilesHorizontal / 2;
+                int columnsRight = this.numberOfTilesHorizontal - columnsLeft;
+                var quadrants = new[]
+                   {
                 new RectInt32 { X = 0, Y = 0, Width = columnsLeft, Height = rowsTop },
                 new RectInt32 { X = columnsLeft, Y = 0, Width = columnsRight, Height = rowsTop },
                 new RectInt32 { X = 0, Y = rowsTop, Width = columnsLeft, Height = rowsBottom },
                 new RectInt32 { X = columnsLeft, Y = rowsTop, Width = columnsRight, Height = rowsBottom },
             };
-            foreach (var area in quadrants)
-            {
-                // find a random x and y that still fits inside the quadrant
-                int x, y;
-                x = r.Next(0, area.Width - this.LargeSize);
-                y = r.Next(0, area.Height - this.LargeSize);
+                foreach (var area in quadrants)
+                {
+                    // find a random x and y that still fits inside the quadrant
+                    int x, y;
+                    x = r.Next(0, area.Width - this.LargeSize);
+                    y = r.Next(0, area.Height - this.LargeSize);
 
-                var information = new ImageInformation(this.LargeSize, x + area.X, y + area.Y);
-                this.targetTiles.Add(information);
-                // set the information in the targetLayout
-                SetTileInformation(information);
+                    var information = new ImageInformation(this.LargeSize, x + area.X, y + area.Y);
+                    this.targetTiles.Add(information);
+                    // set the information in the targetLayout
+                    SetTileInformation(information);
+                }
             }
 
             // now we fill the matrix with random sized quads
@@ -379,7 +534,6 @@ namespace MusicPlayer.Controls
                     }
                     var currentSize = r.Next(1, maxSize);
 
-                    var cover = this.covers.Next();
                     var information = new ImageInformation(currentSize, x, y);
                     this.targetTiles.Add(information);
                     SetTileInformation(information);
@@ -409,11 +563,12 @@ namespace MusicPlayer.Controls
 
         private class ImageInformation
         {
-            public ImageInformation(int size, int x, int y)
+            public ImageInformation(int size, int x, int y, bool isReplacing = false)
             {
                 this.Size = size;
                 this.X = x;
                 this.Y = y;
+                this.IsReplacing = isReplacing;
             }
 
             private bool removing;
@@ -422,6 +577,7 @@ namespace MusicPlayer.Controls
             public int Size { get; set; }
             public int X { get; set; }
             public int Y { get; set; }
+            public bool IsReplacing { get; }
             public Image Image { get; set; }
             public Storyboard FadeOut { get; set; }
 

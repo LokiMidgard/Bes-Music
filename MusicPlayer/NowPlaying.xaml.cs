@@ -36,7 +36,7 @@ namespace MusicPlayer
             {
                 var library = new LocalLibrary();
                 var covers = context.CoverIds(library).Select(x => new CoverData() { Id = x, Provider = library.Id });
-                this.background.Covers = covers;
+                this.backgroundLarge.Covers = covers;
             }
         }
     }
