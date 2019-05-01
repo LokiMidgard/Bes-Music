@@ -30,6 +30,7 @@ namespace MusicPlayer
         /// </summary>
         public App()
         {
+            _ = LocalLibrary.Instance;
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
         }
@@ -41,7 +42,7 @@ namespace MusicPlayer
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-            Pages.ShellPage rootFrame = Window.Current.Content as Pages.ShellPage;
+            var rootFrame = Window.Current.Content as Pages.ShellPage;
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
@@ -68,7 +69,7 @@ namespace MusicPlayer
                     // When the navigation stack isn't restored navigate to the first page,
                     // configuring the new page by passing required information as a navigation
                     // parameter
-                    Services.NavigationService.Navigate<MainPage>();
+                    Services.NavigationService.Navigate<Pages.MainPage>();
                     //rootFrame.Navigate(typeof(MainPage), e.Arguments);
                 }
                 // Ensure the current window is active

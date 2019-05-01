@@ -10,6 +10,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Media.Core;
 using Windows.Media.Playback;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -39,6 +40,7 @@ namespace MusicPlayer.Pages
             this.DataContext = this.ViewModel;
 
             this._mediaPlaybackList = new MediaPlaybackList();
+            this._mediaPlaybackList.CurrentItemChanged += this._mediaPlaybackList_CurrentItemChanged;
             IList<KeyboardAccelerator> keyboardAccelerators;
             try
             {
@@ -54,15 +56,39 @@ namespace MusicPlayer.Pages
 
         }
 
+        private void _mediaPlaybackList_CurrentItemChanged(MediaPlaybackList sender, CurrentMediaPlaybackItemChangedEventArgs args)
+        {
+
+        }
+
         public async Task PlaySong(Song song)
         {
             var media = await LocalLibrary.Instance.GetMediaSource(song.LibraryMediaId);
             var mediaItem = new MediaPlaybackItem(media);
 
+            var displayProperties = mediaItem.GetDisplayProperties();
+            displayProperties.Type = Windows.Media.MediaPlaybackType.Music;
+            displayProperties.MusicProperties.AlbumTitle = song.AlbumName;
+            displayProperties.MusicProperties.TrackNumber = (uint)song.Track;
+            displayProperties.MusicProperties.Title = song.Name;
+
+            displayProperties.MusicProperties.Genres.Clear();
+            foreach (var genre in song.Genre.Select(x => x.Name))
+                displayProperties.MusicProperties.Genres.Add(genre);
+
+            displayProperties.MusicProperties.Artist = string.Join(", ", song.Artist.Select(x => x.Name));
+
+            mediaItem.ApplyDisplayProperties(displayProperties);
+
             this._mediaPlaybackList.Items.Add(mediaItem);
 
             if (this._mediaPlaybackList.Items.Count > 0)
                 this.mediaPlayer.Source = this._mediaPlaybackList;
+
+            var storageItemThumbnail = await LocalLibrary.Instance.GetImageRetryAsync(song.LibraryImageId, 300, default);
+            displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromStream(storageItemThumbnail);
+            mediaItem.ApplyDisplayProperties(displayProperties);
+
         }
 
 

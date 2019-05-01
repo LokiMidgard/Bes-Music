@@ -1,0 +1,49 @@
+﻿<Page
+    x:Class="MusicPlayer.Pages.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MusicPlayer.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:MusicPlayer.Controls"
+    mc:Ignorable="d"
+    x:Name="root"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Pivot>
+            <PivotItem Header="Now Playing">
+
+            </PivotItem>
+            <PivotItem Header="Playlists">
+
+            </PivotItem>
+            <PivotItem Header="Albums">
+                <controls:Albums HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ></controls:Albums>
+
+            </PivotItem>
+        </Pivot>
+        <!--<Hub Orientation="Horizontal" >
+            <HubSection Header="Now Playing">
+                <DataTemplate>
+                    <Grid Width="{Binding HubSize, ElementName=root}"></Grid>
+
+                </DataTemplate>
+
+            </HubSection>
+            <HubSection Header="Playlists" >
+                <DataTemplate>
+                    <Grid Width="{Binding HubSize, ElementName=root}"></Grid>
+                        
+                </DataTemplate>
+            </HubSection>
+            <HubSection Header="Albums">
+                <DataTemplate>
+                    <Grid Width="{Binding HubSize, ElementName=root}"></Grid>
+
+                </DataTemplate>
+
+            </HubSection>
+        </Hub>-->
+    </Grid>
+</Page>

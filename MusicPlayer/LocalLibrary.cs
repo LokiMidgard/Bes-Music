@@ -57,12 +57,6 @@ namespace MusicPlayer
             using (var context = await MusicStore.CreateContextAsync(default))
             {
                 var song = await context.Songs.ToAsyncEnumerable().Where(x => x.LibraryMediaId == id).First();
-                await mediaSource.OpenAsync();
-                //var musicProperties = mediaSource.MediaStreamSource.MusicProperties;
-
-                //musicProperties.Album = song.AlbumName;
-                //musicProperties.
-                
             }
 
             return mediaSource;

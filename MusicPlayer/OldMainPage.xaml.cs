@@ -50,7 +50,7 @@ namespace MusicPlayer
         }
 
 
-        public async Task InitMusicLibraryAsync()
+        public async void InitMusicLibraryAsync()
         {
             //var files = await this.GetFilesAsync(KnownFolders.MusicLibrary);
             ////files.Select(x=>x.Properties.GetMusicPropertiesAsync())

@@ -16,10 +16,16 @@ namespace MusicPlayer.Core
         private DbSet<Artist> artists { get; set; }
         private DbSet<Genre> genre { get; set; }
 
-        public IQueryable<Song> Songs => this.songs.AsNoTracking();
+        public IQueryable<Song> Songs => this.songs
+            .Include(s => s.Genre)
+            .Include(s => s.Artist)
+            .Include(s => s.Composers)
+            .AsNoTracking();
         public IQueryable<Album> Albums => this.albums
             .Include(c => c.Songs)
                 .ThenInclude((Song x) => x.Artist)
+            .Include(c => c.Songs)
+                .ThenInclude((Song x) => x.Genre)
             .Include(c => c.Songs)
                 .ThenInclude((Song x) => x.Composers)
             .AsNoTracking();
@@ -40,7 +46,7 @@ namespace MusicPlayer.Core
 
         public static async Task<MusicStore> CreateContextAsync(CancellationToken cancellationToken)
         {
-            var store = new MusicStore();
+            var store = await Task.Run(() => new MusicStore(), cancellationToken); // Konstructor call takes forever :/
             await store.Check(cancellationToken);
             return store;
         }

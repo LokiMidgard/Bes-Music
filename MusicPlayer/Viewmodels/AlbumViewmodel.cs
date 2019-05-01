@@ -19,7 +19,7 @@ namespace MusicPlayer.Viewmodels
 
         public static readonly AlbumCollectionViewmodel Instance = new AlbumCollectionViewmodel();
 
-        private readonly LocalLibrary library = LocalLibrary.Instance;
+        //private readonly ILibrary<MediaSource, StorageItemThumbnail> library = LocalLibrary.Instance;
 
         private readonly ObservableCollection<AlbumViewmodel> albums = new ObservableCollection<AlbumViewmodel>();
 
@@ -28,17 +28,20 @@ namespace MusicPlayer.Viewmodels
         private AlbumCollectionViewmodel()
         {
             this.Albums = new ReadOnlyObservableCollection<AlbumViewmodel>(this.albums);
-            _ = this.InitilizeAsync();
+            this.InitilizeAsync();
         }
 
-        private async Task InitilizeAsync()
+        private async void InitilizeAsync()
         {
             MusicStore.AlbumCollectionChanged += this.MusicStore_AlbumCollectionChanged;
             using (var store = await MusicStore.CreateContextAsync(default))
                 foreach (var item in store.Albums)
-                    this.albums.Add(new AlbumViewmodel(item, this.library));
+                {
+                    this.albums.Add(new AlbumViewmodel(item, LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(item.LibraryProvider)));
+                }
 
-            _ = this.library.Update(default);
+
+
         }
 
         private void MusicStore_AlbumCollectionChanged(object sender, AlbumCollectionChangedEventArgs e)
@@ -47,7 +50,7 @@ namespace MusicPlayer.Viewmodels
             {
                 _ = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
-                    this.albums.Add(new AlbumViewmodel(e.Album, this.library));
+                    this.albums.Add(new AlbumViewmodel(e.Album, LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(e.Album.LibraryProvider)));
                 });
             }
         }

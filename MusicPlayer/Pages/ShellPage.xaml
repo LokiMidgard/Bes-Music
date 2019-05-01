@@ -9,11 +9,13 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Frame x:Name="shellFrame"  />
+        
         <MediaPlayerElement x:Name="mediaPlayer" 
                             Grid.Row="1"
                             VerticalAlignment="Bottom"
