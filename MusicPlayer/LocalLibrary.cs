@@ -50,14 +50,14 @@ namespace MusicPlayer
             LibraryRegistry.Register(this);
         }
 
-        public async Task<MediaSource> GetMediaSource(string id)
+        public async Task<MediaSource> GetMediaSource(string id, CancellationToken cancel)
         {
             var file = await StorageFile.GetFileFromPathAsync(id);
             var mediaSource = MediaSource.CreateFromStorageFile(file);
-            using (var context = await MusicStore.CreateContextAsync(default))
-            {
-                var song = await context.Songs.ToAsyncEnumerable().Where(x => x.LibraryMediaId == id).First();
-            }
+            //using (var context = await MusicStore.CreateContextAsync(cancel))
+            //{
+            //    var song = await context.Songs.ToAsyncEnumerable().Where(x => x.LibraryMediaId == id).First();
+            //}
 
             return mediaSource;
         }
@@ -91,17 +91,18 @@ namespace MusicPlayer
                         {
                             LibraryProvider = this.Id,
                             AlbumName = properties.Album,
-                            Artist = artist,
                             DiscNumber = discNumber ?? 0,
-                            Composers = componosts,
                             Duration = properties.Duration,
-                            Genre = genres,
                             Name = title,
                             Track = (int)properties.TrackNumber,
                             Year = properties.Year,
                             LibraryMediaId = file.Path,
 
                         };
+                        s.AddArtists(artist, ArtistType.Interpret);
+                        s.AddArtists(componosts, ArtistType.Composer);
+                        s.AddGenres(genres);
+
                         var album = await store.AddSong(s, this, deffer.CancelToken);
                         if (album != null)
                         {
@@ -109,6 +110,7 @@ namespace MusicPlayer
                             var imagePath = album.Songs.Where(x => x.LibraryImageId != null).Select(x => x.LibraryImageId).FirstOrDefault() ?? file.Path;
                             s.LibraryImageId = imagePath;
                             await store.SaveChangesAsync(token);
+                         
                         }
                         deffer.Complete();
                     }

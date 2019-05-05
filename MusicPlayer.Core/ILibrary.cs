@@ -7,7 +7,7 @@ namespace MusicPlayer.Core
     public interface ILibrary<TMediaType, TImageType> : ILibrary
     {
         Task<TImageType> GetImage(string id, int size, CancellationToken cancellationToken);
-        Task<TMediaType> GetMediaSource(string id);
+        Task<TMediaType> GetMediaSource(string id, CancellationToken cancellationToken);
     }
     public interface ILibrary
     {

@@ -40,7 +40,7 @@ namespace MusicPlayer.Viewmodels
                     this.albums.Add(new AlbumViewmodel(item, LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(item.LibraryProvider)));
                 }
 
-
+            await LocalLibrary.Instance.Update(default);
 
         }
 
@@ -144,9 +144,9 @@ namespace MusicPlayer.Viewmodels
         private void Initilize()
         {
 
-            this.Name = this.item.Name;
+            this.Name = this.item.Title;
 
-            this.Interprets = this.item.Artists.Select(x => x.Name).ToArray();
+            this.Interprets = this.item.Interpreters.Select(x => x.Name).ToArray();
 
             this.Songs = this.item.Songs.Select(x => new SongViewmodel(x, this.library, this)).ToArray();
 
@@ -157,6 +157,14 @@ namespace MusicPlayer.Viewmodels
             if (e.Album.Equals(this.item))
             {
                 if (e.Action.HasFlag(AlbumChanges.ImageUpdated))
+                {
+                    _ = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    {
+                        this.item = e.Album;
+                        this.Initilize();
+                    });
+                }
+                if (e.Action.HasFlag(AlbumChanges.SongsUpdated))
                 {
                     _ = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                     {

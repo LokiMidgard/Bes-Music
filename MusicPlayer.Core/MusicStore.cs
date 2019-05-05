@@ -17,19 +17,24 @@ namespace MusicPlayer.Core
         private DbSet<Genre> genre { get; set; }
 
         public IQueryable<Song> Songs => this.songs
-            .Include(s => s.Genre)
-            .Include(s => s.Artist)
-            .Include(s => s.Composers)
+            .Include(s => s.GenreSong)
+                .ThenInclude((GenreSong x) => x.Genre)
+            .Include(s => s.ArtistSong)
+                .ThenInclude((ArtistSong x) => x.Artist)
             .AsNoTracking();
+
         public IQueryable<Album> Albums => this.albums
             .Include(c => c.Songs)
-                .ThenInclude((Song x) => x.Artist)
+                .ThenInclude((Song x) => x.ArtistSong)
+                .ThenInclude((ArtistSong x) => x.Artist)
             .Include(c => c.Songs)
-                .ThenInclude((Song x) => x.Genre)
-            .Include(c => c.Songs)
-                .ThenInclude((Song x) => x.Composers)
+                .ThenInclude((Song x) => x.GenreSong)
+                .ThenInclude((GenreSong x) => x.Genre)
+
             .AsNoTracking();
+
         public IQueryable<Artist> Artists => this.artists.AsNoTracking();
+
         public IQueryable<Genre> Genre => this.genre.AsNoTracking();
 
         public IQueryable<string> CoverIds(ILibrary library) => this.songs.Where(x => x.LibraryProvider == library.Id).Select(x => x.LibraryImageId);
@@ -57,7 +62,7 @@ namespace MusicPlayer.Core
             if (!this.first)
             {
                 this.first = true;
-                //await this.Database.EnsureDeletedAsync(cancellationToken);
+                await this.Database.EnsureDeletedAsync(cancellationToken);
             }
             await this.Database.EnsureCreatedAsync(cancellationToken);
         }
@@ -79,14 +84,48 @@ namespace MusicPlayer.Core
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Song>().HasKey(s => new { s.Name, s.AlbumName, s.Track, s.DiscNumber, s.LibraryProvider });
+            modelBuilder.Entity<Song>()
+                .HasKey(s => new { s.Name, s.AlbumName, s.Track, s.DiscNumber, s.LibraryProvider });
+
+
+            modelBuilder.Entity<GenreSong>()
+                .HasKey(x => new { x.SongName, x.AlbumName, x.Track, x.DiscNumber, x.LibraryProvider, x.GenreName });
+
+            modelBuilder.Entity<GenreSong>()
+                .HasOne(x => x.Genre)
+                .WithMany(x => x.GenreSongs)
+                .HasForeignKey(x => x.GenreName);
+
+            modelBuilder.Entity<GenreSong>()
+                .HasOne(x => x.Song)
+                .WithMany(x => x.GenreSong)
+                .HasForeignKey(x => new { x.SongName, x.AlbumName, x.Track, x.DiscNumber, x.LibraryProvider });
+
+
+            modelBuilder.Entity<ArtistSong>()
+                .HasKey(x => new { x.SongName, x.AlbumName, x.Track, x.DiscNumber, x.LibraryProvider, x.ArtistName, x.ArtistType });
+
+            modelBuilder.Entity<ArtistSong>()
+                    .HasOne(x => x.Song)
+                .WithMany(x => x.ArtistSong)
+                .HasForeignKey(x => new { x.SongName, x.AlbumName, x.Track, x.DiscNumber, x.LibraryProvider });
+
+            modelBuilder.Entity<ArtistSong>()
+                .HasOne(x => x.Artist)
+                .WithMany(x => x.ArtistSongs)
+                .HasForeignKey(x => x.ArtistName);
+
+
             modelBuilder.Entity<Album>()
-                .HasMany(c => c.Songs)
-                .WithOne().HasForeignKey(a => new { a.AlbumName, a.LibraryProvider });
+                .HasMany(a => a.Songs)
+                .WithOne()
+                .HasForeignKey(s => new { s.AlbumName, s.LibraryProvider });
             modelBuilder.Entity<Album>()
-                .HasKey(a => new { a.Name, a.LibraryProvider });
-            modelBuilder.Entity<Artist>().HasKey(a => a.Name);
-            modelBuilder.Entity<Genre>().HasKey(g => g.Name);
+                .HasKey(a => new { a.Title, a.LibraryProvider });
+            modelBuilder.Entity<Artist>()
+                .HasKey(a => a.Name);
+            modelBuilder.Entity<Genre>()
+                .HasKey(g => g.Name);
         }
 
         /// <summary>
@@ -97,14 +136,14 @@ namespace MusicPlayer.Core
         /// <returns>The album the Song was added to or <c>null</c> if the song was already peresent</returns>
         public async Task<Album> AddSong<TMediaType, TImageType>(Song song, ILibrary<TMediaType, TImageType> library, CancellationToken cancellationToken)
         {
-            var album = await this.albums.Include(c => c.Songs).FirstOrDefaultAsync(x => x.Name == song.AlbumName, cancellationToken);
+            var album = await this.albums.Include(c => c.Songs).FirstOrDefaultAsync(x => x.Title == song.AlbumName, cancellationToken);
 
             AlbumChanges albumAction;
             if (album == null)
             {
                 album = new Album()
                 {
-                    Name = song.AlbumName,
+                    Title = song.AlbumName,
                     Songs = new List<Song>(),
                     LibraryProvider = library.Id
                 };
@@ -206,6 +245,14 @@ namespace MusicPlayer.Core
     {
         public string Name { get; set; }
 
+        public List<ArtistSong> ArtistSongs { get; set; } = new List<ArtistSong>();
+
+
+        [NotMapped]
+        public IEnumerable<Song> Interpreted => this.ArtistSongs.Where(x => x.ArtistType == ArtistType.Interpret).Select(x => x.Song);
+        [NotMapped]
+        public IEnumerable<Song> Composed => this.ArtistSongs.Where(x => x.ArtistType == ArtistType.Composer).Select(x => x.Song);
+
 
         public override bool Equals(object obj)
         {
@@ -234,10 +281,53 @@ namespace MusicPlayer.Core
         }
     }
 
+    public class GenreSong
+    {
+        public Song Song { get; set; }
+
+        public string AlbumName { get; set; }
+        public string SongName { get; set; }
+        public int Track { get; set; }
+        public int DiscNumber { get; set; }
+        public string LibraryProvider { get; set; }
+
+
+        public Genre Genre { get; set; }
+
+        public string GenreName { get; set; }
+    }
+
+    public enum ArtistType
+    {
+        Interpret,
+        Composer
+    }
+
+    public class ArtistSong
+    {
+        public ArtistType ArtistType { get; set; }
+
+        public Song Song { get; set; }
+        public string AlbumName { get; set; }
+        public string SongName { get; set; }
+        public int Track { get; set; }
+        public int DiscNumber { get; set; }
+        public string LibraryProvider { get; set; }
+
+
+        public Artist Artist { get; set; }
+        public string ArtistName { get; set; }
+    }
+
     [System.Diagnostics.DebuggerDisplay("Genre: {Name}")]
     public class Genre : IEquatable<Genre>
     {
         public string Name { get; set; }
+
+        public List<GenreSong> GenreSongs { get; set; } = new List<GenreSong>();
+        [NotMapped]
+        public IEnumerable<Song> Songs => this.GenreSongs.Select(x => x.Song);
+
 
         public override bool Equals(object obj)
         {
@@ -271,17 +361,61 @@ namespace MusicPlayer.Core
     {
         public string AlbumName { get; set; }
         public string Name { get; set; }
+        public int Track { get; set; }
+        public int DiscNumber { get; set; }
+        public string LibraryProvider { get; set; }
 
         public string LibraryImageId { get; set; }
         public string LibraryMediaId { get; set; }
         public TimeSpan Duration { get; set; }
-        public int Track { get; set; }
-        public int DiscNumber { get; set; }
-        public List<Artist> Artist { get; set; }
-        public List<Artist> Composers { get; set; }
-        public List<Genre> Genre { get; set; }
+
+        public List<ArtistSong> ArtistSong { get; set; } = new List<ArtistSong>();
+        public List<GenreSong> GenreSong { get; set; } = new List<GenreSong>();
+
+        [NotMapped]
+        public IEnumerable<Artist> Interprets => this.ArtistSong.Where(x => x.ArtistType == ArtistType.Interpret).Select(x => x.Artist);
+        [NotMapped]
+        public IEnumerable<Artist> Composers => this.ArtistSong.Where(x => x.ArtistType == ArtistType.Composer).Select(x => x.Artist);
+        [NotMapped]
+        public IEnumerable<Genre> Genre => this.GenreSong.Select(x => x.Genre);
+
+        public void AddArtists(IEnumerable<Artist> artists, ArtistType type)
+        {
+            this.ArtistSong.AddRange(artists.Select(x => new ArtistSong()
+            {
+                AlbumName = this.AlbumName,
+                ArtistName = x.Name,
+                Track = this.Track,
+                DiscNumber = this.DiscNumber,
+                LibraryProvider = this.LibraryProvider,
+                Artist = x,
+                Song = this,
+                SongName = this.Name,
+                ArtistType = type
+            }));
+        }
+        public void AddGenres(IEnumerable<Genre> genres)
+        {
+            this.GenreSong.AddRange(genres.Select(x => new GenreSong()
+            {
+                AlbumName = this.AlbumName,
+                GenreName = x.Name,
+                Track = this.Track,
+                DiscNumber = this.DiscNumber,
+                LibraryProvider = this.LibraryProvider,
+                Genre = x,
+                Song = this,
+                SongName = this.Name
+            }));
+        }
+
+        //public IEnumerable<Artist> Artists => this.Songs.SelectMany(x => x.Artist).Distinct();
+        //[NotMapped]
+        //public IEnumerable<Artist> Composers => this.Songs.SelectMany(x => x.Composers).Distinct();
+        //[NotMapped]
+        //public IEnumerable<string> LibraryImages => this.Songs.Select(x => x.LibraryImageId).Distinct();
+
         public uint Year { get; set; }
-        public string LibraryProvider { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -323,14 +457,14 @@ namespace MusicPlayer.Core
     [System.Diagnostics.DebuggerDisplay("Album: {Name}")]
     public class Album : IEquatable<Album>
     {
-        public string Name { get; set; }
+        public string Title { get; set; }
 
         public string LibraryProvider { get; set; }
 
         public List<Song> Songs { get; set; } = new List<Song>();
 
         [NotMapped]
-        public IEnumerable<Artist> Artists => this.Songs.SelectMany(x => x.Artist).Distinct();
+        public IEnumerable<Artist> Interpreters => this.Songs.SelectMany(x => x.Interprets).Distinct();
         [NotMapped]
         public IEnumerable<Artist> Composers => this.Songs.SelectMany(x => x.Composers).Distinct();
         [NotMapped]
@@ -345,14 +479,14 @@ namespace MusicPlayer.Core
         public bool Equals(Album other)
         {
             return other != null &&
-                   this.Name == other.Name &&
+                   this.Title == other.Title &&
                    this.LibraryProvider == other.LibraryProvider;
         }
 
         public override int GetHashCode()
         {
             var hashCode = 920117603;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.Name);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.Title);
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.LibraryProvider);
             return hashCode;
         }

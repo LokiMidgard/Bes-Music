@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Windows.Foundation.Metadata;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -12,6 +14,35 @@ using Windows.UI.Xaml.Navigation;
 
 namespace MusicPlayer.Services
 {
+
+    public class NavigateBackCommand : ICommand
+    {
+
+
+        public bool IsVisible { get; }
+
+        public NavigateBackCommand()
+        {
+            NavigationService.Navigated += (s, e) => this.CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+
+            bool isHardwareButtonsAPIPresent = ApiInformation.IsTypePresent("Windows.Phone.UI.Input.HardwareButtons");
+            this.IsVisible = !isHardwareButtonsAPIPresent;
+
+        }
+
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            return NavigationService.CanGoBack;
+        }
+
+        public void Execute(object parameter)
+        {
+            NavigationService.GoBack();
+        }
+    }
+
     public static class NavigationService
     {
         public static event NavigatedEventHandler Navigated;
@@ -98,7 +129,7 @@ namespace MusicPlayer.Services
             if (_naviagationManager != null)
                 _naviagationManager.BackRequested += NavigationService_BackRequested;
 
-
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
         }
 
         private static void NavigationService_BackRequested(object sender, BackRequestedEventArgs e)

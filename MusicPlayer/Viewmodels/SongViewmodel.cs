@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MusicPlayer.Core;
 using Windows.Media.Core;
@@ -54,9 +57,11 @@ namespace MusicPlayer.Viewmodels
             set { this.SetValue(DurationProperty, value); }
         }
 
+        public AlbumViewmodel AlbumViewmodel { get; }
+
         internal Task Play()
         {
-            return App.Shell.PlaySong(this.item);
+            return App.Shell.PlaySong(this);
         }
 
         // Using a DependencyProperty as the backing store for timeSpan.  This enables animation, styling, binding, etc...
@@ -66,15 +71,65 @@ namespace MusicPlayer.Viewmodels
 
 
 
+
+        public IReadOnlyList<string> Interprets
+        {
+            get { return (IReadOnlyList<string>)GetValue(InterpretsProperty); }
+            set { SetValue(InterpretsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Artists.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty InterpretsProperty =
+            DependencyProperty.Register("Interprets", typeof(IReadOnlyList<string>), typeof(SongViewmodel), new PropertyMetadata(null));
+
+
+
+        public IReadOnlyList<string> Composers
+        {
+            get { return (IReadOnlyList<string>)GetValue(ComposersProperty); }
+            set { SetValue(ComposersProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Composers.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ComposersProperty =
+            DependencyProperty.Register("Composers", typeof(IReadOnlyList<string>), typeof(SongViewmodel), new PropertyMetadata(null));
+
+
+
+        public IReadOnlyList<string> Genres
+        {
+            get { return (IReadOnlyList<string>)GetValue(GenresProperty); }
+            set { SetValue(GenresProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Genres.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty GenresProperty =
+            DependencyProperty.Register("Genres", typeof(IReadOnlyList<string>), typeof(SongViewmodel), new PropertyMetadata(null));
+
+
+
+        public int Year
+        {
+            get { return (int)GetValue(YearProperty); }
+            set { SetValue(YearProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Year.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty YearProperty =
+            DependencyProperty.Register("Year", typeof(int), typeof(SongViewmodel), new PropertyMetadata(0));
+
+
+
+
+
         private Song item;
         private ILibrary<MediaSource, StorageItemThumbnail> library;
-        private AlbumViewmodel albumViewmodel;
 
         public SongViewmodel(Song x, ILibrary<MediaSource, StorageItemThumbnail> library, AlbumViewmodel albumViewmodel)
         {
             this.item = x;
             this.library = library;
-            this.albumViewmodel = albumViewmodel;
+            this.AlbumViewmodel = albumViewmodel;
             MusicStore.SongCollectionChanged += this.MusicStore_SongCollectionChanged;
             this.Initilize();
         }
@@ -85,8 +140,14 @@ namespace MusicPlayer.Viewmodels
             this.Title = this.item.Name;
             this.Track = this.item.Track;
             this.Duration = this.item.Duration;
-
+            this.Interprets = this.item.Interprets.Select(x => x.Name).ToList().AsReadOnly();
+            this.Composers = this.item.Composers.Select(x => x.Name).ToList().AsReadOnly();
+            this.Genres = this.item.Genre.Select(x => x.Name).ToList().AsReadOnly();
+            this.Year = (int)this.item.Year;
         }
+
+        public Task<MediaSource> GetMediaSource(CancellationToken cancel) => LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(this.item.LibraryProvider).GetMediaSource(this.item.LibraryMediaId, cancel);
+        public Task<StorageItemThumbnail> GetCover(int size, CancellationToken cancel) => LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(this.item.LibraryProvider).GetImage(this.item.LibraryImageId, size, cancel);
 
         private void MusicStore_SongCollectionChanged(object sender, SongCollectionChangedEventArgs e)
         {

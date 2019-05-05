@@ -42,6 +42,21 @@ namespace MusicPlayer.Pages
             this.InitializeComponent();
             this.SizeChanged += this.MainPage_SizeChanged;
             this.HubSize = Math.Max(30, this.Width - 60);
+
+            this.NavigationCacheMode = NavigationCacheMode.Enabled;
+        }
+
+        
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+            
+        }
+
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            base.OnNavigatingFrom(e);
         }
 
         private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
