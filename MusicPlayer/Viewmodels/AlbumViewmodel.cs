@@ -22,23 +22,53 @@ namespace MusicPlayer.Viewmodels
         //private readonly ILibrary<MediaSource, StorageItemThumbnail> library = LocalLibrary.Instance;
 
         private readonly ObservableCollection<AlbumViewmodel> albums = new ObservableCollection<AlbumViewmodel>();
-
         public ReadOnlyObservableCollection<AlbumViewmodel> Albums { get; }
+
+        private readonly GroupedObservableCollection<char, AlbumViewmodel> alphabetGrouped;
+        public ReadOnlyObservableCollection<SortedGroup<char, AlbumViewmodel>> AlphabetGrouped { get; }
 
         private AlbumCollectionViewmodel()
         {
             this.Albums = new ReadOnlyObservableCollection<AlbumViewmodel>(this.albums);
+
+            this.alphabetGrouped = new GroupedObservableCollection<char, AlbumViewmodel>(x =>
+            {
+
+                var c = x.Name.FirstOrDefault();
+                if (c >= 'a' && c <= 'z'
+                    || c >= 'A' && c <= 'Z'
+                    )
+                    return char.ToUpper(c);
+
+                if (c >= '0' && c <= '9')
+                    return '#';
+
+                return '';
+            }, Comparer<char>.Default, new AlbumViewmodelComparer());
+            this.AlphabetGrouped = new ReadOnlyObservableCollection<SortedGroup<char, AlbumViewmodel>>(this.alphabetGrouped);
+
             this.InitilizeAsync();
+        }
+
+        public void Add(AlbumViewmodel model)
+        {
+            this.alphabetGrouped.Add(model);
+            this.albums.Add(model);
+        }
+        public void Remove(AlbumViewmodel model)
+        {
+            this.alphabetGrouped.Remove(model);
+            this.albums.Remove(model);
         }
 
         private async void InitilizeAsync()
         {
             MusicStore.AlbumCollectionChanged += this.MusicStore_AlbumCollectionChanged;
-            using (var store = await MusicStore.CreateContextAsync(default))
-                foreach (var item in store.Albums)
-                {
-                    this.albums.Add(new AlbumViewmodel(item, LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(item.LibraryProvider)));
-                }
+
+            foreach (var item in await MusicStore.GetAlbums())
+            {
+                this.Add(new AlbumViewmodel(item, LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(item.LibraryProvider)));
+            }
 
             await LocalLibrary.Instance.Update(default);
 
@@ -48,12 +78,120 @@ namespace MusicPlayer.Viewmodels
         {
             if (e.Action.HasFlag(AlbumChanges.Added))
             {
-                _ = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                _ = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                 {
-                    this.albums.Add(new AlbumViewmodel(e.Album, LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(e.Album.LibraryProvider)));
+                    var albume = await MusicStore.GetAlbum(e.AlbumName, e.AlbumInterpret, e.ProviderId);
+                    this.Add(new AlbumViewmodel(albume, LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(albume.LibraryProvider)));
                 });
             }
         }
+    }
+
+
+    public class GroupedObservableCollection<TKey, TValue> : ObservableCollection<SortedGroup<TKey, TValue>>
+    {
+        private readonly Func<TValue, TKey> keySelector;
+        private readonly IComparer<SortedGroup<TKey, TValue>> groupComparer;
+        private readonly IComparer<TValue> valueComparer;
+        private readonly Dictionary<TKey, SortedGroup<TKey, TValue>> keyLookup = new Dictionary<TKey, SortedGroup<TKey, TValue>>();
+
+        public GroupedObservableCollection(Func<TValue, TKey> keySelector, IComparer<TKey> groupComparer, IComparer<TValue> valueComparer)
+        {
+            this.keySelector = keySelector;
+            this.groupComparer = new GroupComparer(groupComparer);
+            this.valueComparer = valueComparer;
+        }
+
+        public void Add(TValue value)
+        {
+            var key = this.keySelector(value);
+            SortedGroup<TKey, TValue> group;
+            if (this.keyLookup.ContainsKey(key))
+                group = this.keyLookup[key];
+            else
+            {
+                group = new SortedGroup<TKey, TValue>(key, this.valueComparer);
+                this.keyLookup.Add(key, group);
+                var index = this.BinarySearch(group, this.groupComparer);
+                if (index < 0)
+                    index = ~index;
+                this.Insert(index, group);
+            }
+
+            group.Add(value);
+        }
+
+        public void Remove(TValue value)
+        {
+            var key = this.keySelector(value);
+            if (this.keyLookup.ContainsKey(key))
+            {
+                var group = this.keyLookup[key];
+                group.Remove(value);
+                if (!group.HasItems)
+                {
+                    this.Remove(group);
+                    this.keyLookup.Remove(key);
+                }
+            }
+        }
+
+        private class GroupComparer : IComparer<SortedGroup<TKey, TValue>>
+        {
+            private readonly IComparer<TKey> groupComparer;
+
+            public GroupComparer(IComparer<TKey> groupComparer) => this.groupComparer = groupComparer;
+
+            public int Compare(SortedGroup<TKey, TValue> x, SortedGroup<TKey, TValue> y) => this.groupComparer.Compare(x.Key, y.Key);
+        }
+
+    }
+
+    public class SortedGroup<TKey, TValue> : ObservableCollection<TValue>, IGrouping<TKey, TValue>
+    {
+        /// <summary>
+        /// The Group Title
+        /// </summary>
+        public TKey Key
+        {
+            get;
+        }
+
+        private readonly IComparer<TValue> comparer;
+
+        /// <summary>
+        /// Constructor ensure that a Group Title is included
+        /// </summary>
+        /// <param name="key">string to be used as the Group Title</param>
+        public SortedGroup(TKey key, IComparer<TValue> comparer)
+        {
+            this.Key = key;
+            this.comparer = comparer;
+        }
+
+        /// <summary>
+        /// Returns true if the group has a count more than zero
+        /// </summary>
+        public bool HasItems
+        {
+            get
+            {
+                return (this.Count != 0);
+            }
+
+        }
+
+        public new void Add(TValue value)
+        {
+            var index = this.BinarySearch(value, this.comparer);
+            if (index < 0)
+                index = ~index;
+            this.Insert(index, value);
+        }
+
+
+
+
     }
 
     public class AlbumViewmodel : DependencyObject
@@ -146,21 +284,22 @@ namespace MusicPlayer.Viewmodels
 
             this.Name = this.item.Title;
 
-            this.Interprets = this.item.Interpreters.Select(x => x.Name).ToArray();
+            this.Interprets = this.item.Interpreters;
 
             this.Songs = this.item.Songs.Select(x => new SongViewmodel(x, this.library, this)).ToArray();
 
         }
 
-        private void MusicStore_AlbumCollectionChanged(object sender, AlbumCollectionChangedEventArgs e)
+        private async void MusicStore_AlbumCollectionChanged(object sender, AlbumCollectionChangedEventArgs e)
         {
-            if (e.Album.Equals(this.item))
+            if (e.AlbumName.Equals(this.item.Title) && e.AlbumInterpret == this.item.AlbumInterpret && e.ProviderId == this.item.LibraryProvider)
             {
+                var albume = await MusicStore.GetAlbum(e.AlbumName, e.AlbumInterpret, e.ProviderId);
                 if (e.Action.HasFlag(AlbumChanges.ImageUpdated))
                 {
                     _ = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                     {
-                        this.item = e.Album;
+                        this.item = albume;
                         this.Initilize();
                     });
                 }
@@ -168,7 +307,7 @@ namespace MusicPlayer.Viewmodels
                 {
                     _ = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                     {
-                        this.item = e.Album;
+                        this.item = albume;
                         this.Initilize();
                     });
                 }

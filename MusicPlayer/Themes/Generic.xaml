@@ -2,6 +2,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="using:MusicPlayer.Helpers"
     xmlns:local="using:MusicPlayer"
     xmlns:local2="using:MusicPlayer.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -26,7 +27,7 @@
                     <Grid
                         x:Name="RootGrid"
                         Height="{StaticResource NormalMediaControlHeight}"
-                        Background="Transparent">
+                        Background="{StaticResource SystemRevealChromeLowColor}">
                         <Grid.Resources>
                             <Style x:Key="MediaTextBlockStyle" TargetType="TextBlock">
                                 <Setter Property="VerticalAlignment" Value="Center" />
@@ -42,11 +43,17 @@
                                 <Setter Property="Padding" Value="0" />
                             </Style>
                         </Grid.Resources>
+                        <Border Visibility="Collapsed">
+                            <Border.DataContext>
+                                <helpers:ConstantsHelper PlayListHeight="{Binding ElementName=RootGrid, Path=Height, Mode=OneWay}" />
+                            </Border.DataContext>
+                        </Border>
                         <Border x:Name="ControlPanel_ControlPanelVisibilityStates_Border">
                             <Grid
                                 x:Name="ControlPanelGrid"
                                 VerticalAlignment="Bottom"
-                                Background="{ThemeResource MediaTransportControlsPanelBackground}"
+                                Background="{ThemeResource SystemControlTransparentRevealBackgroundBrush}"
+                                BorderBrush="{ThemeResource SystemControlTransparentRevealBorderBrush}"
                                 RenderTransformOrigin="0.5,0.5">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -146,7 +153,11 @@
                                             MinWidth="80"
                                             Margin="12,0"
                                             VerticalAlignment="Center"
-                                            IsThumbToolTipEnabled="False" />
+                                            IsThumbToolTipEnabled="False">
+                                            <Slider.Template>
+                                                <ControlTemplate />
+                                            </Slider.Template>
+                                        </Slider>
                                         <ProgressBar
                                             x:Name="BufferingProgressBar"
                                             Height="4"
@@ -155,11 +166,12 @@
                                             IsHitTestVisible="False"
                                             IsIndeterminate="True"
                                             Visibility="Collapsed" />
-                                        <Grid
+                                        <StackPanel
                                             x:Name="TimeTextGrid"
                                             Grid.Row="1"
                                             Height="15"
-                                            Margin="12,0">
+                                            Margin="12,0"
+                                            HorizontalAlignment="Center">
                                             <TextBlock
                                                 x:Name="TimeElapsedElement"
                                                 Margin="0"
@@ -168,12 +180,18 @@
                                                 Style="{StaticResource MediaTextBlockStyle}"
                                                 Text="00:00" />
                                             <TextBlock
+                                                Margin="0"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Bottom"
+                                                Style="{StaticResource MediaTextBlockStyle}"
+                                                Text="/" />
+                                            <TextBlock
                                                 x:Name="TimeRemainingElement"
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Bottom"
                                                 Style="{StaticResource MediaTextBlockStyle}"
                                                 Text="00:00" />
-                                        </Grid>
+                                        </StackPanel>
                                     </Grid>
                                 </Border>
                                 <!--<Border
@@ -203,34 +221,81 @@
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-
+                                        <Grid.Resources>
+                                            <x:Double x:Key="BigButtonSize">48</x:Double>
+                                            <Thickness x:Key="BigButtonMargin">6</Thickness>
+                                            <x:Double x:Key="MediumButtonSize">36</x:Double>
+                                            <Thickness x:Key="MediumButtonMargin">6</Thickness>
+                                            <x:Double x:Key="SmalButtonSize">36</x:Double>
+                                            <Thickness x:Key="SmalButtonMargin">6</Thickness>
+                                        </Grid.Resources>
                                         <StackPanel Grid.Column="0" HorizontalAlignment="Left" />
                                         <StackPanel
                                             Grid.Column="1"
                                             HorizontalAlignment="Center"
                                             Orientation="Horizontal">
-                                            <Button Command="{TemplateBinding ShuffleCommand}">
-                                                <SymbolIcon Symbol="Shuffle" />
+                                            <ToggleButton
+                                                Width="{StaticResource SmalButtonSize}"
+                                                Height="{StaticResource SmalButtonSize}"
+                                                Margin="{StaticResource SmalButtonMargin}"
+                                                Command="{TemplateBinding ShuffleCommand}"
+                                                Style="{StaticResource RoundToggleButtonRevealStyle}">
+                                                <Viewbox>
+                                                    <SymbolIcon Symbol="Shuffle" />
+                                                </Viewbox>
+                                            </ToggleButton>
+                                            <Button
+                                                Width="{StaticResource MediumButtonSize}"
+                                                Height="{StaticResource MediumButtonSize}"
+                                                Margin="{StaticResource MediumButtonMargin}"
+                                                Command="{TemplateBinding PreviousCommand}"
+                                                Style="{StaticResource RoundButtonRevealStyle}">
+                                                <Viewbox>
+                                                    <SymbolIcon Symbol="Previous" />
+                                                </Viewbox>
                                             </Button>
-                                            <Button Command="{TemplateBinding PreviousCommand}">
-                                                <SymbolIcon Symbol="Previous" />
-                                            </Button>
-                                            <Button x:Name="PausePlayButton" Command="{TemplateBinding PlayCommand}">
+                                            <Button
+                                                x:Name="PausePlayButton"
+                                                Width="{StaticResource BigButtonSize}"
+                                                Height="{StaticResource BigButtonSize}"
+                                                Margin="{StaticResource BigButtonMargin}"
+                                                Command="{TemplateBinding PlayCommand}"
+                                                Style="{StaticResource RoundButtonRevealStyle}">
                                                 <SymbolIcon x:Name="PlayPauseSymbol" Symbol="Play" />
                                             </Button>
-                                            <Button Command="{TemplateBinding NextCommand}">
-                                                <SymbolIcon Symbol="Next" />
+                                            <Button
+                                                Width="{StaticResource MediumButtonSize}"
+                                                Height="{StaticResource MediumButtonSize}"
+                                                Margin="{StaticResource MediumButtonMargin}"
+                                                Command="{TemplateBinding NextCommand}"
+                                                Style="{StaticResource RoundButtonRevealStyle}">
+                                                <Viewbox>
+                                                    <SymbolIcon Symbol="Next" />
+                                                </Viewbox>
                                             </Button>
-                                            <Button Command="{TemplateBinding RepeateCommand}">
-                                                <SymbolIcon Symbol="RepeatAll" />
-                                            </Button>
+                                            <ToggleButton
+                                                Width="{StaticResource SmalButtonSize}"
+                                                Height="{StaticResource SmalButtonSize}"
+                                                Margin="{StaticResource SmalButtonMargin}"
+                                                Command="{TemplateBinding RepeateCommand}"
+                                                Style="{StaticResource RoundToggleButtonRevealStyle}">
+                                                <Viewbox>
+                                                    <SymbolIcon Symbol="RepeatAll" />
+                                                </Viewbox>
+                                            </ToggleButton>
                                         </StackPanel>
                                         <StackPanel
                                             Grid.Column="2"
                                             HorizontalAlignment="Right"
                                             Orientation="Horizontal">
-                                            <Button Command="{TemplateBinding SwitchFullScreenCommand}">
-                                                <SymbolIcon x:Name="FullWindowSymbol" Symbol="FullScreen" />
+                                            <Button
+                                                Width="{StaticResource SmalButtonSize}"
+                                                Height="{StaticResource SmalButtonSize}"
+                                                Command="{TemplateBinding SwitchFullScreenCommand}"
+                                                Style="{StaticResource RoundButtonRevealStyle}">
+                                                <Viewbox>
+                                                    <SymbolIcon x:Name="FullWindowSymbol" Symbol="FullScreen" />
+                                                </Viewbox>
                                             </Button>
                                         </StackPanel>
 
@@ -474,7 +539,7 @@
                                     </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>
-                            <VisualStateGroup x:Name="RepeatStates">
+                            <!--<VisualStateGroup x:Name="RepeatStates">
                                 <VisualState x:Name="RepeatNoneState" />
                                 <VisualState x:Name="RepeatOneState">
                                     <VisualState.Setters>
@@ -487,7 +552,7 @@
                                         <Setter Target="RepeatButton.IsChecked" Value="True" />
                                     </VisualState.Setters>
                                 </VisualState>
-                            </VisualStateGroup>
+                            </VisualStateGroup>-->
                         </VisualStateManager.VisualStateGroups>
                     </Grid>
                 </ControlTemplate>
@@ -537,7 +602,7 @@
                                         Storyboard.TargetName="transform"
                                         Storyboard.TargetProperty="Angle"
                                         To="360"
-                                        Duration="0:1:0" />
+                                        Duration="0:0:1.8" />
                                 </Storyboard>
                             </Ellipse.Resources>
                             <Ellipse.RenderTransform>

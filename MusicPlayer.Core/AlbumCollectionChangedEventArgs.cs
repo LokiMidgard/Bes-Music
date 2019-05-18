@@ -5,7 +5,9 @@ namespace MusicPlayer.Core
     public class AlbumCollectionChangedEventArgs
     {
         public AlbumChanges Action { get; internal set; }
-        public Album Album { get; internal set; }
+        public string AlbumName { get; internal set; }
+        public string AlbumInterpret { get; internal set; }
+        public string ProviderId { get; internal set; }
     }
 
     [Flags]

@@ -137,12 +137,12 @@ namespace MusicPlayer.Viewmodels
         private void Initilize()
         {
             this.Discnumber = this.item.DiscNumber;
-            this.Title = this.item.Name;
+            this.Title = this.item.Title;
             this.Track = this.item.Track;
             this.Duration = this.item.Duration;
-            this.Interprets = this.item.Interprets.Select(x => x.Name).ToList().AsReadOnly();
-            this.Composers = this.item.Composers.Select(x => x.Name).ToList().AsReadOnly();
-            this.Genres = this.item.Genre.Select(x => x.Name).ToList().AsReadOnly();
+            this.Interprets = this.item.Interpreters.ToList().AsReadOnly();
+            this.Composers = this.item.Composers.ToList().AsReadOnly();
+            this.Genres = this.item.Genres.ToList().AsReadOnly();
             this.Year = (int)this.item.Year;
         }
 

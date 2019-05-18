@@ -32,12 +32,9 @@ namespace MusicPlayer
         private async System.Threading.Tasks.Task InitAsync()
         {
 
-            using (var context = await MusicPlayer.Core.MusicStore.CreateContextAsync(default))
-            {
-                var library = LocalLibrary.Instance;
-                var covers = context.CoverIds(library).Select(x => new CoverData() { Id = x, Provider = library.Id });
-                this.backgroundLarge.Covers = covers;
-            }
+            var library = LocalLibrary.Instance;
+            var covers = (await MusicPlayer.Core.MusicStore.CoverIds(library)).Select(x => new CoverData() { Id = x, Provider = library.Id });
+            this.backgroundLarge.Covers = covers;
         }
     }
 }

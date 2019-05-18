@@ -45,8 +45,14 @@ namespace MusicPlayer.Controls
             var me = d as NowPlayingDisk;
             var elipse = me.coverDisc;
             var storyboard = elipse.Resources["Storyboard"] as Windows.UI.Xaml.Media.Animation.Storyboard;
+
             if ((bool)e.NewValue)
-                storyboard.Begin();
+            {
+                if (storyboard.GetCurrentState() == Windows.UI.Xaml.Media.Animation.ClockState.Stopped)
+                    storyboard.Begin();
+                else
+                    storyboard.Resume();
+            }
             else
                 storyboard.Pause();
         }

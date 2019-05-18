@@ -1,13 +1,14 @@
-﻿using System;
+﻿using MusicPlayer.Core;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using MusicPlayer.Core;
 using Windows.Media.Core;
 using Windows.Media.Playback;
 using Windows.Storage;
@@ -48,6 +49,7 @@ namespace MusicPlayer
         private LocalLibrary()
         {
             LibraryRegistry.Register(this);
+
         }
 
         public async Task<MediaSource> GetMediaSource(string id, CancellationToken cancel)
@@ -64,63 +66,84 @@ namespace MusicPlayer
 
         public async Task Update(CancellationToken token)
         {
-            using (var store = await MusicStore.CreateContextAsync(token))
+            var query = new FileQuery(KnownFolders.MusicLibrary);
+            await query.ToAsyncEnumerable().ForEachAsync(async arg =>
             {
-
-                var query = new FileQuery(KnownFolders.MusicLibrary);
-                await query.ToAsyncEnumerable().ForEachAsync(async arg =>
+                var (file, deffer) = arg;
+                try
                 {
-                    var (file, deffer) = arg;
-                    try
+                    if (!SUPPORTED_EXTENSIONS.Contains(Path.GetExtension(file.Name)))
                     {
-                        if (!SUPPORTED_EXTENSIONS.Contains(Path.GetExtension(file.Name)))
-                        {
-                            deffer.Complete();
-                            return;
-                        }
-
-                        var properties = await file.Properties.GetMusicPropertiesAsync();
-                        var discNumberPropertie = await properties.RetrievePropertiesAsync(new[] { "System.Music.DiscNumber" }).AsTask().ContinueWith(x => x.Result.SingleOrDefault());
-                        var artistString = properties.Artist ?? properties.AlbumArtist ?? "";
-                        var discNumber = discNumberPropertie.Value as int?;
-                        var componosts = (await Task.WhenAll(properties.Composers.Select(x => store.GetOrCreateArtist(x, token)))).ToList();
-                        var title = properties.Title;
-                        var artist = (await Task.WhenAll(artistString.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => store.GetOrCreateArtist(x.Trim(), token)))).ToList();
-                        var genres = (await Task.WhenAll(properties.Genre.Select(x => store.GetOrCreateGenre(x, token)))).ToList();
-                        var s = new Song()
-                        {
-                            LibraryProvider = this.Id,
-                            AlbumName = properties.Album,
-                            DiscNumber = discNumber ?? 0,
-                            Duration = properties.Duration,
-                            Name = title,
-                            Track = (int)properties.TrackNumber,
-                            Year = properties.Year,
-                            LibraryMediaId = file.Path,
-
-                        };
-                        s.AddArtists(artist, ArtistType.Interpret);
-                        s.AddArtists(componosts, ArtistType.Composer);
-                        s.AddGenres(genres);
-
-                        var album = await store.AddSong(s, this, deffer.CancelToken);
-                        if (album != null)
-                        {
-                            // lets look if we have already set an image on another song
-                            var imagePath = album.Songs.Where(x => x.LibraryImageId != null).Select(x => x.LibraryImageId).FirstOrDefault() ?? file.Path;
-                            s.LibraryImageId = imagePath;
-                            await store.SaveChangesAsync(token);
-                         
-                        }
                         deffer.Complete();
+                        return;
                     }
-                    catch (Exception e)
+
+
+
+
+
+                    using (var stream = await file.OpenReadAsync())
                     {
-                        deffer.Complete(e);
+
+                        var abstracStream = new TagLib.StreamFileAbstraction(file.Name, stream.AsStream(), null);
+                        await Task.Run(async () =>
+                       {
+                           using (var tagFile = TagLib.File.Create(abstracStream))
+                           {
+
+                               var tag = tagFile.Tag;
+
+
+
+
+
+                               //var artistString = tag.Artists properties.Artist ?? properties.AlbumArtist ?? "";
+
+                               //var artistString = properties.Artist ?? properties.AlbumArtist ?? "";
+                               //var discNumber = GetDiscNumber(discNumberPropertie);
+                               //var componosts = (await Task.WhenAll(properties.Composers.Select(x => store.GetOrCreateArtist(x, token)))).ToList();
+                               //var title = properties.Title;
+                               //var artist = (await Task.WhenAll(artistString.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => store.GetOrCreateArtist(x.Trim(), token)))).ToList();
+                               //var genres = (await Task.WhenAll(properties.Genre.Select(x => store.GetOrCreateGenre(x, token)))).ToList();
+                               var musicProperties = await file.Properties.GetMusicPropertiesAsync();
+                               var song = await MusicStore.Instance.AddSong(this.Id, file.Path, deffer.CancelToken);
+
+                               song.Duration = musicProperties.Duration;
+                               song.Composers = tag.Composers;
+                               song.Interpreters = tag.Performers;
+                               song.Genres = tag.Genres;
+                               song.Year = tag.Year;
+                               song.LibraryImageId = file.Path;
+                               song.AlbumInterpret = tag.JoinedAlbumArtists;
+                               song.AlbumName = tag.Album;
+                               song.Title = tag.Title;
+                               song.Track = (int)tag.Track;
+                               song.DiscNumber = (int)tag.Disc;
+
+                           }
+                       });
+                        //s.AddArtists(artist, ArtistType.Interpret);
+                        //s.AddArtists(componosts, ArtistType.Composer);
+                        //s.AddGenres(genres);
+                        //var album = await store.AddSong(s, this, deffer.CancelToken);
+                        //if (album != null)
+                        //{
+                        //        // lets look if we have already set an image on another song
+                        //        var imagePath = album.Songs.Where(x => x.LibraryImageId != null).Select(x => x.LibraryImageId).FirstOrDefault() ?? file.Path;
+                        //    s.LibraryImageId = imagePath;
+                        //    await store.SaveChangesAsync(token);
+
+                        //}
                     }
-                }, token);
-            }
+                    deffer.Complete();
+                }
+                catch (Exception e)
+                {
+                    deffer.Complete(e);
+                }
+            }, token);
         }
+
     }
 
 

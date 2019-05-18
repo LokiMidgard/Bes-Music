@@ -23,6 +23,7 @@
     </Page.Resources>
 
     <Grid>
+
         <Pivot LeftHeaderTemplate="{StaticResource PivotLeftHeaderTemplate1}">
             <PivotItem Header="Now Playing" />
             <PivotItem Header="Playlists" />

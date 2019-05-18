@@ -272,7 +272,8 @@ namespace MusicPlayer.Controls
                 this.SwitchFullScreenCommand = new DelegateCommand(() => this.IsFullscreen = !this.IsFullscreen);
                 this.IsShuffled = this.PlayList.ShuffleEnabled;
                 this.IsRepeate = this.PlayList.AutoRepeatEnabled;
-                
+                this.mediaPlayerElement.MediaPlayer.CurrentStateChanged += this.MediaPlayer_CurrentStateChanged;
+                this.mediaPlayerElement.MediaPlayer.MediaEnded += this.MediaPlayer_MediaEnded;
             }
 
             MediaPlayerElement FindParent(DependencyObject current)
@@ -285,6 +286,37 @@ namespace MusicPlayer.Controls
 
         }
 
+        private void MediaPlayer_MediaEnded(MediaPlayer sender, object args)
+        {
+
+        }
+
+        private async void MediaPlayer_CurrentStateChanged(MediaPlayer sender, object args)
+        {
+            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                switch (sender.PlaybackSession.PlaybackState)
+                {
+                    case MediaPlaybackState.None:
+                        this.IsPlaying = false;
+                        break;
+                    case MediaPlaybackState.Opening:
+                        this.IsPlaying = false;
+                        break;
+                    case MediaPlaybackState.Buffering:
+                        this.IsPlaying = false;
+                        break;
+                    case MediaPlaybackState.Playing:
+                        this.IsPlaying = true;
+                        break;
+                    case MediaPlaybackState.Paused:
+                        this.IsPlaying = false;
+                        break;
+                    default:
+                        break;
+                }
+            });
+        }
 
         private async void PlayList_CurrentItemChanged(MediaPlaybackList sender, CurrentMediaPlaybackItemChangedEventArgs args)
         {
@@ -302,7 +334,7 @@ namespace MusicPlayer.Controls
                 if (this.Dispatcher.HasThreadAccess)
                 {
                     if (displayPropertys != null)
-                        this.CurrentSong = await SongInformation.Create(displayPropertys.MusicProperties.AlbumTitle, string.IsNullOrWhiteSpace(displayPropertys.MusicProperties.Artist)? displayPropertys.MusicProperties.AlbumArtist: displayPropertys.MusicProperties.Artist, displayPropertys.MusicProperties.Title, displayPropertys.Thumbnail);
+                        this.CurrentSong = await SongInformation.Create(displayPropertys.MusicProperties.AlbumTitle, string.IsNullOrWhiteSpace(displayPropertys.MusicProperties.Artist) ? displayPropertys.MusicProperties.AlbumArtist : displayPropertys.MusicProperties.Artist, displayPropertys.MusicProperties.Title, displayPropertys.Thumbnail);
                     else
                         this.CurrentSong = null;
                 }
@@ -359,10 +391,18 @@ namespace MusicPlayer.Controls
 
             public static async Task<SongInformation> Create(string albumTitle, string artist, string title, RandomAccessStreamReference thumbnail)
             {
-                using (var stream = await thumbnail.OpenReadAsync())
+                using (var stream = await (thumbnail?.OpenReadAsync()?.AsTask() ?? Task.FromResult<IRandomAccessStreamWithContentType>(null)))
                 {
-                    var imageSource = new BitmapImage();
-                    await imageSource.SetSourceAsync(stream);
+                    BitmapImage imageSource;
+                    if (stream is null)
+                    {
+                        imageSource = null;
+                    }
+                    else
+                    {
+                        imageSource = new BitmapImage();
+                        await imageSource.SetSourceAsync(stream);
+                    }
                     return new SongInformation(albumTitle, artist, title, imageSource);
                 }
 
