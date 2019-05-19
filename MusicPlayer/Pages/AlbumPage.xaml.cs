@@ -1,11 +1,14 @@
-﻿using System;
+﻿using MusicPlayer.Core;
+using MusicPlayer.Viewmodels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using MusicPlayer.Viewmodels;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Media.Core;
+using Windows.Storage.FileProperties;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -53,8 +56,14 @@ namespace MusicPlayer.Pages
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
-            var song = button.Tag as SongViewmodel;
-            await song.Play();
+            var song = button.Tag as SongGroup;
+            await App.Shell.PlaySong(song.Songs.First());
+
+
+
+            //        public Task<MediaSource> GetMediaSource(CancellationToken cancel) => LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(this.item.LibraryProvider).GetMediaSource(this.item.LibraryMediaId, cancel);
+            //        public Task<StorageItemThumbnail> GetCover(int size, CancellationToken cancel) => LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(this.item.LibraryProvider).GetImage(this.item.LibraryImageId, size, cancel);
+
 
         }
     }

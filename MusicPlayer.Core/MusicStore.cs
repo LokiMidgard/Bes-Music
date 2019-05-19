@@ -16,7 +16,7 @@ namespace MusicPlayer.Core
 {
     public class MusicStore : INotifyPropertyChanged
     {
-
+        private readonly AsyncManualResetEvent initilisation = new AsyncManualResetEvent(false);
         public static MusicStore Instance { get; } = new MusicStore();
 
         public IEnumerable<string> Genres { get; private set; }
@@ -53,225 +53,170 @@ namespace MusicPlayer.Core
 
         private MusicStore()
         {
-            this.thread = new AsyncContextThread();
+            this.albums = new ObservableCollection<Album>();
+            this.Albums = new ReadOnlyObservableCollection<Album>(this.albums);
         }
 
-        //public static Task<Album> GetAlbum(string title, string albumInterpret, string libraryProvider) => thread.Factory.Run(() => GetAlbumInternal(title, albumInterpret, libraryProvider));
-        //private static async Task<Album> GetAlbumInternal(string title, string albumInterpret, string libraryProvider)
-        //{
-        //    using (var context = await MusicStoreDatabase.CreateContextAsync(default))
-        //    {
-        //        var songs = context.songs.Where(x => x.AlbumInterpret == albumInterpret && x.AlbumName == title && x.LibraryProvider == libraryProvider);
-        //        return GenerateAlbum(songs, albumInterpret, title, libraryProvider);
-        //    }
-        //}
 
-        //public static Task<IEnumerable<Album>> GetAlbums() => thread.Factory.Run(() => GetAlbumsInternal());
-        //public static async Task<IEnumerable<Album>> GetAlbumsInternal()
-        //{
-        //    using (var context = await MusicStoreDatabase.CreateContextAsync(default))
-        //    {
-        //        var albums = new List<Album>();
-        //        foreach (var albumData in context.songs.GroupBy(x => new { x.AlbumInterpret, x.AlbumName, x.LibraryProvider }))
-        //        {
-        //            var albumInterpret = albumData.Key.AlbumInterpret;
-        //            var albumName = albumData.Key.AlbumName;
-        //            var libraryProvider = albumData.Key.LibraryProvider;
-        //            var album = GenerateAlbum(albumData, albumInterpret, albumName, libraryProvider);
-
-        //            albums.Add(album);
-        //        }
-        //        return albums;
-        //    }
-        //}
-
-        //private static Album GenerateAlbum(IEnumerable<MusicStoreDatabase.Song> albumData, string albumInterpret, string albumName, string libraryProvider)
-        //{
-        //    return new Album(albumName, albumInterpret)
-        //    {
-        //        Songs = albumData.Select(x => new Song(x.AlbumName, x.AlbumInterpret, x.Name, x.Track, x.DiscNumber, x.LibraryProvider)
-        //        {
-        //            Composers = new HashSet<string>(x.ArtistSong.Where(z => z.ArtistType == MusicStoreDatabase.ArtistType.Composer).Select(y => y.ArtistName)),
-        //            Duration = x.Duration,
-        //            Genres = new HashSet<string>(x.GenreSong.Select(y => y.GenreName)),
-        //            Interpreters = new HashSet<string>(x.ArtistSong.Where(y => y.ArtistType == MusicStoreDatabase.ArtistType.Interpret).Select(z => z.ArtistName)),
-        //            LibraryImageId = x.LibraryImageId,
-        //            LibraryMediaId = x.LibraryMediaId,
-        //            Year = x.Year
-        //        }).ToList()
-        //    };
-        //}
-
-        //private static SemaphoreSlim addOrUpdateSemaphore = new SemaphoreSlim(1);
-
-        //public static Task AddOrUpdateSong(Song song, CancellationToken cancellationToken) => thread.Factory.Run(() => AddOrUpdateSongInternal(song, cancellationToken));
-        //private static async Task AddOrUpdateSongInternal(Song song, CancellationToken cancellationToken)
-        //{
-        //    var notifyChanges = new List<Action>();
-        //    using (var context = await MusicStoreDatabase.CreateContextAsync(cancellationToken))
-        //    {
-        //        /// <summary>
-        //        /// Adds the Song to the correct album. If Album does not exists, it is created.
-        //        /// </summary>
-        //        /// <param name="song"></param>
-        //        /// <param name="library"></param>
-        //        /// <returns>The album the Song was added to or <c>null</c> if the song was already peresent</returns>
-        //        //public async Task<Album> AddSong<TMediaType, TImageType>(Song song, ILibrary<TMediaType, TImageType> library, CancellationToken cancellationToken)
-        //        var lockedUpSong = await context.FindAsync<MusicStoreDatabase.Song>(song.PrimaryKeys);
-
-        //        if (lockedUpSong is null)
-        //        {
-
-        //            var newSong = new MusicStoreDatabase.Song()
-        //            {
-        //                AlbumName = song.AlbumName,
-        //                AlbumInterpret = song.AlbumInterpret,
-        //                Name = song.Title,
-        //                Track = song.Track,
-        //                DiscNumber = song.DiscNumber,
-        //                Duration = song.Duration,
-        //                LibraryImageId = song.LibraryImageId,
-        //                LibraryMediaId = song.LibraryMediaId,
-        //                LibraryProvider = song.LibraryProvider,
-        //                Year = song.Year,
-        //            };
-
-        //            newSong.GenreSong = new HashSet<MusicStoreDatabase.GenreSong>(song.Genres.Select(x => newSong.GenerateGenre(x)));
-        //            newSong.ArtistSong = new HashSet<MusicStoreDatabase.ArtistSong>(song.Composers.Select(x => newSong.GenerateArtist(x, MusicStoreDatabase.ArtistType.Composer))
-        //                .Concat(
-        //                song.Interpreters.Select(x => newSong.GenerateArtist(x, MusicStoreDatabase.ArtistType.Interpret)))
-        //                );
-
-        //            AlbumChanges albumAction;
-
-        //            await addOrUpdateSemaphore.WaitAsync(cancellationToken);
-        //            try
-        //            {
-        //                var albumAlredyExists = await context.songs.AnyAsync(x => x.AlbumName == newSong.AlbumName
-        //                        && x.AlbumInterpret == newSong.AlbumInterpret);
-
-        //                if (albumAlredyExists)
-        //                    albumAction = AlbumChanges.SongsUpdated;
-        //                else
-        //                    albumAction = AlbumChanges.Added;
-
-        //                await context.songs.AddAsync(newSong, cancellationToken);
-        //                await context.SaveChangesAsync(cancellationToken);
-
-        //            }
-        //            finally
-        //            {
-        //                addOrUpdateSemaphore.Release();
-        //            }
-
-        //            var albumEventArgs = new AlbumCollectionChangedEventArgs()
-        //            {
-        //                AlbumName = song.AlbumName,
-        //                AlbumInterpret = song.AlbumInterpret,
-        //                ProviderId = song.LibraryProvider,
-        //                Action = albumAction
-        //            };
-        //            var songEventArgs = new SongCollectionChangedEventArgs() { Song = song, Action = CollectionAction.Added };
-        //            notifyChanges.Add(() => SongCollectionChanged?.Invoke(null /*we dont want to leak the context reference.*/, songEventArgs));
-        //            notifyChanges.Add(() => AlbumCollectionChanged?.Invoke(null /*we dont want to leak the context reference.*/, albumEventArgs));
-
-        //            //return album;
-        //        }
-        //        else
-        //        {
-        //            if (lockedUpSong.AlbumName != song.AlbumName)
-        //            {
-        //                lockedUpSong.AlbumName = song.AlbumName;
-        //            }
-
-        //            if (lockedUpSong.AlbumInterpret != song.AlbumInterpret)
-        //            {
-        //                lockedUpSong.AlbumInterpret = song.AlbumInterpret;
-        //            }
-
-        //            if (lockedUpSong.Name != song.Title)
-        //            {
-        //                lockedUpSong.Name = song.Title;
-        //            }
-
-        //            if (lockedUpSong.Track != song.Track)
-        //            {
-        //                lockedUpSong.Track = song.Track;
-        //            }
-
-        //            if (lockedUpSong.DiscNumber != song.DiscNumber)
-        //            {
-        //                lockedUpSong.DiscNumber = song.DiscNumber;
-        //            }
-
-        //            if (lockedUpSong.Duration != song.Duration)
-        //            {
-        //                lockedUpSong.Duration = song.Duration;
-        //            }
-
-        //            if (lockedUpSong.LibraryImageId != song.LibraryImageId)
-        //            {
-        //                lockedUpSong.LibraryImageId = song.LibraryImageId;
-        //            }
-
-        //            if (lockedUpSong.LibraryMediaId != song.LibraryMediaId)
-        //            {
-        //                lockedUpSong.LibraryMediaId = song.LibraryMediaId;
-        //            }
-
-        //            if (lockedUpSong.LibraryProvider != song.LibraryProvider)
-        //            {
-        //                lockedUpSong.LibraryProvider = song.LibraryProvider;
-        //            }
-
-        //            if (lockedUpSong.Year != song.Year)
-        //            {
-        //                lockedUpSong.Year = song.Year;
-        //            }
-
-        //            //ISet<bool> x; x.SetEquals()
-
-        //            var genres = new HashSet<MusicStoreDatabase.GenreSong>(song.Genres.Select(x => lockedUpSong.GenerateGenre(x)));
-        //            var artists = new HashSet<MusicStoreDatabase.ArtistSong>(song.Composers.Select(x => lockedUpSong.GenerateArtist(x, MusicStoreDatabase.ArtistType.Composer))
-        //                .Concat(
-        //                song.Interpreters.Select(x => lockedUpSong.GenerateArtist(x, MusicStoreDatabase.ArtistType.Interpret)))
-        //                );
-
-        //            if (lockedUpSong.GenreSong.SetEquals(genres))
-        //            {
-        //                lockedUpSong.GenreSong = genres;
-        //            }
-        //            if (lockedUpSong.ArtistSong.SetEquals(artists))
-        //            {
-        //                lockedUpSong.ArtistSong = artists;
-        //            }
-        //            await context.SaveChangesAsync(cancellationToken);
-        //        }
-
-        //    }
-        //    //    var result = await base.SaveChangesAsync(cancellationToken);
-        //    foreach (var a in notifyChanges)
-        //        a();
-        //}
+        public void Initilize(Func<Func<Task>, Task> invokeOnUi)
+        {
+            if (this.invoke != null)
+                return;
+            this.invoke = invokeOnUi;
+            this.initilisation.Set();
+        }
 
 
-        private readonly AsyncContextThread thread;
 
-        public event EventHandler<SongCollectionChangedEventArgs> SongCollectionChanged;
-        public event EventHandler<AlbumCollectionChangedEventArgs> AlbumCollectionChanged;
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ReadOnlyObservableCollection<Album> Albums { get; }
         private readonly ObservableCollection<Album> albums;
+        private Func<Func<Task>, Task> invoke;
 
-        public Task<Song> AddSong(string provider, string mediaId, CancellationToken cancelToken)
+        public Task<Song> AddSong(string provider, string mediaId,
+              string albumInterpret = default,
+            string albumName = default,
+            ICollection<string> composers = default,
+            int discNumber = default,
+            TimeSpan duration = default,
+            ICollection<string> genres = default,
+            ICollection<string> interpreters = default,
+            string libraryImageId = default,
+            string title = default,
+            int track = default,
+            uint year = default,
+            CancellationToken cancelToken=default)
         {
-            return this.thread.Factory.Run(() =>
+            return this.RunOnUIThread(() =>
             {
                 var song = new Song(provider, mediaId, this);
+                if (albumInterpret != default)
+                    song.AlbumInterpret = albumInterpret;
+                if (albumName != default)
+                    song.AlbumName = albumName;
+                if (composers != default)
+                    song.Composers = composers;
+                if (discNumber != default)
+                    song.DiscNumber = discNumber;
+                if (duration != default)
+                    song.Duration = duration;
+                if (genres != default)
+                    song.Genres = genres;
+                if (interpreters != default)
+                    song.Interpreters = interpreters;
+                if (libraryImageId != default)
+                    song.LibraryImageId = libraryImageId;
+                if (title != default)
+                    song.Title = title;
+                if (track != default)
+                    song.Track = track;
+                if (year != default)
+                    song.Year = year;
                 this.AddSong(song);
                 return song;
             });
+        }
+
+        public Task UpdateSong(Song song,
+            string albumInterpret = default,
+            string albumName = default,
+            ICollection<string> composers = default,
+            int discNumber = default,
+            TimeSpan duration = default,
+            ICollection<string> genres = default,
+            ICollection<string> interpreters = default,
+            string libraryImageId = default,
+            string title = default,
+            int track = default,
+            uint year = default
+            )
+        {
+            return this.RunOnUIThread(() =>
+            {
+                if (albumInterpret != default)
+                    song.AlbumInterpret = albumInterpret;
+                if (albumName != default)
+                    song.AlbumName = albumName;
+                if (composers != default)
+                    song.Composers = composers;
+                if (discNumber != default)
+                    song.DiscNumber = discNumber;
+                if (duration != default)
+                    song.Duration = duration;
+                if (genres != default)
+                    song.Genres = genres;
+                if (interpreters != default)
+                    song.Interpreters = interpreters;
+                if (libraryImageId != default)
+                    song.LibraryImageId = libraryImageId;
+                if (title != default)
+                    song.Title = title;
+                if (track != default)
+                    song.Track = track;
+                if (year != default)
+                    song.Year = year;
+            });
+        }
+
+        private async Task RunOnUIThread(Func<Task> func)
+        {
+            await this.initilisation.WaitAsync();
+
+            await this.invoke(() =>
+            {
+                return func();
+            });
+        }
+
+        private async Task<T> RunOnUIThread<T>(Func<Task<T>> func)
+        {
+            await this.initilisation.WaitAsync();
+            var taskCompletionSource = new TaskCompletionSource<T>();
+            await this.invoke(async () =>
+            {
+                try
+                {
+                    var result = await func();
+                    taskCompletionSource.SetResult(result);
+
+                }
+                catch (Exception e)
+                {
+                    taskCompletionSource.SetException(e);
+                }
+            });
+            return await taskCompletionSource.Task;
+        }
+
+        private async Task RunOnUIThread(Action func)
+        {
+            await this.initilisation.WaitAsync();
+            await this.invoke(() =>
+            {
+                func();
+                return Task.CompletedTask;
+            });
+        }
+        private async Task<T> RunOnUIThread<T>(Func<T> func)
+        {
+            await this.initilisation.WaitAsync();
+
+            var taskCompletionSource = new TaskCompletionSource<T>();
+            await this.invoke(() =>
+            {
+                try
+                {
+                    var result = func();
+                    taskCompletionSource.SetResult(result);
+                }
+                catch (Exception e)
+                {
+                    taskCompletionSource.SetException(e);
+                }
+                return Task.CompletedTask;
+            });
+            return await taskCompletionSource.Task;
         }
 
         internal void AddSong(Song song)
@@ -292,7 +237,7 @@ namespace MusicPlayer.Core
                 album.PropertyChanged += this.Album_PropertyChanged;
                 (album.Songs as INotifyCollectionChanged).CollectionChanged += this.MusicStore_CollectionChanged;
 
-                this.albums.Add(album);
+                this.albums.Insert(insertionPoint, album);
             }
             else
                 album = this.albums[insertionPoint];
@@ -336,6 +281,8 @@ namespace MusicPlayer.Core
             this.Title = title ?? throw new ArgumentNullException(nameof(title));
             this.AlbumInterpret = albumInterpret ?? throw new ArgumentNullException(nameof(albumInterpret));
             this.MusicStore = musicStore;
+            this.songs = new ObservableCollection<SongGroup>();
+            this.Songs = new ReadOnlyObservableCollection<SongGroup>(this.songs);
         }
 
         public string Title { get; }
@@ -367,7 +314,7 @@ namespace MusicPlayer.Core
                 songGroup = new SongGroup(this, song.Title, song.Track, song.DiscNumber, this.MusicStore);
                 songGroup.PropertyChanged += this.SongGroup_PropertyChanged;
                 (songGroup.Songs as INotifyCollectionChanged).CollectionChanged += this.Album_CollectionChanged;
-                this.songs.Add(songGroup);
+                this.songs.Insert(insertionIndex, songGroup);
             }
             else
             {
@@ -479,7 +426,7 @@ namespace MusicPlayer.Core
             if (insertionIndex < 0)
                 insertionIndex = ~insertionIndex;
 
-            this.songs.Add(song);
+            this.songs.Insert(insertionIndex, song);
 
             song.PropertyChanged += this.Song_PropertyChanged;
 
@@ -554,14 +501,14 @@ namespace MusicPlayer.Core
     public class Song : INotifyPropertyChanged
     {
         private uint _year;
-        private ICollection<string> _genres;
-        private ICollection<string> _composers;
-        private ICollection<string> _interpreters;
+        private ICollection<string> _genres = Array.Empty<string>();
+        private ICollection<string> _composers = Array.Empty<string>();
+        private ICollection<string> _interpreters = Array.Empty<string>();
         private TimeSpan _duration;
         private string _libraryImageId;
         private string _albumName = string.Empty;
         private string _albumInterpret = string.Empty;
-        private string _title;
+        private string _title= string.Empty;
         private int _track;
         private int _discNumber;
 
@@ -578,7 +525,7 @@ namespace MusicPlayer.Core
 
         public string AlbumName
         {
-            get => this._albumName; set
+            get => this._albumName; internal set
             {
                 if (value is null)
                     throw new ArgumentNullException();
@@ -591,7 +538,7 @@ namespace MusicPlayer.Core
         }
         public string AlbumInterpret
         {
-            get => this._albumInterpret; set
+            get => this._albumInterpret; internal set
             {
                 if (value is null)
                     throw new ArgumentNullException();
@@ -604,8 +551,10 @@ namespace MusicPlayer.Core
         }
         public string Title
         {
-            get => this._title; set
+            get => this._title; internal set
             {
+                if (value is null)
+                    throw new ArgumentNullException();
                 if (this._title != value)
                 {
                     this._title = value;
@@ -615,7 +564,7 @@ namespace MusicPlayer.Core
         }
         public int Track
         {
-            get => this._track; set
+            get => this._track; internal set
             {
                 if (this._track != value)
                 {
@@ -626,7 +575,7 @@ namespace MusicPlayer.Core
         }
         public int DiscNumber
         {
-            get => this._discNumber; set
+            get => this._discNumber; internal set
             {
                 if (this._discNumber != value)
                 {
@@ -639,7 +588,7 @@ namespace MusicPlayer.Core
         public string LibraryImageId
         {
             get => this._libraryImageId;
-            set
+            internal set
             {
                 if (this._libraryImageId != value)
                 {
@@ -651,7 +600,7 @@ namespace MusicPlayer.Core
 
         public TimeSpan Duration
         {
-            get => this._duration; set
+            get => this._duration; internal set
             {
                 if (this._duration != value)
                 {
@@ -663,7 +612,7 @@ namespace MusicPlayer.Core
 
         public ICollection<string> Interpreters
         {
-            get => this._interpreters; set
+            get => this._interpreters; internal set
             {
                 if (!(this?._interpreters.SequenceEqual(value) ?? false))
                 {
@@ -674,7 +623,7 @@ namespace MusicPlayer.Core
         }
         public ICollection<string> Composers
         {
-            get => this._composers; set
+            get => this._composers; internal set
             {
                 if (!(this._composers?.SequenceEqual(value) ?? false))
                 {
@@ -685,7 +634,7 @@ namespace MusicPlayer.Core
         }
         public ICollection<string> Genres
         {
-            get => this._genres; set
+            get => this._genres; internal set
             {
                 if (!(this._genres?.SequenceEqual(value) ?? false))
                 {
@@ -696,7 +645,8 @@ namespace MusicPlayer.Core
         }
         public uint Year
         {
-            get => this._year; set
+            get => this._year;
+            internal set
             {
                 if (this._year != value)
                 {
@@ -710,7 +660,11 @@ namespace MusicPlayer.Core
 
         internal object[] PrimaryKeys => new object[] { this.LibraryProvider, this.MediaId };
 
-        private void FireNotifyChanged([CallerMemberName] string propretyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propretyName));
+        private void FireNotifyChanged([CallerMemberName] string propretyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propretyName));
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
 

@@ -106,19 +106,19 @@ namespace MusicPlayer
                                //var artist = (await Task.WhenAll(artistString.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => store.GetOrCreateArtist(x.Trim(), token)))).ToList();
                                //var genres = (await Task.WhenAll(properties.Genre.Select(x => store.GetOrCreateGenre(x, token)))).ToList();
                                var musicProperties = await file.Properties.GetMusicPropertiesAsync();
-                               var song = await MusicStore.Instance.AddSong(this.Id, file.Path, deffer.CancelToken);
-
-                               song.Duration = musicProperties.Duration;
-                               song.Composers = tag.Composers;
-                               song.Interpreters = tag.Performers;
-                               song.Genres = tag.Genres;
-                               song.Year = tag.Year;
-                               song.LibraryImageId = file.Path;
-                               song.AlbumInterpret = tag.JoinedAlbumArtists;
-                               song.AlbumName = tag.Album;
-                               song.Title = tag.Title;
-                               song.Track = (int)tag.Track;
-                               song.DiscNumber = (int)tag.Disc;
+                               var song = await MusicStore.Instance.AddSong(this.Id, file.Path,
+                                   duration: musicProperties.Duration,
+                                   composers: tag.Composers,
+                                   interpreters: tag.Performers,
+                                   genres: tag.Genres,
+                                   year: tag.Year,
+                                   libraryImageId: file.Path,
+                                   albumInterpret: tag.JoinedAlbumArtists,
+                                   albumName: tag.Album,
+                                   title: tag.Title,
+                                   track: (int)tag.Track,
+                                   discNumber: (int)tag.Disc,
+                                   cancelToken: deffer.CancelToken);
 
                            }
                        });

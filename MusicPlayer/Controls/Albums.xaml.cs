@@ -36,9 +36,15 @@ namespace MusicPlayer.Controls
         public Albums()
         {
             this.InitializeComponent();
+
+            this.Loaded += this.Albums_Loaded;
         }
 
+        private async void Albums_Loaded(object sender, RoutedEventArgs e)
+        {
+            await LocalLibrary.Instance.Update(default);
 
+        }
 
         private async void ToRender_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {

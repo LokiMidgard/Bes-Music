@@ -58,7 +58,7 @@
                         <TextBlock
                             x:Name="name"
                             Grid.Row="1"
-                            Text="{x:Bind Name}" />
+                            Text="{x:Bind Model.Title}" />
                     </Grid>
                 </Border>
             </DataTemplate>

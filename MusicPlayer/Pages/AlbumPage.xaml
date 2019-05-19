@@ -7,6 +7,7 @@
     xmlns:local="using:MusicPlayer.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:MusicPlayer.Viewmodels"
+    xmlns:core="using:MusicPlayer.Core"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
     <Page.Resources>
@@ -46,7 +47,8 @@
         <ListView
             Grid.Row="1"
             HorizontalContentAlignment="Stretch"
-            ItemsSource="{Binding Songs}">
+            ItemsSource="{Binding Model.Songs}">
+            
             <ListView.Style>
                 <Style TargetType="ListView">
                     <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
@@ -63,7 +65,7 @@
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="viewmodels:SongViewmodel">
+                <DataTemplate x:DataType="core:SongGroup">
                     <Grid HorizontalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -80,7 +82,7 @@
                         <TextBlock Grid.Column="1" Margin="3,0">
                             <Run Text="{Binding Track}" />
                             <Run Text=" - " />
-                            <Run Text="{Binding Discnumber}" />
+                            <Run Text="{Binding DiscNumber}" />
                         </TextBlock>
                     </Grid>
                 </DataTemplate>

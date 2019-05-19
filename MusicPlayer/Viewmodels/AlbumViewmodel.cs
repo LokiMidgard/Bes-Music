@@ -1,11 +1,12 @@
-﻿using System;
+﻿using MusicPlayer.Core;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using MusicPlayer.Core;
 using Windows.Media.Core;
 using Windows.Storage.FileProperties;
 using Windows.UI.Xaml;
@@ -29,12 +30,17 @@ namespace MusicPlayer.Viewmodels
 
         private AlbumCollectionViewmodel()
         {
+            MusicStore.Instance.Initilize(this.RunOnDispatcher);
             this.Albums = new ReadOnlyObservableCollection<AlbumViewmodel>(this.albums);
 
             this.alphabetGrouped = new GroupedObservableCollection<char, AlbumViewmodel>(x =>
             {
 
-                var c = x.Name.FirstOrDefault();
+                var c = x.Model.Title.FirstOrDefault();
+                if (c == default)
+                {
+                    return 'Ø';
+                }
                 if (c >= 'a' && c <= 'z'
                     || c >= 'A' && c <= 'Z'
                     )
@@ -47,44 +53,51 @@ namespace MusicPlayer.Viewmodels
             }, Comparer<char>.Default, new AlbumViewmodelComparer());
             this.AlphabetGrouped = new ReadOnlyObservableCollection<SortedGroup<char, AlbumViewmodel>>(this.alphabetGrouped);
 
-            this.InitilizeAsync();
-        }
 
-        public void Add(AlbumViewmodel model)
-        {
-            this.alphabetGrouped.Add(model);
-            this.albums.Add(model);
-        }
-        public void Remove(AlbumViewmodel model)
-        {
-            this.alphabetGrouped.Remove(model);
-            this.albums.Remove(model);
-        }
-
-        private async void InitilizeAsync()
-        {
-            MusicStore.AlbumCollectionChanged += this.MusicStore_AlbumCollectionChanged;
-
-            foreach (var item in await MusicStore.GetAlbums())
+            foreach (var item in MusicStore.Instance.Albums)
             {
-                this.Add(new AlbumViewmodel(item, LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(item.LibraryProvider)));
+                this.Add(item);
             }
 
-            await LocalLibrary.Instance.Update(default);
-
+            (MusicStore.Instance.Albums as INotifyCollectionChanged).CollectionChanged += this.AlbumCollectionViewmodel_CollectionChanged1;
+            InitAsync();
         }
 
-        private void MusicStore_AlbumCollectionChanged(object sender, AlbumCollectionChangedEventArgs e)
+        private static async void InitAsync()
         {
-            if (e.Action.HasFlag(AlbumChanges.Added))
-            {
-                _ = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-                {
-                    var albume = await MusicStore.GetAlbum(e.AlbumName, e.AlbumInterpret, e.ProviderId);
-                    this.Add(new AlbumViewmodel(albume, LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(albume.LibraryProvider)));
-                });
-            }
         }
+
+        private void AlbumCollectionViewmodel_CollectionChanged1(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+                foreach (var item in e.NewItems.OfType<Album>())
+                    this.Add(item);
+            if (e.OldItems != null)
+                foreach (var item in e.OldItems.OfType<Album>())
+                    this.Remove(item);
+        }
+
+        private Task RunOnDispatcher(Func<Task> f)
+        {
+            if (this.Dispatcher.HasThreadAccess)
+                return f();
+            return this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => f()).AsTask();
+        }
+
+        private void Add(Album model)
+        {
+            var vm = new AlbumViewmodel(model);
+            this.alphabetGrouped.Add(vm);
+            this.albums.Add(vm);
+        }
+        private void Remove(Album model)
+        {
+            // We have identety over model!
+            var vm = new AlbumViewmodel(model);
+            this.alphabetGrouped.Remove(vm);
+            this.albums.Remove(vm);
+        }
+
     }
 
 
@@ -135,6 +148,8 @@ namespace MusicPlayer.Viewmodels
                 }
             }
         }
+
+
 
         private class GroupComparer : IComparer<SortedGroup<TKey, TValue>>
         {
@@ -194,45 +209,12 @@ namespace MusicPlayer.Viewmodels
 
     }
 
-    public class AlbumViewmodel : DependencyObject
+    public class AlbumViewmodel : DependencyObject, IEquatable<AlbumViewmodel>
     {
 
 
 
-        public string Name
-        {
-            get { return (string)this.GetValue(NameProperty); }
-            set { this.SetValue(NameProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Name.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty NameProperty =
-            DependencyProperty.Register("Name", typeof(string), typeof(AlbumViewmodel), new PropertyMetadata(null));
-
-
-
-        public IEnumerable<string> Interprets
-        {
-            get { return (IEnumerable<string>)this.GetValue(InterpretsProperty); }
-            set { this.SetValue(InterpretsProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Interprets.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty InterpretsProperty =
-            DependencyProperty.Register("Interprets", typeof(IEnumerable<string>), typeof(AlbumViewmodel), new PropertyMetadata(new string[0]));
-
-
-
-
-        public IEnumerable<SongViewmodel> Songs
-        {
-            get { return (IEnumerable<SongViewmodel>)this.GetValue(SongsProperty); }
-            set { this.SetValue(SongsProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Songs.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty SongsProperty =
-            DependencyProperty.Register("Songs", typeof(IEnumerable<SongViewmodel>), typeof(AlbumViewmodel), new PropertyMetadata(new SongViewmodel[0]));
+        public Album Model { get; }
 
 
 
@@ -242,76 +224,47 @@ namespace MusicPlayer.Viewmodels
         {
             if (this.cover != null && this.cover.TryGetTarget(out var target))
                 return target;
-            string id;
-            if (this.item.LibraryImages.Any())
 
-                id = this.item.LibraryImages.FirstOrDefault();
-            else
-                id = null;
+            var stream = await this.Model.GetCover(300, cancellationToken);
 
+            if (stream is null)
+                return null;
 
-            if (id != null)
-            {
-                var thumbnail = await this.library.GetImageRetryAsync(id, 300, cancellationToken);
-                if (thumbnail != null)
-                {
-                    var bitmapImage = new BitmapImage();
-                    await bitmapImage.SetSourceAsync(thumbnail);
-                    this.cover = new WeakReference<BitmapImage>(bitmapImage);
-                    return bitmapImage;
-                }
-            }
-
-
-            return null;
-
+            var bitmapImage = new BitmapImage();
+            await bitmapImage.SetSourceAsync(await stream.OpenReadAsync());
+            this.cover = new WeakReference<BitmapImage>(bitmapImage);
+            return bitmapImage;
         }
 
-
-        private Album item;
-        private readonly ILibrary<MediaSource, StorageItemThumbnail> library;
-
-        public AlbumViewmodel(Album item, ILibrary<MediaSource, StorageItemThumbnail> library)
+        public override bool Equals(object obj)
         {
-            this.item = item;
-            this.library = library;
-            MusicStore.AlbumCollectionChanged += this.MusicStore_AlbumCollectionChanged;
-            this.Initilize();
+            return this.Equals(obj as AlbumViewmodel);
         }
 
-        private void Initilize()
+        public bool Equals(AlbumViewmodel other)
         {
-
-            this.Name = this.item.Title;
-
-            this.Interprets = this.item.Interpreters;
-
-            this.Songs = this.item.Songs.Select(x => new SongViewmodel(x, this.library, this)).ToArray();
-
+            return other != null &&
+                   EqualityComparer<Album>.Default.Equals(this.Model, other.Model);
         }
 
-        private async void MusicStore_AlbumCollectionChanged(object sender, AlbumCollectionChangedEventArgs e)
+        public override int GetHashCode()
         {
-            if (e.AlbumName.Equals(this.item.Title) && e.AlbumInterpret == this.item.AlbumInterpret && e.ProviderId == this.item.LibraryProvider)
-            {
-                var albume = await MusicStore.GetAlbum(e.AlbumName, e.AlbumInterpret, e.ProviderId);
-                if (e.Action.HasFlag(AlbumChanges.ImageUpdated))
-                {
-                    _ = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-                    {
-                        this.item = albume;
-                        this.Initilize();
-                    });
-                }
-                if (e.Action.HasFlag(AlbumChanges.SongsUpdated))
-                {
-                    _ = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
-                    {
-                        this.item = albume;
-                        this.Initilize();
-                    });
-                }
-            }
+            return -623947254 + EqualityComparer<Album>.Default.GetHashCode(this.Model);
+        }
+
+        public AlbumViewmodel(Album item)
+        {
+            this.Model = item ?? throw new ArgumentNullException(nameof(item));
+        }
+
+        public static bool operator ==(AlbumViewmodel viewmodel1, AlbumViewmodel viewmodel2)
+        {
+            return EqualityComparer<AlbumViewmodel>.Default.Equals(viewmodel1, viewmodel2);
+        }
+
+        public static bool operator !=(AlbumViewmodel viewmodel1, AlbumViewmodel viewmodel2)
+        {
+            return !(viewmodel1 == viewmodel2);
         }
     }
 }

@@ -4,6 +4,6 @@ namespace MusicPlayer.Viewmodels
 {
     internal class AlbumViewmodelComparer : IComparer<AlbumViewmodel>
     {
-        public int Compare(AlbumViewmodel x, AlbumViewmodel y) => x.Name.CompareTo(y.Name);
+        public int Compare(AlbumViewmodel x, AlbumViewmodel y) => x.Model.Title.CompareTo(y.Model.Title);
     }
 }

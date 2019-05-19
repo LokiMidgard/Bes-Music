@@ -1,15 +1,16 @@
-﻿using System;
+﻿using MusicPlayer.Core;
+using MusicPlayer.Viewmodels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using MusicPlayer.Core;
-using MusicPlayer.Viewmodels;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Media.Core;
 using Windows.Media.Playback;
+using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -64,15 +65,15 @@ namespace MusicPlayer.Pages
 
         }
 
-        public async Task PlaySong(SongViewmodel song)
+        public async Task PlaySong(Song song)
         {
 
-            var media = await song.GetMediaSource(default);
+            var media = await LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(song.LibraryProvider).GetMediaSource(song.MediaId, default);
             var mediaItem = new MediaPlaybackItem(media);
 
             var displayProperties = mediaItem.GetDisplayProperties();
             displayProperties.Type = Windows.Media.MediaPlaybackType.Music;
-            displayProperties.MusicProperties.AlbumTitle = song.AlbumViewmodel.Name;
+            displayProperties.MusicProperties.AlbumTitle = song.AlbumName;
             displayProperties.MusicProperties.TrackNumber = (uint)song.Track;
             displayProperties.MusicProperties.Title = song.Title;
 
@@ -80,17 +81,17 @@ namespace MusicPlayer.Pages
             foreach (var genre in song.Genres)
                 displayProperties.MusicProperties.Genres.Add(genre);
 
-            displayProperties.MusicProperties.Artist = string.Join(", ", song.Interprets);
+            displayProperties.MusicProperties.Artist = string.Join(", ", song.Interpreters);
 
             mediaItem.ApplyDisplayProperties(displayProperties);
 
             this._mediaPlaybackList.Items.Add(mediaItem);
 
             //if (this._mediaPlaybackList.Items.Count > 0)
-                //this.mediaPlayer.Source = this._mediaPlaybackList;
+            //this.mediaPlayer.Source = this._mediaPlaybackList;
 
-            var storageItemThumbnail = await song.GetCover(300, default);
-            displayProperties.Thumbnail = RandomAccessStreamReference.CreateFromStream(storageItemThumbnail);
+            var coverStreamReferance = await song.GetCover(300, default);
+            displayProperties.Thumbnail = coverStreamReferance;
             mediaItem.ApplyDisplayProperties(displayProperties);
 
         }

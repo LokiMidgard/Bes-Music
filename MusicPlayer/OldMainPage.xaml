@@ -22,7 +22,7 @@
                             </Grid.RowDefinitions>
 
                             <Image x:Name="cover" Width="300" Height="300"/>
-                            <TextBlock Text="{x:Bind Name}" x:Name="name" Grid.Row="1" ></TextBlock>
+                            <TextBlock Text="{x:Bind Model.Title}" x:Name="name" Grid.Row="1" ></TextBlock>
                         </Grid>
                     </Border>
                 </DataTemplate>
