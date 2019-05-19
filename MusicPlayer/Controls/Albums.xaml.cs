@@ -42,8 +42,8 @@ namespace MusicPlayer.Controls
 
         private async void Albums_Loaded(object sender, RoutedEventArgs e)
         {
+            await Core.MusicStore.Instance.Init();
             await LocalLibrary.Instance.Update(default);
-
         }
 
         private async void ToRender_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)

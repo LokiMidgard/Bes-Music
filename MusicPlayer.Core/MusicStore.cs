@@ -2,6 +2,7 @@
 using Nito.AsyncEx;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -17,24 +18,31 @@ namespace MusicPlayer.Core
     public class MusicStore : INotifyPropertyChanged
     {
         private readonly AsyncManualResetEvent initilisation = new AsyncManualResetEvent(false);
+        private readonly AsyncManualResetEvent databaseLoad = new AsyncManualResetEvent(false);
         public static MusicStore Instance { get; } = new MusicStore();
+
+        private readonly Dictionary<(string provider, string mediaId), Song> songLoockup = new Dictionary<(string provider, string mediaId), Song>();
 
         public IEnumerable<string> Genres { get; private set; }
         public IEnumerable<string> Interpreters { get; private set; }
         public IEnumerable<string> Composers { get; private set; }
         public IEnumerable<(string providerId, string imageId)> LibraryImages { get; private set; }
 
+        public bool IsInitilized => this.databaseLoad.IsSet;
+
         private void UpdateProperties()
         {
+            if (!this.IsInitilized)
+                return;
             var oldGenres = this.Genres;
             var oldInterpreters = this.Interpreters;
             var oldComposers = this.Composers;
             var oldLibraryImages = this.LibraryImages;
 
-            this.Genres = this.Albums.SelectMany(x => x.Genres).Distinct().OrderBy(x => x).ToArray();
-            this.Interpreters = this.Albums.SelectMany(x => x.Interpreters).Distinct().OrderBy(x => x).ToArray();
-            this.Composers = this.Albums.SelectMany(x => x.Composers).Distinct().OrderBy(x => x).ToArray();
-            this.LibraryImages = this.Albums.SelectMany(x => x.LibraryImages).Distinct().OrderBy(x => x.providerId).ThenBy(x => x.imageId).ToArray();
+            this.Genres = this.albums.SelectMany(x => x.Genres).Distinct().OrderBy(x => x).ToArray();
+            this.Interpreters = this.albums.SelectMany(x => x.Interpreters).Distinct().OrderBy(x => x).ToArray();
+            this.Composers = this.albums.SelectMany(x => x.Composers).Distinct().OrderBy(x => x).ToArray();
+            this.LibraryImages = this.albums.SelectMany(x => x.LibraryImages).Distinct().OrderBy(x => x.providerId).ThenBy(x => x.imageId).ToArray();
 
             if (!(oldGenres?.SequenceEqual(this.Genres) ?? false))
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Genres)));
@@ -51,10 +59,31 @@ namespace MusicPlayer.Core
         }
 
 
+        private void InitilizeProperties()
+        {
+
+            foreach (var album in this.albums)
+                album.InitilizeProperties();
+
+            this.Genres = this.albums.SelectMany(x => x.Genres).Distinct().OrderBy(x => x).ToArray();
+            this.Interpreters = this.albums.SelectMany(x => x.Interpreters).Distinct().OrderBy(x => x).ToArray();
+            this.Composers = this.albums.SelectMany(x => x.Composers).Distinct().OrderBy(x => x).ToArray();
+            this.LibraryImages = this.albums.SelectMany(x => x.LibraryImages).Distinct().OrderBy(x => x.providerId).ThenBy(x => x.imageId).ToArray();
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Genres)));
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Interpreters)));
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Composers)));
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.LibraryImages)));
+
+        }
+
+
         private MusicStore()
         {
             this.albums = new ObservableCollection<Album>();
-            this.Albums = new ReadOnlyObservableCollection<Album>(this.albums);
         }
 
 
@@ -66,54 +95,125 @@ namespace MusicPlayer.Core
             this.initilisation.Set();
         }
 
+        private Lazy<Task> initTask;
+        public Task Init(CancellationToken cancellationToken = default)
+        {
+            var lazy = new Lazy<Task>(Work);
+            var original = Interlocked.CompareExchange(ref this.initTask, lazy, null);
+            if (original != null)
+                return original.Value;
+            return lazy.Value;
+
+            Task Work()
+            {
+                return Task.Run(async () =>
+                {
+                    using (var context = await MusicStoreDatabase.CreateContextAsync(cancellationToken))
+                    {
+                        foreach (var song in await context.songs.ToArrayAsync())
+                        {
+                            song.TransferFromDatabase();
+                            //await this.RunOnUIThread(async () =>
+                            //{
+                            this.songLoockup.Add((song.LibraryProvider, song.MediaId), song);
+                            this.AddSong(song);
+                            //await Task.Delay(1);
+                            //});
+
+                        }
+                        //await Task.WhenAll((await context.songs.ToArrayAsync()).Select(async song =>
+                        //{
+                        //}));
+                    }
+                    this.Albums = new ReadOnlyObservableCollection<Album>(this.albums);
+                    this.InitilizeProperties();
+                    this.databaseLoad.Set();
+
+
+
+
+                    await this.RunOnUIThread(() =>
+                    {
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Albums)));
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.IsInitilized)));
+                    });
+
+                });
+            }
+
+        }
 
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public ReadOnlyObservableCollection<Album> Albums { get; }
+        public ReadOnlyObservableCollection<Album> Albums { get; private set; }
         private readonly ObservableCollection<Album> albums;
         private Func<Func<Task>, Task> invoke;
+
 
         public Task<Song> AddSong(string provider, string mediaId,
               string albumInterpret = default,
             string albumName = default,
-            ICollection<string> composers = default,
+            IEnumerable<string> composers = default,
             int discNumber = default,
             TimeSpan duration = default,
-            ICollection<string> genres = default,
-            ICollection<string> interpreters = default,
+            IEnumerable<string> genres = default,
+            IEnumerable<string> interpreters = default,
             string libraryImageId = default,
             string title = default,
             int track = default,
             uint year = default,
-            CancellationToken cancelToken=default)
+            CancellationToken cancelToken = default)
         {
-            return this.RunOnUIThread(() =>
+            return this.RunOnUIThread(async () =>
             {
-                var song = new Song(provider, mediaId, this);
-                if (albumInterpret != default)
-                    song.AlbumInterpret = albumInterpret;
-                if (albumName != default)
-                    song.AlbumName = albumName;
-                if (composers != default)
-                    song.Composers = composers;
-                if (discNumber != default)
-                    song.DiscNumber = discNumber;
-                if (duration != default)
-                    song.Duration = duration;
-                if (genres != default)
-                    song.Genres = genres;
-                if (interpreters != default)
-                    song.Interpreters = interpreters;
-                if (libraryImageId != default)
-                    song.LibraryImageId = libraryImageId;
-                if (title != default)
-                    song.Title = title;
-                if (track != default)
-                    song.Track = track;
-                if (year != default)
-                    song.Year = year;
-                this.AddSong(song);
+                await this.databaseLoad.WaitAsync();
+                Song song;
+                using (var context = await MusicStoreDatabase.CreateContextAsync(cancelToken))
+                {
+                    bool newSong;
+
+                    if (this.songLoockup.ContainsKey((provider, mediaId)))
+                    {
+                        song = this.songLoockup[(provider, mediaId)];
+                        newSong = false;
+                    }
+                    else
+                    {
+                        song = new Song(provider, mediaId);
+                        this.songLoockup.Add((provider, mediaId), song);
+                        newSong = true;
+                    }
+
+                    if (albumInterpret != default)
+                        song.AlbumInterpret = albumInterpret;
+                    if (albumName != default)
+                        song.AlbumName = albumName;
+                    if (composers != default)
+                        song.Composers = composers.ToImmutableSortedSet();
+                    if (discNumber != default)
+                        song.DiscNumber = discNumber;
+                    if (duration != default)
+                        song.Duration = duration;
+                    if (genres != default)
+                        song.Genres = genres.ToImmutableSortedSet();
+                    if (interpreters != default)
+                        song.Interpreters = interpreters.ToImmutableSortedSet();
+                    if (libraryImageId != default)
+                        song.LibraryImageId = libraryImageId;
+                    if (title != default)
+                        song.Title = title;
+                    if (track != default)
+                        song.Track = track;
+                    if (year != default)
+                        song.Year = year;
+
+                    if (newSong)
+                        await context.AddAsync(song, cancelToken);
+
+                    await context.SaveChangesAsync();
+                    this.AddSong(song);
+                }
                 return song;
             });
         }
@@ -121,41 +221,50 @@ namespace MusicPlayer.Core
         public Task UpdateSong(Song song,
             string albumInterpret = default,
             string albumName = default,
-            ICollection<string> composers = default,
+            IEnumerable<string> composers = default,
             int discNumber = default,
             TimeSpan duration = default,
-            ICollection<string> genres = default,
-            ICollection<string> interpreters = default,
+            IEnumerable<string> genres = default,
+            IEnumerable<string> interpreters = default,
             string libraryImageId = default,
             string title = default,
             int track = default,
-            uint year = default
+            uint year = default,
+            CancellationToken cancellationToken = default
             )
         {
-            return this.RunOnUIThread(() =>
+            return this.RunOnUIThread(async () =>
             {
-                if (albumInterpret != default)
-                    song.AlbumInterpret = albumInterpret;
-                if (albumName != default)
-                    song.AlbumName = albumName;
-                if (composers != default)
-                    song.Composers = composers;
-                if (discNumber != default)
-                    song.DiscNumber = discNumber;
-                if (duration != default)
-                    song.Duration = duration;
-                if (genres != default)
-                    song.Genres = genres;
-                if (interpreters != default)
-                    song.Interpreters = interpreters;
-                if (libraryImageId != default)
-                    song.LibraryImageId = libraryImageId;
-                if (title != default)
-                    song.Title = title;
-                if (track != default)
-                    song.Track = track;
-                if (year != default)
-                    song.Year = year;
+                await this.databaseLoad.WaitAsync();
+                using (var context = await MusicStoreDatabase.CreateContextAsync(cancellationToken))
+                {
+
+                    if (albumInterpret != default)
+                        song.AlbumInterpret = albumInterpret;
+                    if (albumName != default)
+                        song.AlbumName = albumName;
+                    if (composers != default)
+                        song.Composers = composers.ToImmutableSortedSet();
+                    if (discNumber != default)
+                        song.DiscNumber = discNumber;
+                    if (duration != default)
+                        song.Duration = duration;
+                    if (genres != default)
+                        song.Genres = genres.ToImmutableSortedSet();
+                    if (interpreters != default)
+                        song.Interpreters = interpreters.ToImmutableSortedSet();
+                    if (libraryImageId != default)
+                        song.LibraryImageId = libraryImageId;
+                    if (title != default)
+                        song.Title = title;
+                    if (track != default)
+                        song.Track = track;
+                    if (year != default)
+                        song.Year = year;
+
+
+                    await context.SaveChangesAsync();
+                }
             });
         }
 
@@ -233,7 +342,7 @@ namespace MusicPlayer.Core
             if (insertionPoint < 0)
             {
                 insertionPoint = ~insertionPoint;
-                album = new Album(song.AlbumName, song.AlbumInterpret, this);
+                album = new Album(song.AlbumName, song.AlbumInterpret);
                 album.PropertyChanged += this.Album_PropertyChanged;
                 (album.Songs as INotifyCollectionChanged).CollectionChanged += this.MusicStore_CollectionChanged;
 
@@ -276,18 +385,17 @@ namespace MusicPlayer.Core
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        internal Album(string title, string albumInterpret, MusicStore musicStore)
+        internal Album(string title, string albumInterpret)
         {
             this.Title = title ?? throw new ArgumentNullException(nameof(title));
             this.AlbumInterpret = albumInterpret ?? throw new ArgumentNullException(nameof(albumInterpret));
-            this.MusicStore = musicStore;
+
             this.songs = new ObservableCollection<SongGroup>();
             this.Songs = new ReadOnlyObservableCollection<SongGroup>(this.songs);
         }
 
         public string Title { get; }
         public string AlbumInterpret { get; }
-        public MusicStore MusicStore { get; }
         public ReadOnlyObservableCollection<SongGroup> Songs { get; }
         private readonly ObservableCollection<SongGroup> songs;
 
@@ -311,7 +419,7 @@ namespace MusicPlayer.Core
             if (insertionIndex < 0)
             {
                 insertionIndex = ~insertionIndex;
-                songGroup = new SongGroup(this, song.Title, song.Track, song.DiscNumber, this.MusicStore);
+                songGroup = new SongGroup(this, song.Title, song.Track, song.DiscNumber);
                 songGroup.PropertyChanged += this.SongGroup_PropertyChanged;
                 (songGroup.Songs as INotifyCollectionChanged).CollectionChanged += this.Album_CollectionChanged;
                 this.songs.Insert(insertionIndex, songGroup);
@@ -352,6 +460,10 @@ namespace MusicPlayer.Core
 
         private void UpdateProperties()
         {
+
+            if (!MusicStore.Instance.IsInitilized)
+                return;
+
             var oldGenres = this.Genres;
             var oldInterpreters = this.Interpreters;
             var oldComposers = this.Composers;
@@ -376,6 +488,22 @@ namespace MusicPlayer.Core
 
         }
 
+        internal void InitilizeProperties()
+        {
+            foreach (var song in this.songs)
+                song.InitilizeProperties();
+
+            this.Genres = this.Songs.SelectMany(x => x.Genres).Distinct().OrderBy(x => x).ToArray();
+            this.Interpreters = this.Songs.SelectMany(x => x.Interpreters).Distinct().OrderBy(x => x).ToArray();
+            this.Composers = this.Songs.SelectMany(x => x.Composers).Distinct().OrderBy(x => x).ToArray();
+            this.LibraryImages = this.Songs.SelectMany(x => x.LibraryImages).Distinct().OrderBy(x => x.providerId).ThenBy(x => x.imageId).ToArray();
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Genres)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Interpreters)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Composers)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.LibraryImages)));
+        }
+
         public IEnumerable<string> Genres { get; private set; }
         public IEnumerable<string> Interpreters { get; private set; }
         public IEnumerable<string> Composers { get; private set; }
@@ -390,13 +518,12 @@ namespace MusicPlayer.Core
         public string Title { get; }
         public int Track { get; }
         public int DiscNumber { get; }
-        public MusicStore MusicStore { get; }
 
         private readonly ObservableCollection<Song> songs;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        internal SongGroup(Album album, string title, int track, int discNumber, MusicStore musicStore)
+        internal SongGroup(Album album, string title, int track, int discNumber)
         {
             this.songs = new ObservableCollection<Song>();
             this.Songs = new ReadOnlyObservableCollection<Song>(this.songs);
@@ -404,7 +531,6 @@ namespace MusicPlayer.Core
             this.Title = title;
             this.Track = track;
             this.DiscNumber = discNumber;
-            this.MusicStore = musicStore;
         }
 
         internal void AddSong(Song song)
@@ -451,7 +577,7 @@ namespace MusicPlayer.Core
                 case nameof(Song.Track):
                 case nameof(Song.DiscNumber):
                     this.RemoveSong(sender as Song);
-                    this.MusicStore.AddSong(sender as Song);
+                    MusicStore.Instance.AddSong(sender as Song);
                     break;
                 default:
                     break;
@@ -467,6 +593,9 @@ namespace MusicPlayer.Core
 
         private void UpdateProperties()
         {
+            if (!MusicStore.Instance.IsInitilized)
+                return;
+
             var oldGenres = this.Genres;
             var oldInterpreters = this.Interpreters;
             var oldComposers = this.Composers;
@@ -491,6 +620,19 @@ namespace MusicPlayer.Core
 
         }
 
+        internal void InitilizeProperties()
+        {
+            this.Genres = this.Songs.SelectMany(x => x.Genres).Distinct().OrderBy(x => x).ToArray();
+            this.Interpreters = this.Songs.SelectMany(x => x.Interpreters).Distinct().OrderBy(x => x).ToArray();
+            this.Composers = this.Songs.SelectMany(x => x.Composers).Distinct().OrderBy(x => x).ToArray();
+            this.LibraryImages = this.Songs.Select(x => (x.LibraryProvider, x.LibraryImageId)).Distinct().OrderBy(x => x.LibraryProvider).ThenBy(x => x.LibraryImageId).ToArray();
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Genres)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Interpreters)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Composers)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.LibraryImages)));
+        }
+
         public IEnumerable<string> Genres { get; private set; }
         public IEnumerable<string> Interpreters { get; private set; }
         public IEnumerable<string> Composers { get; private set; }
@@ -498,30 +640,57 @@ namespace MusicPlayer.Core
 
     }
 
-    public class Song : INotifyPropertyChanged
+    public class Song : INotifyPropertyChanged, IEquatable<Song>
     {
+        [NotMapped]
         private uint _year;
-        private ICollection<string> _genres = Array.Empty<string>();
-        private ICollection<string> _composers = Array.Empty<string>();
-        private ICollection<string> _interpreters = Array.Empty<string>();
+        [NotMapped]
+        private ImmutableSortedSet<string> _genres = ImmutableSortedSet<string>.Empty;
+        [NotMapped]
+        private ImmutableSortedSet<string> _composers = ImmutableSortedSet<string>.Empty;
+        [NotMapped]
+        private ImmutableSortedSet<string> _interpreters = ImmutableSortedSet<string>.Empty;
+        [NotMapped]
         private TimeSpan _duration;
+        [NotMapped]
         private string _libraryImageId;
+        [NotMapped]
         private string _albumName = string.Empty;
+        [NotMapped]
         private string _albumInterpret = string.Empty;
-        private string _title= string.Empty;
+        [NotMapped]
+        private string _title = string.Empty;
+        [NotMapped]
         private int _track;
+        [NotMapped]
         private int _discNumber;
 
-        internal Song(string libraryProvider, string mediaId, MusicStore musicStore)
+
+        internal List<MusicStoreDatabase.InterpreterSong> InterpreterSong { get; set; } = new List<MusicStoreDatabase.InterpreterSong>();
+        internal List<MusicStoreDatabase.ComposerSong> ComposerSong { get; set; } = new List<MusicStoreDatabase.ComposerSong>();
+        internal List<MusicStoreDatabase.GenreSong> GenreSong { get; set; } = new List<MusicStoreDatabase.GenreSong>();
+
+        internal void TransferFromDatabase()
+        {
+            this._interpreters = this.InterpreterSong.Select(x => x.ArtistName).ToImmutableSortedSet();
+            this._composers = this.ComposerSong.Select(x => x.ArtistName).ToImmutableSortedSet();
+            this._genres = this.GenreSong.Select(x => x.GenreName).ToImmutableSortedSet();
+        }
+
+
+        private Song()
+        {
+
+        }
+
+        internal Song(string libraryProvider, string mediaId)
         {
             this.LibraryProvider = libraryProvider ?? throw new ArgumentNullException(nameof(libraryProvider));
             this.MediaId = mediaId ?? throw new ArgumentNullException(nameof(mediaId));
-            this.MusicStore = musicStore;
         }
 
-        public string LibraryProvider { get; }
-        public string MediaId { get; }
-        public MusicStore MusicStore { get; }
+        public string LibraryProvider { get; private set; }
+        public string MediaId { get; private set; }
 
         public string AlbumName
         {
@@ -610,36 +779,65 @@ namespace MusicPlayer.Core
             }
         }
 
-        public ICollection<string> Interpreters
+        [NotMapped]
+        public ImmutableSortedSet<string> Interpreters
         {
             get => this._interpreters; internal set
             {
                 if (!(this?._interpreters.SequenceEqual(value) ?? false))
                 {
                     this._interpreters = value;
+                    this.InterpreterSong = new List<MusicStoreDatabase.InterpreterSong>(value.Select(x => new MusicStoreDatabase.InterpreterSong()
+                    {
+                        Song = this,
+                        ArtistName = x,
+                        LibraryProvider = this.LibraryProvider,
+                        MediaId = this.MediaId
+                    }));
                     this.FireNotifyChanged();
+                    this.FireNotifyChanged(nameof(this.InterpreterSong));
                 }
             }
         }
-        public ICollection<string> Composers
+        [NotMapped]
+        public ImmutableSortedSet<string> Composers
         {
             get => this._composers; internal set
             {
+
                 if (!(this._composers?.SequenceEqual(value) ?? false))
                 {
                     this._composers = value;
+                    this.ComposerSong = new List<MusicStoreDatabase.ComposerSong>(value.Select(x => new MusicStoreDatabase.ComposerSong()
+                    {
+                        Song = this,
+                        ArtistName = x,
+                        LibraryProvider = this.LibraryProvider,
+                        MediaId = this.MediaId
+                    }));
                     this.FireNotifyChanged();
+                    this.FireNotifyChanged(nameof(this.ComposerSong));
                 }
             }
         }
-        public ICollection<string> Genres
+        [NotMapped]
+        public ImmutableSortedSet<string> Genres
         {
             get => this._genres; internal set
             {
+
                 if (!(this._genres?.SequenceEqual(value) ?? false))
                 {
                     this._genres = value;
+                    this.GenreSong = new List<MusicStoreDatabase.GenreSong>(value.Select(x => new MusicStoreDatabase.GenreSong()
+                    {
+                        Song = this,
+                        GenreName = x,
+                        LibraryProvider = this.LibraryProvider,
+                        MediaId = this.MediaId
+                    }));
                     this.FireNotifyChanged();
+                    this.FireNotifyChanged(nameof(this.GenreSong));
                 }
             }
         }
@@ -665,23 +863,51 @@ namespace MusicPlayer.Core
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propretyName));
         }
 
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as Song);
+        }
+
+        public bool Equals(Song other)
+        {
+            return other != null &&
+                   this.LibraryProvider == other.LibraryProvider &&
+                   this.MediaId == other.MediaId;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -1793927485;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.LibraryProvider);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.MediaId);
+            return hashCode;
+        }
+
+
+
+
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public static bool operator ==(Song song1, Song song2)
+        {
+            return EqualityComparer<Song>.Default.Equals(song1, song2);
+        }
 
+        public static bool operator !=(Song song1, Song song2)
+        {
+            return !(song1 == song2);
+        }
     }
 
 
     internal sealed class MusicStoreDatabase : DbContext
     {
-        internal DbSet<MusicStoreDatabase.Song> songs { get; set; }
-        internal DbSet<MusicStoreDatabase.ArtistSong> artists { get; set; }
+        internal DbSet<Song> songs { get; set; }
+        internal DbSet<MusicStoreDatabase.InterpreterSong> artists { get; set; }
         internal DbSet<MusicStoreDatabase.GenreSong> genres { get; set; }
 
         public IQueryable<string> CoverIds(ILibrary library) => this.songs.Where(x => x.LibraryProvider == library.Id).Select(x => x.LibraryImageId);
 
-
-        public static event EventHandler<SongCollectionChangedEventArgs> SongCollectionChanged;
-        public static event EventHandler<AlbumCollectionChangedEventArgs> AlbumCollectionChanged;
 
         private MusicStoreDatabase()
         {
@@ -701,7 +927,7 @@ namespace MusicPlayer.Core
             if (!this.first)
             {
                 this.first = true;
-                await this.Database.EnsureDeletedAsync(cancellationToken);
+                //await this.Database.EnsureDeletedAsync(cancellationToken);
             }
             await this.Database.EnsureCreatedAsync(cancellationToken);
         }
@@ -724,15 +950,35 @@ namespace MusicPlayer.Core
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Song>()
-                .HasKey(s => new { s.AlbumName, s.AlbumInterpret, s.Name, s.Track, s.DiscNumber, s.LibraryProvider });
+                .HasKey(s => new { s.MediaId, s.LibraryProvider });
+
+            modelBuilder.Entity<Song>()
+                .HasMany(x => x.GenreSong)
+                .WithOne(x => x.Song)
+                .HasForeignKey(x => new { x.MediaId, x.LibraryProvider });
+
+            modelBuilder.Entity<Song>()
+                .HasMany(x => x.ComposerSong)
+                .WithOne(x => x.Song)
+                .HasForeignKey(x => new { x.MediaId, x.LibraryProvider });
+
+            modelBuilder.Entity<Song>()
+                            .HasMany(x => x.InterpreterSong)
+                            .WithOne(x => x.Song)
+                            .HasForeignKey(x => new { x.MediaId, x.LibraryProvider });
+
 
 
             modelBuilder.Entity<GenreSong>()
-                .HasKey(x => new { x.SongTitle, x.AlbumInterpret, x.AlbumName, x.Track, x.DiscNumber, x.LibraryProvider, x.GenreName });
+                .HasKey(x => new { x.MediaId, x.LibraryProvider, x.GenreName });
 
 
-            modelBuilder.Entity<ArtistSong>()
-                .HasKey(x => new { x.SongTitle, x.AlbumInterpret, x.AlbumName, x.Track, x.DiscNumber, x.LibraryProvider, x.ArtistName, x.ArtistType });
+            modelBuilder.Entity<InterpreterSong>()
+                .HasKey(x => new { x.ArtistName, x.LibraryProvider, x.MediaId });
+
+
+            modelBuilder.Entity<ComposerSong>()
+                .HasKey(x => new { x.ArtistName, x.LibraryProvider, x.MediaId });
 
 
         }
@@ -762,13 +1008,10 @@ namespace MusicPlayer.Core
         public class GenreSong : IEquatable<GenreSong>
         {
 
-            public string AlbumName { get; set; }
-            public string AlbumInterpret { get; set; }
-            public string SongTitle { get; set; }
-            public int Track { get; set; }
-            public int DiscNumber { get; set; }
-            public string LibraryProvider { get; set; }
+            public Song Song { get; set; }
 
+            public string MediaId { get; set; }
+            public string LibraryProvider { get; set; }
 
             public string GenreName { get; set; }
 
@@ -780,189 +1023,114 @@ namespace MusicPlayer.Core
             public bool Equals(GenreSong other)
             {
                 return other != null &&
-                       this.AlbumName == other.AlbumName &&
-                       this.AlbumInterpret == other.AlbumInterpret &&
-                       this.SongTitle == other.SongTitle &&
-                       this.Track == other.Track &&
-                       this.DiscNumber == other.DiscNumber &&
+                       this.MediaId == other.MediaId &&
                        this.LibraryProvider == other.LibraryProvider &&
                        this.GenreName == other.GenreName;
             }
 
             public override int GetHashCode()
             {
-                var hashCode = 603161187;
-                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.AlbumName);
-                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.AlbumInterpret);
-                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.SongTitle);
-                hashCode = hashCode * -1521134295 + this.Track.GetHashCode();
-                hashCode = hashCode * -1521134295 + this.DiscNumber.GetHashCode();
+                var hashCode = -1222438042;
+                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.MediaId);
                 hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.LibraryProvider);
                 hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.GenreName);
                 return hashCode;
             }
 
-            public static bool operator ==(GenreSong left, GenreSong right)
+            public static bool operator ==(GenreSong song1, GenreSong song2)
             {
-                return EqualityComparer<GenreSong>.Default.Equals(left, right);
+                return EqualityComparer<GenreSong>.Default.Equals(song1, song2);
             }
 
-            public static bool operator !=(GenreSong left, GenreSong right)
+            public static bool operator !=(GenreSong song1, GenreSong song2)
             {
-                return !(left == right);
+                return !(song1 == song2);
             }
         }
 
-        public enum ArtistType
+        public class InterpreterSong : IEquatable<InterpreterSong>
         {
-            Interpret,
-            Composer
-        }
+            public Song Song { get; set; }
 
-        public class ArtistSong : IEquatable<ArtistSong>
-        {
-            public ArtistType ArtistType { get; set; }
-
-            public string AlbumName { get; set; }
-            public string AlbumInterpret { get; set; }
-            public string SongTitle { get; set; }
-            public int Track { get; set; }
-            public int DiscNumber { get; set; }
+            public string MediaId { get; set; }
             public string LibraryProvider { get; set; }
-
-
             public string ArtistName { get; set; }
 
             public override bool Equals(object obj)
             {
-                return this.Equals(obj as ArtistSong);
+                return this.Equals(obj as InterpreterSong);
             }
 
-            public bool Equals(ArtistSong other)
+            public bool Equals(InterpreterSong other)
             {
                 return other != null &&
-                       this.ArtistType == other.ArtistType &&
-                       this.AlbumName == other.AlbumName &&
-                       this.AlbumInterpret == other.AlbumInterpret &&
-                       this.SongTitle == other.SongTitle &&
-                       this.Track == other.Track &&
-                       this.DiscNumber == other.DiscNumber &&
+                       this.MediaId == other.MediaId &&
                        this.LibraryProvider == other.LibraryProvider &&
                        this.ArtistName == other.ArtistName;
             }
 
             public override int GetHashCode()
             {
-                var hashCode = -45014965;
-                hashCode = hashCode * -1521134295 + this.ArtistType.GetHashCode();
-                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.AlbumName);
-                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.AlbumInterpret);
-                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.SongTitle);
-                hashCode = hashCode * -1521134295 + this.Track.GetHashCode();
-                hashCode = hashCode * -1521134295 + this.DiscNumber.GetHashCode();
+                var hashCode = -615129376;
+                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.MediaId);
                 hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.LibraryProvider);
                 hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.ArtistName);
                 return hashCode;
             }
 
-            public static bool operator ==(ArtistSong left, ArtistSong right)
+            public static bool operator ==(InterpreterSong song1, InterpreterSong song2)
             {
-                return EqualityComparer<ArtistSong>.Default.Equals(left, right);
+                return EqualityComparer<InterpreterSong>.Default.Equals(song1, song2);
             }
 
-            public static bool operator !=(ArtistSong left, ArtistSong right)
+            public static bool operator !=(InterpreterSong song1, InterpreterSong song2)
             {
-                return !(left == right);
+                return !(song1 == song2);
             }
         }
 
-
-        [System.Diagnostics.DebuggerDisplay("{Name} - {Track}/{DiscNumber}")]
-        public class Song : IEquatable<Song>
+        public class ComposerSong : IEquatable<ComposerSong>
         {
-            public string AlbumName { get; set; }
-            public string AlbumInterpret { get; set; }
-            public string Name { get; set; }
-            public int Track { get; set; }
-            public int DiscNumber { get; set; }
+            public Song Song { get; set; }
+
+            public string MediaId { get; set; }
             public string LibraryProvider { get; set; }
-
-            public string LibraryImageId { get; set; }
-            public string LibraryMediaId { get; set; }
-            public TimeSpan Duration { get; set; }
-
-            public HashSet<ArtistSong> ArtistSong { get; set; } = new HashSet<ArtistSong>();
-            public HashSet<GenreSong> GenreSong { get; set; } = new HashSet<GenreSong>();
-
-
-            public ArtistSong GenerateArtist(string artist, ArtistType type)
-            {
-                return new ArtistSong()
-                {
-                    AlbumName = this.AlbumName,
-                    AlbumInterpret = this.AlbumInterpret,
-                    ArtistName = artist,
-                    Track = this.Track,
-                    DiscNumber = this.DiscNumber,
-                    LibraryProvider = this.LibraryProvider,
-                    SongTitle = this.Name,
-                    ArtistType = type
-                };
-            }
-            public GenreSong GenerateGenre(string genre)
-            {
-                return new GenreSong()
-                {
-                    AlbumName = this.AlbumName,
-                    AlbumInterpret = this.AlbumInterpret,
-                    GenreName = genre,
-                    Track = this.Track,
-                    DiscNumber = this.DiscNumber,
-                    LibraryProvider = this.LibraryProvider,
-                    SongTitle = this.Name
-                };
-            }
+            public string ArtistName { get; set; }
 
             public override bool Equals(object obj)
             {
-                return this.Equals(obj as Song);
+                return this.Equals(obj as ComposerSong);
             }
 
-            public bool Equals(Song other)
+            public bool Equals(ComposerSong other)
             {
                 return other != null &&
-                       this.AlbumName == other.AlbumName &&
-                       this.AlbumInterpret == other.AlbumInterpret &&
-                       this.Name == other.Name &&
-                       this.Track == other.Track &&
-                       this.DiscNumber == other.DiscNumber &&
-                       this.LibraryProvider == other.LibraryProvider;
+                       this.MediaId == other.MediaId &&
+                       this.LibraryProvider == other.LibraryProvider &&
+                       this.ArtistName == other.ArtistName;
             }
 
             public override int GetHashCode()
             {
-                var hashCode = -424849820;
-                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.AlbumName);
-                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.AlbumInterpret);
-                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.Name);
-                hashCode = hashCode * -1521134295 + this.Track.GetHashCode();
-                hashCode = hashCode * -1521134295 + this.DiscNumber.GetHashCode();
+                var hashCode = -615129376;
+                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.MediaId);
                 hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.LibraryProvider);
+                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.ArtistName);
                 return hashCode;
             }
 
-            public uint Year { get; set; }
-
-            public static bool operator ==(Song left, Song right)
+            public static bool operator ==(ComposerSong song1, ComposerSong song2)
             {
-                return EqualityComparer<Song>.Default.Equals(left, right);
+                return EqualityComparer<ComposerSong>.Default.Equals(song1, song2);
             }
 
-            public static bool operator !=(Song left, Song right)
+            public static bool operator !=(ComposerSong song1, ComposerSong song2)
             {
-                return !(left == right);
+                return !(song1 == song2);
             }
         }
+
+
 
     }
 }

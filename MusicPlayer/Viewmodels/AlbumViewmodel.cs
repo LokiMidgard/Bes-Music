@@ -53,13 +53,26 @@ namespace MusicPlayer.Viewmodels
             }, Comparer<char>.Default, new AlbumViewmodelComparer());
             this.AlphabetGrouped = new ReadOnlyObservableCollection<SortedGroup<char, AlbumViewmodel>>(this.alphabetGrouped);
 
+            
 
+            MusicStore.Instance.PropertyChanged += this.Instance_PropertyChanged;
+
+        }
+
+        private void Instance_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(MusicStore.Albums))
+                this.UpdateCollection();
+        }
+
+        private void UpdateCollection()
+        {
             foreach (var item in MusicStore.Instance.Albums)
             {
                 this.Add(item);
             }
 
-            (MusicStore.Instance.Albums as INotifyCollectionChanged).CollectionChanged += this.AlbumCollectionViewmodel_CollectionChanged1;
+                    (MusicStore.Instance.Albums as INotifyCollectionChanged).CollectionChanged += this.AlbumCollectionViewmodel_CollectionChanged1;
             InitAsync();
         }
 
