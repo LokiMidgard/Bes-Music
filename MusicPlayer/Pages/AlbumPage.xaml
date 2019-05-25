@@ -35,12 +35,12 @@
                         x:Name="name"
                         MaxLines="1"
                         Style="{StaticResource HeaderTextBlockStyle}"
-                        Text="{Binding Name}"
+                        Text="{Binding Model.Title}"
                         TextTrimming="CharacterEllipsis" />
                     <TextBlock
                         MaxLines="1"
                         Style="{StaticResource SubheaderTextBlockStyle}"
-                        Text="{Binding Interprets, Converter={StaticResource listConverter}}" />
+                        Text="{Binding Model.Interpreters, Converter={StaticResource listConverter}}" />
                 </StackPanel>
             </Grid>
         </Border>
