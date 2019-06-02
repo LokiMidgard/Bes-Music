@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -14,7 +15,6 @@ using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using System.IO;
 
 // The Templated Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234235
 
@@ -28,8 +28,8 @@ namespace MusicPlayer.Controls
 
         public MediaPlaybackList PlayList
         {
-            get { return (MediaPlaybackList)GetValue(PlayListProperty); }
-            set { SetValue(PlayListProperty, value); }
+            get { return (MediaPlaybackList)this.GetValue(PlayListProperty); }
+            set { this.SetValue(PlayListProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for PlayList.  This enables animation, styling, binding, etc...
@@ -49,6 +49,18 @@ namespace MusicPlayer.Controls
         public static readonly DependencyProperty CurrentSongProperty =
             DependencyProperty.Register("CurrentSong", typeof(SongInformation), typeof(TransportControls), new PropertyMetadata(null));
 
+
+
+
+        public MediaPlaybackItem CurrentMediaPlaybackItem
+        {
+            get { return (MediaPlaybackItem)this.GetValue(CurrentMediaPlaybackItemProperty); }
+            set { this.SetValue(CurrentMediaPlaybackItemProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CurrentMediaPlaybackItem.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CurrentMediaPlaybackItemProperty =
+            DependencyProperty.Register("CurrentMediaPlaybackItem", typeof(MediaPlaybackItem), typeof(TransportControls), new PropertyMetadata(null));
 
 
 
@@ -320,8 +332,11 @@ namespace MusicPlayer.Controls
 
         private async void PlayList_CurrentItemChanged(MediaPlaybackList sender, CurrentMediaPlaybackItemChangedEventArgs args)
         {
-
             var playbackItem = args.NewItem;
+
+            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => this.CurrentMediaPlaybackItem = playbackItem);
+
+
             if (playbackItem != null)
             {
                 await SetCurrentSong(playbackItem.GetDisplayProperties());

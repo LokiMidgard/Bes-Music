@@ -31,7 +31,6 @@ namespace MusicPlayer.Pages
     /// </summary>
     public sealed partial class ShellPage : Page
     {
-        private readonly MediaPlaybackList _mediaPlaybackList;
 
         public ShellViewModel ViewModel { get; } = new ShellViewModel();
 
@@ -41,10 +40,9 @@ namespace MusicPlayer.Pages
             this.DataContext = this.ViewModel;
 
 
-            this._mediaPlaybackList = new MediaPlaybackList();
-            this._mediaPlaybackList.CurrentItemChanged += this._mediaPlaybackList_CurrentItemChanged;
 
-            this.TransportControls.PlayList = this._mediaPlaybackList;
+            MediaplayerViewmodel.Init(this.TransportControls);
+
 
             IList<KeyboardAccelerator> keyboardAccelerators;
             try
@@ -60,41 +58,7 @@ namespace MusicPlayer.Pages
             this.ViewModel.Initialize(this.shellFrame, null, keyboardAccelerators);
         }
 
-        private void _mediaPlaybackList_CurrentItemChanged(MediaPlaybackList sender, CurrentMediaPlaybackItemChangedEventArgs args)
-        {
 
-        }
-
-        public async Task PlaySong(Song song)
-        {
-
-            var media = await LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(song.LibraryProvider).GetMediaSource(song.MediaId, default);
-            var mediaItem = new MediaPlaybackItem(media);
-
-            var displayProperties = mediaItem.GetDisplayProperties();
-            displayProperties.Type = Windows.Media.MediaPlaybackType.Music;
-            displayProperties.MusicProperties.AlbumTitle = song.AlbumName;
-            displayProperties.MusicProperties.TrackNumber = (uint)song.Track;
-            displayProperties.MusicProperties.Title = song.Title;
-
-            displayProperties.MusicProperties.Genres.Clear();
-            foreach (var genre in song.Genres)
-                displayProperties.MusicProperties.Genres.Add(genre);
-
-            displayProperties.MusicProperties.Artist = string.Join(", ", song.Interpreters);
-
-            mediaItem.ApplyDisplayProperties(displayProperties);
-
-            this._mediaPlaybackList.Items.Add(mediaItem);
-
-            //if (this._mediaPlaybackList.Items.Count > 0)
-            //this.mediaPlayer.Source = this._mediaPlaybackList;
-
-            var coverStreamReferance = await song.GetCover(300, default);
-            displayProperties.Thumbnail = coverStreamReferance;
-            mediaItem.ApplyDisplayProperties(displayProperties);
-
-        }
 
 
     }

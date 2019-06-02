@@ -46,12 +46,12 @@ namespace MusicPlayer.Pages
             this.NavigationCacheMode = NavigationCacheMode.Enabled;
         }
 
-        
+
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
-            
+
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -62,6 +62,12 @@ namespace MusicPlayer.Pages
         private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             this.HubSize = Math.Max(30, e.NewSize.Width - 60);
+        }
+
+        private async void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedSong = (e.OriginalSource as FrameworkElement).DataContext as Viewmodels.PlayingSong;
+            await Viewmodels.MediaplayerViewmodel.Instance.RemoveSong(selectedSong);
         }
     }
 }

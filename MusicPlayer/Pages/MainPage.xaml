@@ -7,6 +7,7 @@
     xmlns:local="using:MusicPlayer.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:services="using:MusicPlayer.Services"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
     x:Name="root"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
@@ -25,7 +26,39 @@
     <Grid>
 
         <Pivot LeftHeaderTemplate="{StaticResource PivotLeftHeaderTemplate1}">
-            <PivotItem Header="Now Playing" />
+            <PivotItem Header="Now Playing" >
+                <PivotItem.DataContext>
+                    <viewmodels:MediaPlayerAccessor/>
+                </PivotItem.DataContext>
+                <ListView ItemsSource="{Binding Instance.CurrentPlaylist}" SelectedIndex="{Binding Instance.CurrentPlayingIndex, Mode=OneWay}" SelectionMode="Single" HorizontalContentAlignment="Stretch">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="6*"/>
+                                    <ColumnDefinition Width="4*"/>
+                                    <ColumnDefinition Width="4*"/>
+                                    <ColumnDefinition Width="100" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding Song.Title}" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Song.AlbumName}" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="2" Text="{Binding Song.Interpreters}" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="3" Text="{Binding Song.Duration}"/>
+                                <Grid.ContextFlyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem Text="Remove" Click="MenuFlyoutItem_Click"/>
+                                    </MenuFlyout>
+                                </Grid.ContextFlyout>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </PivotItem>
             <PivotItem Header="Playlists" />
             <PivotItem Header="Albums">
                 <controls:Albums HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />

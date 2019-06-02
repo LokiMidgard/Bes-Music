@@ -57,7 +57,7 @@ namespace MusicPlayer.Pages
         {
             var button = sender as Button;
             var song = button.Tag as SongGroup;
-            await App.Shell.PlaySong(song.Songs.First());
+            await Viewmodels.MediaplayerViewmodel.Instance.AddSong(song.Songs.First());
 
 
 
