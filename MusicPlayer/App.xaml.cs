@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -17,11 +18,19 @@ using Windows.UI.Xaml.Navigation;
 
 namespace MusicPlayer
 {
+    public class AppViewmodel
+    {
+
+        public App Instace => Application.Current as App;
+
+    }
+
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    public sealed partial class App : Application
+    public sealed partial class App : Application, INotifyPropertyChanged
     {
+        public static new App Current => Application.Current as App;
 
         public static Pages.ShellPage Shell { get; private set; }
         /// <summary>
@@ -35,6 +44,8 @@ namespace MusicPlayer
             this.Suspending += this.OnSuspending;
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
         /// will be used such as when the application is launched to open a specific file.
@@ -42,6 +53,7 @@ namespace MusicPlayer
         /// <param name="e">Details about the launch request and process.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
+
             var rootFrame = Window.Current.Content as Pages.ShellPage;
 
             // Do not repeat app initialization when the Window already has content,
@@ -74,11 +86,59 @@ namespace MusicPlayer
                 }
                 // Ensure the current window is active
                 Window.Current.Activate();
+
+                Window.Current.SizeChanged += this.WindowSizeChanged;
+                this.UpdateIsTouch();
+
+
             }
-
-
-
+            // Set the application minimum window size
+            Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetPreferredMinSize(
+                new Size(
+                    width: 200,
+                    height: 250 
+                    ));
         }
+
+        private bool isTouchMode;
+
+        public bool IsMouseMode => !this.IsTochMode;
+        public bool IsTochMode
+        {
+            get { return this.isTouchMode; }
+            private set
+            {
+                if (this.isTouchMode != value)
+                {
+                    this.isTouchMode = value;
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.IsTochMode)));
+                    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.IsMouseMode)));
+                }
+            }
+        }
+
+
+        private void WindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
+        {
+            this.UpdateIsTouch();
+        }
+
+        private void UpdateIsTouch()
+        {
+            var uIViewSettings = Windows.UI.ViewManagement.UIViewSettings.GetForCurrentView();
+            switch (uIViewSettings.UserInteractionMode)
+            {
+                case Windows.UI.ViewManagement.UserInteractionMode.Mouse:
+                    this.IsTochMode = false;
+                    break;
+                case Windows.UI.ViewManagement.UserInteractionMode.Touch:
+                    this.IsTochMode = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
 
         /// <summary>
         /// Invoked when Navigation to a certain page fails

@@ -1,4 +1,5 @@
-﻿using MusicPlayer.Core;
+﻿using MusicPlayer.Controls;
+using MusicPlayer.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Windows.Media.Core;
 using Windows.Storage.FileProperties;
 using Windows.UI.Xaml;
@@ -53,7 +55,7 @@ namespace MusicPlayer.Viewmodels
             }, Comparer<char>.Default, new AlbumViewmodelComparer());
             this.AlphabetGrouped = new ReadOnlyObservableCollection<SortedGroup<char, AlbumViewmodel>>(this.alphabetGrouped);
 
-            
+
 
             MusicStore.Instance.PropertyChanged += this.Instance_PropertyChanged;
 
@@ -225,7 +227,7 @@ namespace MusicPlayer.Viewmodels
     public class AlbumViewmodel : DependencyObject, IEquatable<AlbumViewmodel>
     {
 
-
+        public ICommand PlayAlbumCommand { get; }
 
         public Album Model { get; }
 
@@ -268,6 +270,15 @@ namespace MusicPlayer.Viewmodels
         public AlbumViewmodel(Album item)
         {
             this.Model = item ?? throw new ArgumentNullException(nameof(item));
+            this.PlayAlbumCommand = new DelegateCommand(async () =>
+            {
+
+                foreach (var songGroup in this.Model.Songs)
+                {
+                    await MediaplayerViewmodel.Instance.AddSong(songGroup.Songs.First());
+                }
+
+            });
         }
 
         public static bool operator ==(AlbumViewmodel viewmodel1, AlbumViewmodel viewmodel2)

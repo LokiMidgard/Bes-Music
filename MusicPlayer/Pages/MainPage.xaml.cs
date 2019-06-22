@@ -69,5 +69,9 @@ namespace MusicPlayer.Pages
             var selectedSong = (e.OriginalSource as FrameworkElement).DataContext as Viewmodels.PlayingSong;
             await Viewmodels.MediaplayerViewmodel.Instance.RemoveSong(selectedSong);
         }
+
+    
     }
+
+    
 }

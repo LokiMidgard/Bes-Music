@@ -40,7 +40,6 @@ namespace MusicPlayer.Pages
             this.DataContext = this.ViewModel;
 
 
-
             MediaplayerViewmodel.Init(this.TransportControls);
 
 
@@ -57,9 +56,6 @@ namespace MusicPlayer.Pages
             }
             this.ViewModel.Initialize(this.shellFrame, null, keyboardAccelerators);
         }
-
-
-
 
     }
 }

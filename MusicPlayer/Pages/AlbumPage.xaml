@@ -16,38 +16,40 @@
     </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="400" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Border Background="{StaticResource SystemControlBackgroundBaseLowBrush}">
-            <Grid
+        
+        <ListView
+            HorizontalContentAlignment="Stretch"
+            ItemsSource="{Binding Model.Songs}">
+
+            <ListView.Header>
+                <Border Background="{StaticResource SystemControlBackgroundBaseLowBrush}">
+                    <Grid
                 Margin="100,100,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top">
-                <Image
+                        <Image
                     x:Name="cover"
                     Width="200"
                     Height="200"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top" />
-                <StackPanel Margin="208,0,0,0" VerticalAlignment="Bottom">
-                    <TextBlock
+                        <StackPanel Margin="208,0,0,0" VerticalAlignment="Bottom">
+                            <TextBlock
                         x:Name="name"
                         MaxLines="1"
                         Style="{StaticResource HeaderTextBlockStyle}"
                         Text="{Binding Model.Title}"
                         TextTrimming="CharacterEllipsis" />
-                    <TextBlock
+                            <TextBlock
                         MaxLines="1"
                         Style="{StaticResource SubheaderTextBlockStyle}"
                         Text="{Binding Model.Interpreters, Converter={StaticResource listConverter}}" />
-                </StackPanel>
-            </Grid>
-        </Border>
-        <ListView
-            Grid.Row="1"
-            HorizontalContentAlignment="Stretch"
-            ItemsSource="{Binding Model.Songs}">
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </ListView.Header>
             
             <ListView.Style>
                 <Style TargetType="ListView">

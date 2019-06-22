@@ -59,19 +59,33 @@ namespace MusicPlayer.Viewmodels
 
         public int CurrentPlayingIndex
         {
-            get { return (int)GetValue(CurrentPlayingIndexProperty); }
-            set { SetValue(CurrentPlayingIndexProperty, value); }
+            get { return (int)this.GetValue(CurrentPlayingIndexProperty); }
+            set { this.SetValue(CurrentPlayingIndexProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for CurrentPlayingIndex.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CurrentPlayingIndexProperty =
-            DependencyProperty.Register("CurrentPlayingIndex", typeof(int), typeof(MediaplayerViewmodel), new PropertyMetadata(-1));
+            DependencyProperty.Register("CurrentPlayingIndex", typeof(int), typeof(MediaplayerViewmodel), new PropertyMetadata(-1, CurrentPlayingIndexChanged));
 
+        private void CurrentPlayingIndexChanged(int newIndex)
+        {
+            if (newIndex > -1)
+            {
+                var newItem = this.CurrentPlaylist[newIndex];
+                this.transportControls.CurrentMediaPlaybackItem = newItem.MediaPlaybackItem;
+            }
+            else
+            {
+                this.transportControls.CurrentMediaPlaybackItem = null;
+            }
 
-
-
-
-
+        }
+        private static void CurrentPlayingIndexChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var newIndex = (int)e.NewValue;
+            var me = (MediaplayerViewmodel)d;
+            me.CurrentPlayingIndexChanged(newIndex);
+        }
 
         private MediaplayerViewmodel(TransportControls transportControls)
         {
@@ -97,8 +111,14 @@ namespace MusicPlayer.Viewmodels
         private void RefresCurrentIndex()
         {
             var currentItem = this.transportControls.CurrentMediaPlaybackItem;
-            var viewmodel = this.playbackItemLookup[currentItem];
-            var index = this.CurrentPlaylist.IndexOf(viewmodel);
+            int index;
+            if (currentItem is null)
+                index = -1;
+            else
+            {
+                var viewmodel = this.playbackItemLookup[currentItem];
+                index = this.CurrentPlaylist.IndexOf(viewmodel);
+            }
             this.CurrentPlayingIndex = index;
         }
 
@@ -213,7 +233,7 @@ namespace MusicPlayer.Viewmodels
             if (this.mediaPlaybackList.ShuffleEnabled)
                 indexAdded = this.mediaPlaybackList.ShuffledItems.Select((value, index) => (value, index)).First(x => x.value == mediaItem).index;
             else
-                indexAdded = this.mediaPlaybackList.Items.Count-1;
+                indexAdded = this.mediaPlaybackList.Items.Count - 1;
 
             this.currentPlaylist.Insert(indexAdded, viewModel);
 

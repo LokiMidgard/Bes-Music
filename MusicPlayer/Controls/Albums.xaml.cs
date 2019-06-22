@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using MusicPlayer.Viewmodels;
 using System;
+using System;
+using System.Collections.Generic;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
-using MusicPlayer.Viewmodels;
 using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -33,6 +33,34 @@ namespace MusicPlayer.Controls
         public AlbumCollectionViewmodel AlbumViewmodel => AlbumCollectionViewmodel.Instance;
 
 
+
+        public bool IsAlbumDisplayedLarge
+        {
+            get { return (bool)this.GetValue(IsAlbumDisplayedLargeProperty); }
+            set { this.SetValue(IsAlbumDisplayedLargeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsAlbumDisplayedLarge.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsAlbumDisplayedLargeProperty =
+            DependencyProperty.Register("IsAlbumDisplayedLarge", typeof(bool), typeof(Albums), new PropertyMetadata(false));
+
+
+
+
+
+        public double AlbumWidth
+        {
+            get { return (double)this.GetValue(AlbumWidthProperty); }
+            set { this.SetValue(AlbumWidthProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for AlbumWidth.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty AlbumWidthProperty =
+            DependencyProperty.Register("AlbumWidth", typeof(double), typeof(Albums), new PropertyMetadata(166));
+
+
+
+
         public Albums()
         {
             this.InitializeComponent();
@@ -44,6 +72,8 @@ namespace MusicPlayer.Controls
         {
             await Core.MusicStore.Instance.Init();
             await LocalLibrary.Instance.Update(default);
+            this.UpdateSize(new Size(this.ActualWidth, this.ActualHeight));
+
         }
 
         private async void ToRender_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
@@ -113,6 +143,23 @@ namespace MusicPlayer.Controls
                 }
             }
             return null;
+        }
+
+        private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var newSize = e.NewSize;
+            this.UpdateSize(newSize);
+        }
+
+        private void UpdateSize(Size newSize)
+        {
+            this.IsAlbumDisplayedLarge = newSize.Width < 364 && newSize.Width > 260;
+            if (!this.IsAlbumDisplayedLarge)
+                this.ClearValue(AlbumWidthProperty);
+            else
+            {
+                this.AlbumWidth = newSize.Width - 16;
+            }
         }
     }
 }

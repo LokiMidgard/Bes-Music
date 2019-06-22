@@ -6,34 +6,42 @@
     xmlns:local="using:MusicPlayer"
     xmlns:services="using:MusicPlayer.Services">
     <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="base.xaml"/>
+                <ResourceDictionary Source="themeresources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
 
-        <helpers:ConstantsHelper x:Key="const" />
+            <SolidColorBrush x:Key="SystemControlTransparentBackgroundBrush" Color="#c0888888"></SolidColorBrush>
+            <SolidColorBrush x:Key="SystemControlTransparentBorderBrush" Color="#c0989898" />
 
-
-        <CornerRadius x:Key="IninitCornerRadius">
-            9999999
-        </CornerRadius>
-        <Style x:Key="RoundButtonRevealStyle" TargetType="Button">
-            <Setter Property="Background" Value="{ThemeResource ButtonRevealBackground}" />
-            <Setter Property="Foreground" Value="{ThemeResource ButtonForeground}" />
-            <Setter Property="BorderBrush" Value="{ThemeResource ButtonRevealBorderBrush}" />
-            <Setter Property="BorderThickness" Value="{ThemeResource ButtonRevealBorderThemeThickness}" />
-            <Setter Property="Padding" Value="{StaticResource ButtonPadding}" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
-            <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
-            <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
-            <Setter Property="FocusVisualMargin" Value="-3" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Grid
+            <helpers:ConstantsHelper x:Key="const" />
+            <Thickness x:Key="ButtonPadding">8,4,8,5</Thickness>
+            <x:Boolean x:Key="UseSystemFocusVisuals">True</x:Boolean>
+            <CornerRadius x:Key="IninitCornerRadius">
+                9999999
+            </CornerRadius>
+            <Style x:Key="RoundButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
+                <Setter Property="Foreground" Value="{ThemeResource ButtonForeground}" />
+                <Setter Property="BorderBrush" Value="{ThemeResource ButtonBorderBrush}" />
+                <Setter Property="BorderThickness" Value="{ThemeResource ButtonBorderThemeThickness}" />
+                <Setter Property="Padding" Value="{StaticResource ButtonPadding}" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+                <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+                <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
+                <Setter Property="FocusVisualMargin" Value="-3" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid
                             x:Name="RootGrid"
                             Background="{TemplateBinding Background}"
                             CornerRadius="{StaticResource IninitCornerRadius}">
-                            <ContentPresenter
+                                <ContentPresenter
                                 x:Name="ContentPresenter"
                                 Padding="{TemplateBinding Padding}"
                                 HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -46,80 +54,80 @@
                                 ContentTransitions="{TemplateBinding ContentTransitions}"
                                 CornerRadius="{StaticResource IninitCornerRadius}" />
 
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
 
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
-                                        </Storyboard>
-                                    </VisualState>
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
 
-                                    <VisualState x:Name="PointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Target="RootGrid.(RevealBrush.State)" Value="PointerOver" />
-                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ButtonRevealBackgroundPointerOver}" />
-                                            <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonRevealBorderBrushPointerOver}" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundPointerOver}" />
-                                        </VisualState.Setters>
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="PointerOver" />-->
+                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ButtonBackgroundPointerOver}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushPointerOver}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundPointerOver}" />
+                                            </VisualState.Setters>
 
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
-                                        </Storyboard>
-                                    </VisualState>
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
 
-                                    <VisualState x:Name="Pressed">
-                                        <VisualState.Setters>
-                                            <Setter Target="RootGrid.(RevealBrush.State)" Value="Pressed" />
-                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ButtonRevealBackgroundPressed}" />
-                                            <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonRevealBorderBrushPressed}" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundPressed}" />
-                                        </VisualState.Setters>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="Pressed" />-->
+                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ButtonBackgroundPressed}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushPressed}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundPressed}" />
+                                            </VisualState.Setters>
 
-                                        <Storyboard>
-                                            <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
-                                        </Storyboard>
-                                    </VisualState>
+                                            <Storyboard>
+                                                <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
 
-                                    <VisualState x:Name="Disabled">
-                                        <VisualState.Setters>
-                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ButtonRevealBackgroundDisabled}" />
-                                            <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonRevealBorderBrushDisabled}" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundDisabled}" />
-                                        </VisualState.Setters>
-                                    </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ButtonBackgroundDisabled}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushDisabled}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundDisabled}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
 
-                                </VisualStateGroup>
+                                    </VisualStateGroup>
 
-                            </VisualStateManager.VisualStateGroups>
-                        </Grid>
+                                </VisualStateManager.VisualStateGroups>
+                            </Grid>
 
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
-        <Style x:Key="RoundToggleButtonRevealStyle" TargetType="ToggleButton">
-            <Setter Property="Background" Value="{ThemeResource ToggleButtonRevealBackground}" />
-            <Setter Property="Foreground" Value="{ThemeResource ToggleButtonForeground}" />
-            <Setter Property="BorderBrush" Value="{ThemeResource ToggleButtonRevealBorderBrush}" />
-            <Setter Property="BorderThickness" Value="{ThemeResource ToggleButtonRevealBorderThemeThickness}" />
-            <Setter Property="Padding" Value="{StaticResource ButtonPadding}" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
-            <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
-            <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
-            <Setter Property="FocusVisualMargin" Value="-3" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ToggleButton">
-                        <Grid
+            <Style x:Key="RoundToggleButtonStyle" TargetType="ToggleButton">
+                <Setter Property="Background" Value="{ThemeResource ToggleButtonBackground}" />
+                <Setter Property="Foreground" Value="{ThemeResource ToggleButtonForeground}" />
+                <Setter Property="BorderBrush" Value="{ThemeResource ToggleButtonBorderBrush}" />
+                <Setter Property="BorderThickness" Value="{ThemeResource ToggleButtonBorderThemeThickness}" />
+                <Setter Property="Padding" Value="{StaticResource ButtonPadding}" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+                <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+                <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
+                <Setter Property="FocusVisualMargin" Value="-3" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToggleButton">
+                            <Grid
                             x:Name="RootGrid"
                             Background="{TemplateBinding Background}"
                             CornerRadius="{StaticResource IninitCornerRadius}">
-                            <ContentPresenter
+                                <ContentPresenter
                                 x:Name="ContentPresenter"
                                 Padding="{TemplateBinding Padding}"
                                 HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -132,212 +140,212 @@
                                 ContentTransitions="{TemplateBinding ContentTransitions}"
                                 CornerRadius="{StaticResource IninitCornerRadius}" />
 
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
 
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
-                                        </Storyboard>
-                                    </VisualState>
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
 
-                                    <VisualState x:Name="PointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Target="RootGrid.(RevealBrush.State)" Value="PointerOver" />
-                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonRevealBackgroundPointerOver}" />
-                                            <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonRevealBorderBrushPointerOver}" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundPointerOver}" />
-                                        </VisualState.Setters>
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="PointerOver" />-->
+                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundPointerOver}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushPointerOver}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundPointerOver}" />
+                                            </VisualState.Setters>
 
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
-                                        </Storyboard>
-                                    </VisualState>
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
 
-                                    <VisualState x:Name="Pressed">
-                                        <VisualState.Setters>
-                                            <Setter Target="RootGrid.(RevealBrush.State)" Value="Pressed" />
-                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonRevealBackgroundPressed}" />
-                                            <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonRevealBorderBrushPressed}" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundPressed}" />
-                                        </VisualState.Setters>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="Pressed" />-->
+                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundPressed}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushPressed}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundPressed}" />
+                                            </VisualState.Setters>
 
-                                        <Storyboard>
-                                            <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
-                                        </Storyboard>
-                                    </VisualState>
+                                            <Storyboard>
+                                                <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
 
-                                    <VisualState x:Name="Disabled">
-                                        <VisualState.Setters>
-                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonRevealBackgroundDisabled}" />
-                                            <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonRevealBorderBrushDisabled}" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundDisabled}" />
-                                        </VisualState.Setters>
-                                    </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundDisabled}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushDisabled}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundDisabled}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
 
-                                    <VisualState x:Name="Checked">
-                                        <VisualState.Setters>
-                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonRevealBackgroundChecked}" />
-                                            <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonRevealBorderBrushChecked}" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundChecked}" />
-                                        </VisualState.Setters>
+                                        <VisualState x:Name="Checked">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundChecked}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushChecked}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundChecked}" />
+                                            </VisualState.Setters>
 
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="CheckedPointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Target="RootGrid.(RevealBrush.State)" Value="PointerOver" />
-                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonRevealBackgroundCheckedPointerOver}" />
-                                            <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonRevealBorderBrushCheckedPointerOver}" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundCheckedPointerOver}" />
-                                        </VisualState.Setters>
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="CheckedPointerOver">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="PointerOver" />-->
+                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundCheckedPointerOver}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushCheckedPointerOver}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundCheckedPointerOver}" />
+                                            </VisualState.Setters>
 
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="CheckedPressed">
-                                        <VisualState.Setters>
-                                            <Setter Target="RootGrid.(RevealBrush.State)" Value="Pressed" />
-                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonRevealBackgroundCheckedPressed}" />
-                                            <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonRevealBorderBrushCheckedPressed}" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundCheckedPressed}" />
-                                        </VisualState.Setters>
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="CheckedPressed">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="Pressed" />-->
+                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundCheckedPressed}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushCheckedPressed}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundCheckedPressed}" />
+                                            </VisualState.Setters>
 
-                                        <Storyboard>
-                                            <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="CheckedDisabled">
-                                        <VisualState.Setters>
-                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonRevealBackgroundCheckedDisabled}" />
-                                            <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonRevealBorderBrushCheckedDisabled}" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundCheckedDisabled}" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="Indeterminate">
-                                        <VisualState.Setters>
-                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonRevealBackgroundIndeterminate}" />
-                                            <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonRevealBorderBrushIndeterminate}" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundIndeterminate}" />
-                                        </VisualState.Setters>
+                                            <Storyboard>
+                                                <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="CheckedDisabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundCheckedDisabled}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushCheckedDisabled}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundCheckedDisabled}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Indeterminate">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundIndeterminate}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushIndeterminate}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundIndeterminate}" />
+                                            </VisualState.Setters>
 
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="IndeterminatePointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Target="RootGrid.(RevealBrush.State)" Value="PointerOver" />
-                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonRevealBackgroundIndeterminatePointerOver}" />
-                                            <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonRevealBorderBrushIndeterminatePointerOver}" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundIndeterminatePointerOver}" />
-                                        </VisualState.Setters>
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="IndeterminatePointerOver">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="PointerOver" />-->
+                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundIndeterminatePointerOver}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushIndeterminatePointerOver}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundIndeterminatePointerOver}" />
+                                            </VisualState.Setters>
 
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="IndeterminatePressed">
-                                        <VisualState.Setters>
-                                            <Setter Target="RootGrid.(RevealBrush.State)" Value="Pressed" />
-                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonRevealBackgroundIndeterminatePressed}" />
-                                            <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonRevealBorderBrushIndeterminatePressed}" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundIndeterminatePressed}" />
-                                        </VisualState.Setters>
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="IndeterminatePressed">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="Pressed" />-->
+                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundIndeterminatePressed}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushIndeterminatePressed}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundIndeterminatePressed}" />
+                                            </VisualState.Setters>
 
-                                        <Storyboard>
-                                            <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="IndeterminateDisabled">
-                                        <VisualState.Setters>
-                                            <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonRevealBackgroundIndeterminateDisabled}" />
-                                            <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonRevealBorderBrushIndeterminateDisabled}" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundIndeterminateDisabled}" />
-                                        </VisualState.Setters>
-                                    </VisualState>
+                                            <Storyboard>
+                                                <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="IndeterminateDisabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundIndeterminateDisabled}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushIndeterminateDisabled}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundIndeterminateDisabled}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
 
-                                </VisualStateGroup>
+                                    </VisualStateGroup>
 
-                            </VisualStateManager.VisualStateGroups>
-                        </Grid>
+                                </VisualStateManager.VisualStateGroups>
+                            </Grid>
 
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="BaseTextBlockStyle" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="XamlAutoFontFamily" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="TextTrimming" Value="None" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-            <Setter Property="LineStackingStrategy" Value="MaxHeight" />
-            <Setter Property="TextLineBounds" Value="Full" />
-        </Style>
-        <Style
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="BaseTextBlockStyle" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="XamlAutoFontFamily" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="TextTrimming" Value="None" />
+                <Setter Property="TextWrapping" Value="Wrap" />
+                <Setter Property="LineStackingStrategy" Value="MaxHeight" />
+                <Setter Property="TextLineBounds" Value="Full" />
+            </Style>
+            <Style
             x:Key="BodyTextBlockStyle"
             BasedOn="{StaticResource BaseTextBlockStyle}"
             TargetType="TextBlock">
-            <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="FontSize" Value="14" />
-        </Style>
-        <Style
+                <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="FontSize" Value="14" />
+            </Style>
+            <Style
             x:Key="CaptionTextBlockStyle"
             BasedOn="{StaticResource BaseTextBlockStyle}"
             TargetType="TextBlock">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="FontWeight" Value="Normal" />
-        </Style>
-        <Style x:Key="AppBarButtonRevealStyle" TargetType="AppBarButton">
-            <Setter Property="Background" Value="{ThemeResource AppBarButtonRevealBackground}" />
-            <Setter Property="Foreground" Value="{ThemeResource AppBarButtonForeground}" />
-            <Setter Property="BorderBrush" Value="{ThemeResource AppBarButtonRevealBorderBrush}" />
-            <Setter Property="BorderThickness" Value="{ThemeResource AppBarButtonRevealBorderThemeThickness}" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="VerticalAlignment" Value="Top" />
-            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
-            <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="Width" Value="68" />
-            <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
-            <Setter Property="AllowFocusOnInteraction" Value="False" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="AppBarButton">
-                        <Grid
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="FontWeight" Value="Normal" />
+            </Style>
+            <Style x:Key="AppBarButtonStyle" TargetType="AppBarButton">
+                <Setter Property="Background" Value="{ThemeResource AppBarButtonBackground}" />
+                <Setter Property="Foreground" Value="{ThemeResource AppBarButtonForeground}" />
+                <Setter Property="BorderBrush" Value="{ThemeResource AppBarButtonBorderBrush}" />
+                <Setter Property="BorderThickness" Value="{ThemeResource AppBarButtonBorderThemeThickness}" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="VerticalAlignment" Value="Top" />
+                <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+                <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="Width" Value="68" />
+                <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
+                <Setter Property="AllowFocusOnInteraction" Value="False" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="AppBarButton">
+                            <Grid
                             x:Name="Root"
                             MinWidth="{TemplateBinding MinWidth}"
                             MaxWidth="{TemplateBinding MaxWidth}"
                             Margin="1,0"
                             Background="{TemplateBinding Background}"
                             CornerRadius="{TemplateBinding CornerRadius}">
-                            <Grid
+                                <Grid
                                 x:Name="ContentRoot"
                                 MinHeight="{ThemeResource AppBarThemeMinHeight}"
                                 Margin="-1,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Viewbox
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Viewbox
                                     x:Name="ContentViewbox"
                                     Height="16"
                                     Margin="{StaticResource AppBarButtonContentViewboxCollapsedMargin}"
                                     HorizontalAlignment="Stretch"
                                     AutomationProperties.AccessibilityView="Raw">
-                                    <ContentPresenter
+                                        <ContentPresenter
                                         x:Name="Content"
                                         Content="{TemplateBinding Icon}"
                                         Foreground="{TemplateBinding Foreground}" />
-                                </Viewbox>
-                                <TextBlock
+                                    </Viewbox>
+                                    <TextBlock
                                     x:Name="TextLabel"
                                     Grid.Row="1"
                                     Margin="2,0,2,6"
@@ -348,7 +356,7 @@
                                     Text="{TemplateBinding Label}"
                                     TextAlignment="Center"
                                     TextWrapping="Wrap" />
-                                <TextBlock
+                                    <TextBlock
                                     x:Name="OverflowTextLabel"
                                     Margin="12,0,12,0"
                                     Padding="{StaticResource AppBarButtonOverflowTextLabelPadding}"
@@ -363,10 +371,10 @@
                                     TextTrimming="Clip"
                                     TextWrapping="NoWrap"
                                     Visibility="Collapsed" />
-                                <TextBlock
+                                    <TextBlock
                                     x:Name="KeyboardAcceleratorTextLabel"
                                     Grid.Column="1"
-                                    MinWidth="{Binding TemplateSettings.KeyboardAcceleratorTextMinWidth, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                    MinWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                     Margin="24,0,12,0"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Center"
@@ -375,7 +383,7 @@
                                     Style="{ThemeResource CaptionTextBlockStyle}"
                                     Text="{TemplateBinding KeyboardAcceleratorTextOverride}"
                                     Visibility="Collapsed" />
-                                <Border
+                                    <Border
                                     x:Name="Border"
                                     Grid.RowSpan="2"
                                     Grid.ColumnSpan="2"
@@ -383,238 +391,238 @@
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
                                     CornerRadius="{TemplateBinding CornerRadius}" />
+                                </Grid>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="ApplicationViewStates">
+                                        <VisualState x:Name="FullSize" />
+                                        <VisualState x:Name="Compact">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Visibility">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentViewbox" Storyboard.TargetProperty="Margin">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarButtonContentViewboxCompactMargin}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="LabelOnRight">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentViewbox" Storyboard.TargetProperty="Margin">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarButtonContentViewboxMargin}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRoot" Storyboard.TargetProperty="MinHeight">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarThemeCompactHeight}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="(Grid.Row)">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="0" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="(Grid.Column)">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="1" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="TextAlignment">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="Left" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Margin">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarButtonTextLabelOnRightMargin}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="LabelCollapsed">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRoot" Storyboard.TargetProperty="MinHeight">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarThemeCompactHeight}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Visibility">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentViewbox" Storyboard.TargetProperty="Margin">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarButtonContentViewboxCompactMargin}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Overflow">
+                                            <VisualState.Setters>
+                                                <Setter Target="ContentRoot.MinHeight" Value="0" />
+                                                <Setter Target="ContentViewbox.Visibility" Value="Collapsed" />
+                                                <Setter Target="TextLabel.Visibility" Value="Collapsed" />
+                                                <Setter Target="OverflowTextLabel.Visibility" Value="Visible" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="OverflowWithToggleButtons">
+                                            <VisualState.Setters>
+                                                <Setter Target="ContentRoot.MinHeight" Value="0" />
+                                                <Setter Target="ContentViewbox.Visibility" Value="Collapsed" />
+                                                <Setter Target="TextLabel.Visibility" Value="Collapsed" />
+                                                <Setter Target="OverflowTextLabel.Visibility" Value="Visible" />
+                                                <Setter Target="OverflowTextLabel.Margin" Value="38,0,12,0" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="OverflowWithMenuIcons">
+                                            <VisualState.Setters>
+                                                <Setter Target="ContentRoot.MinHeight" Value="0" />
+                                                <Setter Target="ContentViewbox.HorizontalAlignment" Value="Left" />
+                                                <Setter Target="ContentViewbox.VerticalAlignment" Value="Center" />
+                                                <Setter Target="ContentViewbox.Width" Value="16" />
+                                                <Setter Target="ContentViewbox.Height" Value="16" />
+                                                <Setter Target="ContentViewbox.Margin" Value="12,0,12,0" />
+                                                <Setter Target="TextLabel.Visibility" Value="Collapsed" />
+                                                <Setter Target="OverflowTextLabel.Visibility" Value="Visible" />
+                                                <Setter Target="OverflowTextLabel.Margin" Value="38,0,12,0" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="OverflowWithToggleButtonsAndMenuIcons">
+                                            <VisualState.Setters>
+                                                <Setter Target="ContentRoot.MinHeight" Value="0" />
+                                                <Setter Target="ContentViewbox.HorizontalAlignment" Value="Left" />
+                                                <Setter Target="ContentViewbox.VerticalAlignment" Value="Center" />
+                                                <Setter Target="ContentViewbox.Width" Value="16" />
+                                                <Setter Target="ContentViewbox.Height" Value="16" />
+                                                <Setter Target="ContentViewbox.Margin" Value="38,0,12,0" />
+                                                <Setter Target="TextLabel.Visibility" Value="Collapsed" />
+                                                <Setter Target="OverflowTextLabel.Visibility" Value="Visible" />
+                                                <Setter Target="OverflowTextLabel.Margin" Value="76,0,12,0" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="OverflowTextLabel" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="Root.(RevealBrush.State)" Value="PointerOver" />-->
+                                                <Setter Target="Root.Background" Value="{ThemeResource AppBarButtonBackgroundPointerOver}" />
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarButtonBorderBrushPointerOver}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarButtonForegroundPointerOver}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPointerOver}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPointerOver}" />
+                                            </VisualState.Setters>
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="OverflowTextLabel" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="Root.(RevealBrush.State)" Value="Pressed" />-->
+                                                <Setter Target="Root.Background" Value="{ThemeResource AppBarButtonBackgroundPressed}" />
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarButtonBorderBrushPressed}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarButtonForegroundPressed}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPressed}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPressed}" />
+                                            </VisualState.Setters>
+                                            <Storyboard>
+                                                <PointerDownThemeAnimation Storyboard.TargetName="OverflowTextLabel" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="Root.Background" Value="{ThemeResource AppBarButtonBackgroundDisabled}" />
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarButtonBorderBrushDisabled}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarButtonForegroundDisabled}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundDisabled}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundDisabled}" />
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarButtonKeyboardAcceleratorTextForegroundDisabled}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="OverflowNormal">
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="ContentRoot" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="OverflowPointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="Root.Background" Value="{ThemeResource AppBarButtonBackgroundPointerOver}" />
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarButtonBorderBrushPointerOver}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarButtonForegroundPointerOver}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPointerOver}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPointerOver}" />
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarButtonKeyboardAcceleratorTextForegroundPointerOver}" />
+                                            </VisualState.Setters>
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="ContentRoot" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="OverflowPressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="Root.Background" Value="{ThemeResource AppBarButtonBackgroundPressed}" />
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarButtonBorderBrushPressed}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarButtonForegroundPressed}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPressed}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPressed}" />
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarButtonKeyboardAcceleratorTextForegroundPressed}" />
+                                            </VisualState.Setters>
+                                            <Storyboard>
+                                                <PointerDownThemeAnimation Storyboard.TargetName="ContentRoot" />
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="InputModeStates">
+                                        <VisualState x:Name="InputModeDefault" />
+                                        <VisualState x:Name="TouchInputMode">
+                                            <VisualState.Setters>
+                                                <Setter Target="OverflowTextLabel.Padding" Value="{StaticResource AppBarButtonOverflowTextTouchMargin}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="GameControllerInputMode">
+                                            <VisualState.Setters>
+                                                <Setter Target="OverflowTextLabel.Padding" Value="{StaticResource AppBarButtonOverflowTextTouchMargin}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="KeyboardAcceleratorTextVisibility">
+                                        <VisualState x:Name="KeyboardAcceleratorTextCollapsed" />
+                                        <VisualState x:Name="KeyboardAcceleratorTextVisible">
+                                            <VisualState.Setters>
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Visibility" Value="Visible" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
                             </Grid>
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="ApplicationViewStates">
-                                    <VisualState x:Name="FullSize" />
-                                    <VisualState x:Name="Compact">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentViewbox" Storyboard.TargetProperty="Margin">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarButtonContentViewboxCompactMargin}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="LabelOnRight">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentViewbox" Storyboard.TargetProperty="Margin">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarButtonContentViewboxMargin}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRoot" Storyboard.TargetProperty="MinHeight">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarThemeCompactHeight}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="(Grid.Row)">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="0" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="(Grid.Column)">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="1" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="TextAlignment">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Left" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Margin">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarButtonTextLabelOnRightMargin}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="LabelCollapsed">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRoot" Storyboard.TargetProperty="MinHeight">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarThemeCompactHeight}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentViewbox" Storyboard.TargetProperty="Margin">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarButtonContentViewboxCompactMargin}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Overflow">
-                                        <VisualState.Setters>
-                                            <Setter Target="ContentRoot.MinHeight" Value="0" />
-                                            <Setter Target="ContentViewbox.Visibility" Value="Collapsed" />
-                                            <Setter Target="TextLabel.Visibility" Value="Collapsed" />
-                                            <Setter Target="OverflowTextLabel.Visibility" Value="Visible" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="OverflowWithToggleButtons">
-                                        <VisualState.Setters>
-                                            <Setter Target="ContentRoot.MinHeight" Value="0" />
-                                            <Setter Target="ContentViewbox.Visibility" Value="Collapsed" />
-                                            <Setter Target="TextLabel.Visibility" Value="Collapsed" />
-                                            <Setter Target="OverflowTextLabel.Visibility" Value="Visible" />
-                                            <Setter Target="OverflowTextLabel.Margin" Value="38,0,12,0" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="OverflowWithMenuIcons">
-                                        <VisualState.Setters>
-                                            <Setter Target="ContentRoot.MinHeight" Value="0" />
-                                            <Setter Target="ContentViewbox.HorizontalAlignment" Value="Left" />
-                                            <Setter Target="ContentViewbox.VerticalAlignment" Value="Center" />
-                                            <Setter Target="ContentViewbox.Width" Value="16" />
-                                            <Setter Target="ContentViewbox.Height" Value="16" />
-                                            <Setter Target="ContentViewbox.Margin" Value="12,0,12,0" />
-                                            <Setter Target="TextLabel.Visibility" Value="Collapsed" />
-                                            <Setter Target="OverflowTextLabel.Visibility" Value="Visible" />
-                                            <Setter Target="OverflowTextLabel.Margin" Value="38,0,12,0" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="OverflowWithToggleButtonsAndMenuIcons">
-                                        <VisualState.Setters>
-                                            <Setter Target="ContentRoot.MinHeight" Value="0" />
-                                            <Setter Target="ContentViewbox.HorizontalAlignment" Value="Left" />
-                                            <Setter Target="ContentViewbox.VerticalAlignment" Value="Center" />
-                                            <Setter Target="ContentViewbox.Width" Value="16" />
-                                            <Setter Target="ContentViewbox.Height" Value="16" />
-                                            <Setter Target="ContentViewbox.Margin" Value="38,0,12,0" />
-                                            <Setter Target="TextLabel.Visibility" Value="Collapsed" />
-                                            <Setter Target="OverflowTextLabel.Visibility" Value="Visible" />
-                                            <Setter Target="OverflowTextLabel.Margin" Value="76,0,12,0" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal">
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="OverflowTextLabel" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="PointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Target="Root.(RevealBrush.State)" Value="PointerOver" />
-                                            <Setter Target="Root.Background" Value="{ThemeResource AppBarButtonRevealBackgroundPointerOver}" />
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarButtonRevealBorderBrushPointerOver}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarButtonForegroundPointerOver}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPointerOver}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPointerOver}" />
-                                        </VisualState.Setters>
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="OverflowTextLabel" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Pressed">
-                                        <VisualState.Setters>
-                                            <Setter Target="Root.(RevealBrush.State)" Value="Pressed" />
-                                            <Setter Target="Root.Background" Value="{ThemeResource AppBarButtonRevealBackgroundPressed}" />
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarButtonRevealBorderBrushPressed}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarButtonForegroundPressed}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPressed}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPressed}" />
-                                        </VisualState.Setters>
-                                        <Storyboard>
-                                            <PointerDownThemeAnimation Storyboard.TargetName="OverflowTextLabel" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Disabled">
-                                        <VisualState.Setters>
-                                            <Setter Target="Root.Background" Value="{ThemeResource AppBarButtonRevealBackgroundDisabled}" />
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarButtonRevealBorderBrushDisabled}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarButtonForegroundDisabled}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundDisabled}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundDisabled}" />
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarButtonKeyboardAcceleratorTextForegroundDisabled}" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="OverflowNormal">
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="ContentRoot" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="OverflowPointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Target="Root.Background" Value="{ThemeResource AppBarButtonRevealBackgroundPointerOver}" />
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarButtonRevealBorderBrushPointerOver}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarButtonForegroundPointerOver}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPointerOver}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPointerOver}" />
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarButtonKeyboardAcceleratorTextForegroundPointerOver}" />
-                                        </VisualState.Setters>
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="ContentRoot" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="OverflowPressed">
-                                        <VisualState.Setters>
-                                            <Setter Target="Root.Background" Value="{ThemeResource AppBarButtonRevealBackgroundPressed}" />
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarButtonRevealBorderBrushPressed}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarButtonForegroundPressed}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPressed}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarButtonForegroundPressed}" />
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarButtonKeyboardAcceleratorTextForegroundPressed}" />
-                                        </VisualState.Setters>
-                                        <Storyboard>
-                                            <PointerDownThemeAnimation Storyboard.TargetName="ContentRoot" />
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                                <VisualStateGroup x:Name="InputModeStates">
-                                    <VisualState x:Name="InputModeDefault" />
-                                    <VisualState x:Name="TouchInputMode">
-                                        <VisualState.Setters>
-                                            <Setter Target="OverflowTextLabel.Padding" Value="{StaticResource AppBarButtonOverflowTextTouchMargin}" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="GameControllerInputMode">
-                                        <VisualState.Setters>
-                                            <Setter Target="OverflowTextLabel.Padding" Value="{StaticResource AppBarButtonOverflowTextTouchMargin}" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                                <VisualStateGroup x:Name="KeyboardAcceleratorTextVisibility">
-                                    <VisualState x:Name="KeyboardAcceleratorTextCollapsed" />
-                                    <VisualState x:Name="KeyboardAcceleratorTextVisible">
-                                        <VisualState.Setters>
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Visibility" Value="Visible" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style x:Key="AppBarToggleButtonRevealStyle" TargetType="AppBarToggleButton">
-            <Setter Property="Foreground" Value="{ThemeResource AppBarToggleButtonForeground}" />
-            <Setter Property="BorderBrush" Value="{ThemeResource AppBarToggleButtonRevealBorderBrush}" />
-            <Setter Property="BorderThickness" Value="{ThemeResource AppBarToggleButtonRevealBorderThemeThickness}" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="VerticalAlignment" Value="Top" />
-            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
-            <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="Width" Value="68" />
-            <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
-            <Setter Property="AllowFocusOnInteraction" Value="False" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="AppBarToggleButton">
-                        <Grid
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="AppBarToggleButtonStyle" TargetType="AppBarToggleButton">
+                <Setter Property="Foreground" Value="{ThemeResource AppBarToggleButtonForeground}" />
+                <Setter Property="BorderBrush" Value="{ThemeResource AppBarToggleButtonBorderBrush}" />
+                <Setter Property="BorderThickness" Value="{ThemeResource AppBarToggleButtonBorderThemeThickness}" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="VerticalAlignment" Value="Top" />
+                <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+                <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="Width" Value="68" />
+                <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
+                <Setter Property="AllowFocusOnInteraction" Value="False" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="AppBarToggleButton">
+                            <Grid
                             x:Name="Root"
                             MinWidth="{TemplateBinding MinWidth}"
                             MaxWidth="{TemplateBinding MaxWidth}"
                             Margin="1,0"
                             CornerRadius="{TemplateBinding CornerRadius}">
-                            <Rectangle
+                                <Rectangle
                                 x:Name="CheckedHighlightBackground"
                                 Fill="{ThemeResource AppBarToggleButtonBackgroundChecked}"
                                 Opacity="0" />
-                            <Rectangle x:Name="AccentOverlayBackground" Fill="{ThemeResource AppBarToggleButtonRevealBackgroundHighLightOverlay}" />
-                            <Grid
+                                <Rectangle x:Name="AccentOverlayBackground" Fill="{ThemeResource AppBarToggleButtonBackgroundHighLightOverlay}" />
+                                <Grid
                                 x:Name="ContentRoot"
                                 MinHeight="{ThemeResource AppBarThemeMinHeight}"
                                 Margin="-1,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <TextBlock
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock
                                     x:Name="OverflowCheckGlyph"
                                     Width="14"
                                     Height="14"
@@ -628,18 +636,18 @@
                                     Opacity="0"
                                     Text="&#xE73E;"
                                     Visibility="Collapsed" />
-                                <Viewbox
+                                    <Viewbox
                                     x:Name="ContentViewbox"
                                     Height="16"
                                     Margin="{StaticResource AppBarButtonContentViewboxCollapsedMargin}"
                                     HorizontalAlignment="Stretch"
                                     AutomationProperties.AccessibilityView="Raw">
-                                    <ContentPresenter
+                                        <ContentPresenter
                                         x:Name="Content"
                                         Content="{TemplateBinding Icon}"
                                         Foreground="{TemplateBinding Foreground}" />
-                                </Viewbox>
-                                <TextBlock
+                                    </Viewbox>
+                                    <TextBlock
                                     x:Name="TextLabel"
                                     Grid.Row="1"
                                     Margin="2,0,2,6"
@@ -650,7 +658,7 @@
                                     Text="{TemplateBinding Label}"
                                     TextAlignment="Center"
                                     TextWrapping="Wrap" />
-                                <TextBlock
+                                    <TextBlock
                                     x:Name="OverflowTextLabel"
                                     Margin="38,0,12,0"
                                     Padding="{StaticResource AppBarToggleButtonOverflowTextLabelPadding}"
@@ -665,10 +673,10 @@
                                     TextTrimming="Clip"
                                     TextWrapping="NoWrap"
                                     Visibility="Collapsed" />
-                                <TextBlock
+                                    <TextBlock
                                     x:Name="KeyboardAcceleratorTextLabel"
                                     Grid.Column="1"
-                                    MinWidth="{Binding TemplateSettings.KeyboardAcceleratorTextMinWidth, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                    MinWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                     Margin="24,0,12,0"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Center"
@@ -677,7 +685,7 @@
                                     Style="{ThemeResource CaptionTextBlockStyle}"
                                     Text="{TemplateBinding KeyboardAcceleratorTextOverride}"
                                     Visibility="Collapsed" />
-                                <Border
+                                    <Border
                                     x:Name="Border"
                                     Grid.RowSpan="2"
                                     Grid.ColumnSpan="2"
@@ -685,292 +693,293 @@
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
                                     CornerRadius="{TemplateBinding CornerRadius}" />
+                                </Grid>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="ApplicationViewStates">
+                                        <VisualState x:Name="FullSize" />
+                                        <VisualState x:Name="Compact">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Visibility">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentViewbox" Storyboard.TargetProperty="Margin">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarButtonContentViewboxCompactMargin}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="LabelOnRight">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentViewbox" Storyboard.TargetProperty="Margin">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarButtonContentViewboxMargin}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRoot" Storyboard.TargetProperty="MinHeight">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarThemeCompactHeight}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="(Grid.Row)">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="0" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="(Grid.Column)">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="1" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="TextAlignment">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="Left" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Margin">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarToggleButtonTextLabelOnRightMargin}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="LabelCollapsed">
+                                            <Storyboard>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRoot" Storyboard.TargetProperty="MinHeight">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarThemeCompactHeight}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Visibility">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentViewbox" Storyboard.TargetProperty="Margin">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarButtonContentViewboxCompactMargin}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="Overflow">
+                                            <VisualState.Setters>
+                                                <Setter Target="ContentRoot.MinHeight" Value="0" />
+                                                <Setter Target="ContentViewbox.Visibility" Value="Collapsed" />
+                                                <Setter Target="TextLabel.Visibility" Value="Collapsed" />
+                                                <Setter Target="CheckedHighlightBackground.Visibility" Value="Collapsed" />
+                                                <Setter Target="OverflowCheckGlyph.Visibility" Value="Visible" />
+                                                <Setter Target="OverflowTextLabel.Visibility" Value="Visible" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="OverflowWithMenuIcons">
+                                            <VisualState.Setters>
+                                                <Setter Target="ContentRoot.MinHeight" Value="0" />
+                                                <Setter Target="ContentViewbox.Visibility" Value="Visible" />
+                                                <Setter Target="ContentViewbox.HorizontalAlignment" Value="Left" />
+                                                <Setter Target="ContentViewbox.VerticalAlignment" Value="Center" />
+                                                <Setter Target="ContentViewbox.MaxWidth" Value="16" />
+                                                <Setter Target="ContentViewbox.MaxHeight" Value="16" />
+                                                <Setter Target="ContentViewbox.Margin" Value="38,0,12,0" />
+                                                <Setter Target="TextLabel.Visibility" Value="Collapsed" />
+                                                <Setter Target="CheckedHighlightBackground.Visibility" Value="Collapsed" />
+                                                <Setter Target="OverflowCheckGlyph.Visibility" Value="Visible" />
+                                                <Setter Target="OverflowTextLabel.Visibility" Value="Visible" />
+                                                <Setter Target="OverflowTextLabel.Margin" Value="76,0,12,0" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="ContentRoot" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="Root.(RevealBrush.State)" Value="PointerOver" />-->
+                                                <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundHighLightOverlayPointerOver}" />
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonBorderBrushPointerOver}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPointerOver}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPointerOver}" />
+                                                <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundPointerOver}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundPointerOver}" />
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundPointerOver}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="Root.(RevealBrush.State)" Value="Pressed" />-->
+                                                <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundHighLightOverlayPressed}" />
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonBorderBrushPressed}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPressed}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPressed}" />
+                                                <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundPressed}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundPressed}" />
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundPressed}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="Root.Background" Value="{ThemeResource AppBarToggleButtonBackgroundDisabled}" />
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonBorderBrushDisabled}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundDisabled}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundDisabled}" />
+                                                <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundDisabled}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundDisabled}" />
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundDisabled}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Checked">
+                                            <VisualState.Setters>
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonBorderBrushChecked}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundChecked}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundChecked}" />
+                                                <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundChecked}" />
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundChecked}" />
+                                                <Setter Target="CheckedHighlightBackground.Opacity" Value="1" />
+                                                <Setter Target="OverflowCheckGlyph.Opacity" Value="1" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="CheckedPointerOver">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="Root.(RevealBrush.State)" Value="PointerOver" />-->
+                                                <Setter Target="ContentRoot.BorderBrush" Value="{ThemeResource AppBarToggleButtonBorderBrushCheckedPointerOver}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPointerOver}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPointerOver}" />
+                                                <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundCheckedPointerOver}" />
+                                                <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundHighLightOverlayCheckedPointerOver}" />
+                                                <Setter Target="CheckedHighlightBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundCheckedPointerOver}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundCheckedPointerOver}" />
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundCheckedPointerOver}" />
+                                                <Setter Target="CheckedHighlightBackground.Opacity" Value="1" />
+                                                <Setter Target="OverflowCheckGlyph.Opacity" Value="1" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="CheckedPressed">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="Root.(RevealBrush.State)" Value="Pressed" />-->
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonBorderBrushCheckedPressed}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPressed}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPressed}" />
+                                                <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundCheckedPressed}" />
+                                                <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundHighLightOverlayCheckedPressed}" />
+                                                <Setter Target="CheckedHighlightBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundCheckedPressed}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundCheckedPointerOver}" />
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundCheckedPressed}" />
+                                                <Setter Target="CheckedHighlightBackground.Opacity" Value="1" />
+                                                <Setter Target="OverflowCheckGlyph.Opacity" Value="1" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="CheckedDisabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonBorderBrushCheckedDisabled}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedDisabled}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedDisabled}" />
+                                                <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundCheckedDisabled}" />
+                                                <Setter Target="CheckedHighlightBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundCheckedDisabled}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundCheckedDisabled}" />
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundCheckedDisabled}" />
+                                                <Setter Target="CheckedHighlightBackground.Opacity" Value="1" />
+                                                <Setter Target="OverflowCheckGlyph.Opacity" Value="1" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="OverflowNormal">
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="ContentRoot" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="OverflowPointerOver">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="Root.(RevealBrush.State)" Value="PointerOver" />-->
+                                                <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundHighLightOverlayPointerOver}" />
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonBorderBrushPointerOver}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPointerOver}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPointerOver}" />
+                                                <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundPointerOver}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundPointerOver}" />
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundPointerOver}" />
+                                            </VisualState.Setters>
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="ContentRoot" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="OverflowPressed">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="Root.(RevealBrush.State)" Value="Pressed" />-->
+                                                <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundHighLightOverlayPressed}" />
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonBorderBrushPressed}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPressed}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPressed}" />
+                                                <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundPressed}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundPressed}" />
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundPressed}" />
+                                            </VisualState.Setters>
+                                            <Storyboard>
+                                                <PointerDownThemeAnimation Storyboard.TargetName="ContentRoot" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="OverflowChecked">
+                                            <VisualState.Setters>
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonBorderBrushChecked}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundChecked}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundChecked}" />
+                                                <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundChecked}" />
+                                                <Setter Target="CheckedHighlightBackground.Opacity" Value="1" />
+                                                <Setter Target="OverflowCheckGlyph.Opacity" Value="1" />
+                                            </VisualState.Setters>
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="ContentRoot" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="OverflowCheckedPointerOver">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="Root.(RevealBrush.State)" Value="PointerOver" />-->
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonBorderBrushCheckedPointerOver}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPointerOver}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPointerOver}" />
+                                                <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundCheckedPointerOver}" />
+                                                <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundHighLightOverlayCheckedPointerOver}" />
+                                                <Setter Target="CheckedHighlightBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundCheckedPointerOver}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundCheckedPointerOver}" />
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundPointerOver}" />
+                                                <Setter Target="CheckedHighlightBackground.Opacity" Value="1" />
+                                                <Setter Target="OverflowCheckGlyph.Opacity" Value="1" />
+                                            </VisualState.Setters>
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="ContentRoot" />
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="OverflowCheckedPressed">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="Root.(RevealBrush.State)" Value="Pressed" />-->
+                                                <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonBorderBrushCheckedPressed}" />
+                                                <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPressed}" />
+                                                <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPressed}" />
+                                                <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundCheckedPressed}" />
+                                                <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundHighLightOverlayCheckedPressed}" />
+                                                <Setter Target="CheckedHighlightBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundCheckedPressed}" />
+                                                <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundCheckedPressed}" />
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundPressed}" />
+                                                <Setter Target="CheckedHighlightBackground.Opacity" Value="1" />
+                                                <Setter Target="OverflowCheckGlyph.Opacity" Value="1" />
+                                            </VisualState.Setters>
+                                            <Storyboard>
+                                                <PointerDownThemeAnimation Storyboard.TargetName="ContentRoot" />
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="InputModeStates">
+                                        <VisualState x:Name="InputModeDefault" />
+                                        <VisualState x:Name="TouchInputMode">
+                                            <VisualState.Setters>
+                                                <Setter Target="OverflowTextLabel.Padding" Value="{StaticResource AppBarToggleButtonOverflowTextTouchMargin}" />
+                                                <Setter Target="OverflowCheckGlyph.Margin" Value="{StaticResource AppBarToggleButtonOverflowCheckTouchMargin}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="GameControllerInputMode">
+                                            <VisualState.Setters>
+                                                <Setter Target="OverflowTextLabel.Padding" Value="{StaticResource AppBarToggleButtonOverflowTextTouchMargin}" />
+                                                <Setter Target="OverflowCheckGlyph.Margin" Value="{StaticResource AppBarToggleButtonOverflowCheckTouchMargin}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="KeyboardAcceleratorTextVisibility">
+                                        <VisualState x:Name="KeyboardAcceleratorTextCollapsed" />
+                                        <VisualState x:Name="KeyboardAcceleratorTextVisible">
+                                            <VisualState.Setters>
+                                                <Setter Target="KeyboardAcceleratorTextLabel.Visibility" Value="Visible" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
                             </Grid>
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="ApplicationViewStates">
-                                    <VisualState x:Name="FullSize" />
-                                    <VisualState x:Name="Compact">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentViewbox" Storyboard.TargetProperty="Margin">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarButtonContentViewboxCompactMargin}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="LabelOnRight">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentViewbox" Storyboard.TargetProperty="Margin">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarButtonContentViewboxMargin}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRoot" Storyboard.TargetProperty="MinHeight">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarThemeCompactHeight}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="(Grid.Row)">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="0" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="(Grid.Column)">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="1" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="TextAlignment">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Left" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Margin">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarToggleButtonTextLabelOnRightMargin}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="LabelCollapsed">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRoot" Storyboard.TargetProperty="MinHeight">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AppBarThemeCompactHeight}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="TextLabel" Storyboard.TargetProperty="Visibility">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentViewbox" Storyboard.TargetProperty="Margin">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AppBarButtonContentViewboxCompactMargin}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="Overflow">
-                                        <VisualState.Setters>
-                                            <Setter Target="ContentRoot.MinHeight" Value="0" />
-                                            <Setter Target="ContentViewbox.Visibility" Value="Collapsed" />
-                                            <Setter Target="TextLabel.Visibility" Value="Collapsed" />
-                                            <Setter Target="CheckedHighlightBackground.Visibility" Value="Collapsed" />
-                                            <Setter Target="OverflowCheckGlyph.Visibility" Value="Visible" />
-                                            <Setter Target="OverflowTextLabel.Visibility" Value="Visible" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="OverflowWithMenuIcons">
-                                        <VisualState.Setters>
-                                            <Setter Target="ContentRoot.MinHeight" Value="0" />
-                                            <Setter Target="ContentViewbox.Visibility" Value="Visible" />
-                                            <Setter Target="ContentViewbox.HorizontalAlignment" Value="Left" />
-                                            <Setter Target="ContentViewbox.VerticalAlignment" Value="Center" />
-                                            <Setter Target="ContentViewbox.MaxWidth" Value="16" />
-                                            <Setter Target="ContentViewbox.MaxHeight" Value="16" />
-                                            <Setter Target="ContentViewbox.Margin" Value="38,0,12,0" />
-                                            <Setter Target="TextLabel.Visibility" Value="Collapsed" />
-                                            <Setter Target="CheckedHighlightBackground.Visibility" Value="Collapsed" />
-                                            <Setter Target="OverflowCheckGlyph.Visibility" Value="Visible" />
-                                            <Setter Target="OverflowTextLabel.Visibility" Value="Visible" />
-                                            <Setter Target="OverflowTextLabel.Margin" Value="76,0,12,0" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Normal">
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="ContentRoot" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="PointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Target="Root.(RevealBrush.State)" Value="PointerOver" />
-                                            <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonRevealBackgroundHighLightOverlayPointerOver}" />
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonRevealBorderBrushPointerOver}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPointerOver}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPointerOver}" />
-                                            <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundPointerOver}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundPointerOver}" />
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundPointerOver}" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="Pressed">
-                                        <VisualState.Setters>
-                                            <Setter Target="Root.(RevealBrush.State)" Value="Pressed" />
-                                            <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonRevealBackgroundHighLightOverlayPressed}" />
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonRevealBorderBrushPressed}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPressed}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPressed}" />
-                                            <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundPressed}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundPressed}" />
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundPressed}" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="Disabled">
-                                        <VisualState.Setters>
-                                            <Setter Target="Root.Background" Value="{ThemeResource AppBarToggleButtonRevealBackgroundDisabled}" />
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonRevealBorderBrushDisabled}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundDisabled}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundDisabled}" />
-                                            <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundDisabled}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundDisabled}" />
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundDisabled}" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="Checked">
-                                        <VisualState.Setters>
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonRevealBorderBrushChecked}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundChecked}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundChecked}" />
-                                            <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundChecked}" />
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundChecked}" />
-                                            <Setter Target="CheckedHighlightBackground.Opacity" Value="1" />
-                                            <Setter Target="OverflowCheckGlyph.Opacity" Value="1" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="CheckedPointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Target="Root.(RevealBrush.State)" Value="PointerOver" />
-                                            <Setter Target="ContentRoot.BorderBrush" Value="{ThemeResource AppBarToggleButtonRevealBorderBrushCheckedPointerOver}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPointerOver}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPointerOver}" />
-                                            <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundCheckedPointerOver}" />
-                                            <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonRevealBackgroundHighLightOverlayCheckedPointerOver}" />
-                                            <Setter Target="CheckedHighlightBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundCheckedPointerOver}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundCheckedPointerOver}" />
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundCheckedPointerOver}" />
-                                            <Setter Target="CheckedHighlightBackground.Opacity" Value="1" />
-                                            <Setter Target="OverflowCheckGlyph.Opacity" Value="1" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="CheckedPressed">
-                                        <VisualState.Setters>
-                                            <Setter Target="Root.(RevealBrush.State)" Value="Pressed" />
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonRevealBorderBrushCheckedPressed}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPressed}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPressed}" />
-                                            <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundCheckedPressed}" />
-                                            <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonRevealBackgroundHighLightOverlayCheckedPressed}" />
-                                            <Setter Target="CheckedHighlightBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundCheckedPressed}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundCheckedPointerOver}" />
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundCheckedPressed}" />
-                                            <Setter Target="CheckedHighlightBackground.Opacity" Value="1" />
-                                            <Setter Target="OverflowCheckGlyph.Opacity" Value="1" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="CheckedDisabled">
-                                        <VisualState.Setters>
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonRevealBorderBrushCheckedDisabled}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedDisabled}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedDisabled}" />
-                                            <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundCheckedDisabled}" />
-                                            <Setter Target="CheckedHighlightBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundCheckedDisabled}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundCheckedDisabled}" />
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundCheckedDisabled}" />
-                                            <Setter Target="CheckedHighlightBackground.Opacity" Value="1" />
-                                            <Setter Target="OverflowCheckGlyph.Opacity" Value="1" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="OverflowNormal">
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="ContentRoot" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="OverflowPointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Target="Root.(RevealBrush.State)" Value="PointerOver" />
-                                            <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonRevealBackgroundHighLightOverlayPointerOver}" />
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonRevealBorderBrushPointerOver}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPointerOver}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPointerOver}" />
-                                            <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundPointerOver}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundPointerOver}" />
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundPointerOver}" />
-                                        </VisualState.Setters>
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="ContentRoot" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="OverflowPressed">
-                                        <VisualState.Setters>
-                                            <Setter Target="Root.(RevealBrush.State)" Value="Pressed" />
-                                            <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonRevealBackgroundHighLightOverlayPressed}" />
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonRevealBorderBrushPressed}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPressed}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundPressed}" />
-                                            <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundPressed}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundPressed}" />
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundPressed}" />
-                                        </VisualState.Setters>
-                                        <Storyboard>
-                                            <PointerDownThemeAnimation Storyboard.TargetName="ContentRoot" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="OverflowChecked">
-                                        <VisualState.Setters>
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonRevealBorderBrushChecked}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundChecked}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundChecked}" />
-                                            <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundChecked}" />
-                                            <Setter Target="CheckedHighlightBackground.Opacity" Value="1" />
-                                            <Setter Target="OverflowCheckGlyph.Opacity" Value="1" />
-                                        </VisualState.Setters>
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="ContentRoot" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="OverflowCheckedPointerOver">
-                                        <VisualState.Setters>
-                                            <Setter Target="Root.(RevealBrush.State)" Value="PointerOver" />
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonRevealBorderBrushCheckedPointerOver}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPointerOver}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPointerOver}" />
-                                            <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundCheckedPointerOver}" />
-                                            <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonRevealBackgroundHighLightOverlayCheckedPointerOver}" />
-                                            <Setter Target="CheckedHighlightBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundCheckedPointerOver}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundCheckedPointerOver}" />
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundPointerOver}" />
-                                            <Setter Target="CheckedHighlightBackground.Opacity" Value="1" />
-                                            <Setter Target="OverflowCheckGlyph.Opacity" Value="1" />
-                                        </VisualState.Setters>
-                                        <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="ContentRoot" />
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="OverflowCheckedPressed">
-                                        <VisualState.Setters>
-                                            <Setter Target="Root.(RevealBrush.State)" Value="Pressed" />
-                                            <Setter Target="Border.BorderBrush" Value="{ThemeResource AppBarToggleButtonRevealBorderBrushCheckedPressed}" />
-                                            <Setter Target="Content.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPressed}" />
-                                            <Setter Target="TextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonForegroundCheckedPressed}" />
-                                            <Setter Target="OverflowCheckGlyph.Foreground" Value="{ThemeResource AppBarToggleButtonCheckGlyphForegroundCheckedPressed}" />
-                                            <Setter Target="AccentOverlayBackground.Fill" Value="{ThemeResource AppBarToggleButtonRevealBackgroundHighLightOverlayCheckedPressed}" />
-                                            <Setter Target="CheckedHighlightBackground.Fill" Value="{ThemeResource AppBarToggleButtonBackgroundCheckedPressed}" />
-                                            <Setter Target="OverflowTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonOverflowLabelForegroundCheckedPressed}" />
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Foreground" Value="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForegroundPressed}" />
-                                            <Setter Target="CheckedHighlightBackground.Opacity" Value="1" />
-                                            <Setter Target="OverflowCheckGlyph.Opacity" Value="1" />
-                                        </VisualState.Setters>
-                                        <Storyboard>
-                                            <PointerDownThemeAnimation Storyboard.TargetName="ContentRoot" />
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                                <VisualStateGroup x:Name="InputModeStates">
-                                    <VisualState x:Name="InputModeDefault" />
-                                    <VisualState x:Name="TouchInputMode">
-                                        <VisualState.Setters>
-                                            <Setter Target="OverflowTextLabel.Padding" Value="{StaticResource AppBarToggleButtonOverflowTextTouchMargin}" />
-                                            <Setter Target="OverflowCheckGlyph.Margin" Value="{StaticResource AppBarToggleButtonOverflowCheckTouchMargin}" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="GameControllerInputMode">
-                                        <VisualState.Setters>
-                                            <Setter Target="OverflowTextLabel.Padding" Value="{StaticResource AppBarToggleButtonOverflowTextTouchMargin}" />
-                                            <Setter Target="OverflowCheckGlyph.Margin" Value="{StaticResource AppBarToggleButtonOverflowCheckTouchMargin}" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                                <VisualStateGroup x:Name="KeyboardAcceleratorTextVisibility">
-                                    <VisualState x:Name="KeyboardAcceleratorTextCollapsed" />
-                                    <VisualState x:Name="KeyboardAcceleratorTextVisible">
-                                        <VisualState.Setters>
-                                            <Setter Target="KeyboardAcceleratorTextLabel.Visibility" Value="Visible" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
+        </ResourceDictionary>
     </Application.Resources>
 
 </Application>

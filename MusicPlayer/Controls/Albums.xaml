@@ -9,6 +9,8 @@
     xmlns:viewmodels="using:MusicPlayer.Viewmodels"
     d:DesignHeight="300"
     d:DesignWidth="400"
+    x:Name="root"
+    SizeChanged="UserControl_SizeChanged"
     mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -22,6 +24,7 @@
         ContainerContentChanging="ToRender_ContainerContentChanging"
         IsItemClickEnabled="True"
         ItemClick="AlbumClicked"
+        HorizontalContentAlignment="Stretch"
         ItemsSource="{Binding Source={StaticResource groupInfoCVS}}">
         <GridView.Resources>
             <Style TargetType="ScrollBar">
@@ -42,25 +45,19 @@
                 </GroupStyle.HeaderTemplate>
             </GroupStyle>
         </GridView.GroupStyle>
+        <GridView.ItemContainerStyle>
+            <Style TargetType="GridViewItem" >
+                <!--<Setter Target="HorizontalAlignment" Value="Right"/>-->
+            </Style>
+        </GridView.ItemContainerStyle>
         <GridView.ItemTemplate>
             <DataTemplate x:DataType="viewmodels:AlbumViewmodel">
-                <Border Margin="8">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <Image
-                            x:Name="cover"
-                            Width="150"
-                            Height="150" />
-                        <TextBlock
-                            x:Name="name"
-                            Grid.Row="1"
-                            Text="{x:Bind Model.Title}" />
-                    </Grid>
-                </Border>
+                <local:AlbumControl 
+                    DataContext="{x:Bind }" 
+                    IsDisplayedLarge="{Binding ElementName=root, Path=IsAlbumDisplayedLarge}" 
+                    Width="{Binding ElementName=root, Path=AlbumWidth}"
+                    MinWidth="{Binding ElementName=root, Path=AlbumWidth}"
+                    MaxWidth="{Binding ElementName=root, Path=AlbumWidth}"></local:AlbumControl>
             </DataTemplate>
         </GridView.ItemTemplate>
         <!--<ItemsControl.ItemsPanel>

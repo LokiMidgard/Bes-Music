@@ -42,7 +42,7 @@ namespace MusicPlayer.Controls
         public SongInformation CurrentSong
         {
             get { return (SongInformation)this.GetValue(CurrentSongProperty); }
-            set { this.SetValue(CurrentSongProperty, value); }
+            private set { this.SetValue(CurrentSongProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for CurrentSong.  This enables animation, styling, binding, etc...
@@ -60,10 +60,29 @@ namespace MusicPlayer.Controls
 
         // Using a DependencyProperty as the backing store for CurrentMediaPlaybackItem.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CurrentMediaPlaybackItemProperty =
-            DependencyProperty.Register("CurrentMediaPlaybackItem", typeof(MediaPlaybackItem), typeof(TransportControls), new PropertyMetadata(null));
+            DependencyProperty.Register("CurrentMediaPlaybackItem", typeof(MediaPlaybackItem), typeof(TransportControls), new PropertyMetadata(null, CurrentMediaPlaybackItemChanged));
 
+        private static void CurrentMediaPlaybackItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
 
+            var me = (TransportControls)d;
+            var newValue = (MediaPlaybackItem)e.NewValue;
+            me.CurrentMediaPlaybackItemChanged(newValue);
+        }
 
+        private async void CurrentMediaPlaybackItemChanged(MediaPlaybackItem newValue)
+        {
+            if (this.PlayList.CurrentItem != newValue)
+            {
+                var index = this.PlayList.Items.IndexOf(newValue);
+                if (index < 0)
+                    return;
+                var currentPlaying = this.IsPlaying;
+                this.PlayList.MoveTo((uint)index);
+                await Task.Delay(10);
+                this.IsPlaying = currentPlaying;
+            }
+        }
 
         public ICommand NextCommand
         {
@@ -115,28 +134,28 @@ namespace MusicPlayer.Controls
 
 
 
-        public ICommand ShuffleCommand
+        public IToggleStateCommand ShuffleCommand
         {
-            get { return (ICommand)this.GetValue(ShuffleCommandProperty); }
+            get { return (IToggleStateCommand)this.GetValue(ShuffleCommandProperty); }
             set { this.SetValue(ShuffleCommandProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for ShuffleCommand.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ShuffleCommandProperty =
-            DependencyProperty.Register("ShuffleCommand", typeof(ICommand), typeof(TransportControls), new PropertyMetadata(DisabledCommand.Instance));
+            DependencyProperty.Register("ShuffleCommand", typeof(IToggleStateCommand), typeof(TransportControls), new PropertyMetadata(DisabledCommand.Instance));
 
 
 
 
-        public ICommand RepeateCommand
+        public IToggleStateCommand RepeateCommand
         {
-            get { return (ICommand)this.GetValue(RepeateCommandProperty); }
+            get { return (IToggleStateCommand)this.GetValue(RepeateCommandProperty); }
             set { this.SetValue(RepeateCommandProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for RepeateCommand.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty RepeateCommandProperty =
-            DependencyProperty.Register("RepeateCommand", typeof(ICommand), typeof(TransportControls), new PropertyMetadata(DisabledCommand.Instance));
+            DependencyProperty.Register("RepeateCommand", typeof(IToggleStateCommand), typeof(TransportControls), new PropertyMetadata(DisabledCommand.Instance));
 
 
 
@@ -246,6 +265,8 @@ namespace MusicPlayer.Controls
 
             Loaded += this.TransportControls_Loaded;
 
+            this.SizeChanged += (sender, e) => this.TransportControls_SizeChanged(e.NewSize);
+
         }
         //protected override Size MeasureOverride(Size availableSize)
         //{
@@ -258,6 +279,7 @@ namespace MusicPlayer.Controls
         private void TransportControls_Loaded(object sender, RoutedEventArgs e)
         {
             this.SetCommands();
+            this.TransportControls_SizeChanged(new Size(this.ActualWidth, this.ActualHeight));
         }
 
         private void SetCommands()
@@ -277,8 +299,8 @@ namespace MusicPlayer.Controls
                 this.PlayCommand = new MediaBehaviorCommand(this.mediaPlayerElement.MediaPlayer.CommandManager.PlayBehavior, this.Play);
                 this.PauseCommand = new MediaBehaviorCommand(this.mediaPlayerElement.MediaPlayer.CommandManager.PauseBehavior, this.Pause);
 
-                this.ShuffleCommand = new MediaBehaviorCommand(this.mediaPlayerElement.MediaPlayer.CommandManager.ShuffleBehavior, this.SwitchShuffle);
-                this.RepeateCommand = new MediaBehaviorCommand(this.mediaPlayerElement.MediaPlayer.CommandManager.AutoRepeatModeBehavior, this.SwitchRepeat);
+                this.ShuffleCommand = new MediaBehaviorWithStateCommand(this.mediaPlayerElement.MediaPlayer.CommandManager.ShuffleBehavior, this.SwitchShuffle, this.IsShuffled);
+                this.RepeateCommand = new MediaBehaviorWithStateCommand(this.mediaPlayerElement.MediaPlayer.CommandManager.AutoRepeatModeBehavior, this.SwitchRepeat, this.IsRepeate);
                 //this.mediaPlayerElement.RegisterPropertyChangedCallback(MediaPlayerElement.SourceProperty, this.SourceChanged);
 
                 this.SwitchFullScreenCommand = new DelegateCommand(() => this.IsFullscreen = !this.IsFullscreen);
@@ -295,7 +317,25 @@ namespace MusicPlayer.Controls
                 return FindParent(VisualTreeHelper.GetParent(current));
             }
 
+        }
 
+
+        private void TransportControls_SizeChanged(Size newSize)
+        {
+            if (newSize.Width < 750)
+                VisualStateManager.GoToState(this, "OverflowCenter1", true);
+            else
+                VisualStateManager.GoToState(this, "OverflowCenterDisabled", true);
+
+            if (newSize.Width < 550)
+                VisualStateManager.GoToState(this, "SmalSize", true);
+            else
+                VisualStateManager.GoToState(this, "NormalSize", true);
+
+            if (newSize.Width < 364)
+            {
+
+            }
         }
 
         private void MediaPlayer_MediaEnded(MediaPlayer sender, object args)
@@ -382,14 +422,14 @@ namespace MusicPlayer.Controls
 
         }
 
-        private void SwitchShuffle()
+        private bool SwitchShuffle()
         {
-            this.IsShuffled = !this.IsShuffled;
+            return this.IsShuffled = !this.IsShuffled;
         }
 
-        private void SwitchRepeat()
+        private bool SwitchRepeat()
         {
-            this.IsRepeate = !this.IsRepeate;
+            return this.IsRepeate = !this.IsRepeate;
         }
 
 

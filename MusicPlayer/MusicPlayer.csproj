@@ -18,7 +18,7 @@
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
     <PackageCertificateKeyFile>MusicPlayer_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -118,6 +118,9 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Controls\AlbumControl.xaml.cs">
+      <DependentUpon>AlbumControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Albums.xaml.cs">
       <DependentUpon>Albums.xaml</DependentUpon>
     </Compile>
@@ -128,6 +131,7 @@
     <Compile Include="Controls\TransportControls.cs" />
     <Compile Include="Converters\BottomThiknessConverter.cs" />
     <Compile Include="Converters\ListConverter.cs" />
+    <Compile Include="Converters\StringFormatConverter.cs" />
     <Compile Include="Helpers\ConstantsHelper.cs" />
     <Compile Include="Helpers\CoverExtension.cs" />
     <Compile Include="Helpers\NavHelper.cs" />
@@ -226,9 +230,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\AlbumControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\Albums.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="base.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="OldMainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -249,6 +261,10 @@
     <Page Include="Pages\ShellPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="themeresources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -665,7 +665,7 @@ namespace MusicPlayer.Core
         [NotMapped]
         private int _discNumber;
 
-        
+
         internal string InterpreterSong { get; set; }
         internal string ComposerSong { get; set; }
         internal string GenreSong { get; set; }
@@ -919,8 +919,9 @@ namespace MusicPlayer.Core
             if (!this.first)
             {
                 this.first = true;
-               // await this.Database.EnsureDeletedAsync(cancellationToken);
+                //await this.Database.EnsureDeletedAsync(cancellationToken);
             }
+
             await this.Database.EnsureCreatedAsync(cancellationToken);
         }
 
