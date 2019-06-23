@@ -36,7 +36,18 @@
                 <PivotItem.DataContext>
                     <viewmodels:MediaPlayerAccessor/>
                 </PivotItem.DataContext>
-                <ListView IsItemClickEnabled="False"  ItemsSource="{Binding Instance.CurrentPlaylist}" SelectedIndex="{Binding Instance.CurrentPlayingIndex, Mode=TwoWay}" SelectionMode="Single" HorizontalContentAlignment="Stretch">
+                <ListView IsItemClickEnabled="False" 
+                          ItemsSource="{Binding Instance.CurrentPlaylist}" SelectedIndex="{Binding Instance.CurrentPlayingIndex, Mode=TwoWay}" SelectionMode="Single" HorizontalContentAlignment="Stretch">
+                    <ListView.Style>
+                        <Style TargetType="ListView">
+                            <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
+                        </Style>
+                    </ListView.Style>
+                    <ListView.Resources>
+                        <Style TargetType="ScrollBar">
+                            <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />
+                        </Style>
+                    </ListView.Resources>
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />

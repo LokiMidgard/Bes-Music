@@ -131,13 +131,21 @@ namespace MusicPlayer.Viewmodels
             initilized.SetResult(null);
         }
 
-        private void ResetSorting()
+        private async Task ResetSorting()
         {
+            var currentItem = this.transportControls.CurrentMediaPlaybackItem;
             this.currentPlaylist.Clear();
 
-            foreach (var item in this.mediaPlaybackList.ShuffledItems)
+            foreach (var item in
+                this.mediaPlaybackList.ShuffleEnabled
+                ? this.mediaPlaybackList.ShuffledItems
+                : this.mediaPlaybackList.Items as IEnumerable<MediaPlaybackItem>)
                 this.currentPlaylist.Add(this.playbackItemLookup[item]);
-            this.RefresCurrentIndex();
+
+            var newIndex = this.currentPlaylist.Select((value, index) => (value, index)).First(x => x.value.MediaPlaybackItem.Equals(currentItem)).index;
+
+            this.CurrentPlayingIndex = newIndex;
+
         }
 
         public async Task RemoveSong(PlayingSong song)
