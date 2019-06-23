@@ -367,27 +367,41 @@ Visibility="Collapsed"
                             </Grid>
                         </Border>
                         <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="OverflowCenter">
-                                <VisualState x:Name="OverflowCenterDisabled"/>
-                                <VisualState x:Name="OverflowCenter1">
+            
+                            <VisualStateGroup x:Name="SizeMode">
+                                <VisualState x:Name="LargeSize">
+                                    <VisualState.StateTriggers>
+                                        <AdaptiveTrigger MinWindowWidth="750"/>
+                                    </VisualState.StateTriggers>
+                                </VisualState>
+                                <VisualState x:Name="NormalSize">
+                                    <VisualState.StateTriggers>
+                                        <AdaptiveTrigger MinWindowWidth="550"/>
+                                    </VisualState.StateTriggers>
+
                                     <VisualState.Setters>
                                         <Setter Target="RepeatButtonOvervlow.Visibility" Value="Visible" />
-                                        <Setter Target="RepeatButtonMain.Visibility" Value="Collapsed" />
-                                        <Setter Target="ShuffleButtonOverflow.Visibility" Value="Visible" />
-                                        <Setter Target="ShuffleButtonMain.Visibility" Value="Collapsed" />
-                                        <Setter Target="MoreButton.Visibility" Value="Visible" />
-
+                                    <Setter Target="RepeatButtonMain.Visibility" Value="Collapsed" />
+                                    <Setter Target="ShuffleButtonOverflow.Visibility" Value="Visible" />
+                                    <Setter Target="ShuffleButtonMain.Visibility" Value="Collapsed" />
+                                    <Setter Target="MoreButton.Visibility" Value="Visible" />
                                     </VisualState.Setters>
                                 </VisualState>
-                            </VisualStateGroup>
-                            <VisualStateGroup x:Name="SizeMode">
-                                <VisualState x:Name="NormalSize"/>
                                 <VisualState x:Name="SmalSize">
+                                    <VisualState.StateTriggers>
+                                        <AdaptiveTrigger MinWindowWidth="0"/>
+                                    </VisualState.StateTriggers>
                                     <VisualState.Setters>
                                         <Setter Target="SwitchFullScreenOverflow.Visibility" Value="Visible" />
                                         <Setter Target="SwitchFullScreenMain.Visibility" Value="Collapsed" />
                                         <Setter Target="MoreButton.Visibility" Value="Visible" />
 
+
+                                        <Setter Target="RepeatButtonOvervlow.Visibility" Value="Visible" />
+                                        <Setter Target="RepeatButtonMain.Visibility" Value="Collapsed" />
+                                        <Setter Target="ShuffleButtonOverflow.Visibility" Value="Visible" />
+                                        <Setter Target="ShuffleButtonMain.Visibility" Value="Collapsed" />
+                                        
 
                                         <Setter Target="CommandBarLastColumn.Width" Value="Auto"/>
 

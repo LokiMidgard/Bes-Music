@@ -26,17 +26,22 @@
             <ListView.Header>
                 <Border Background="{StaticResource SystemControlBackgroundBaseLowBrush}">
                     <Grid
-                Margin="100,100,0,0"
+                Margin="100,100,0,24"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
                         <Image
                     x:Name="cover"
                     Width="200"
                     Height="200"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top" />
-                        <StackPanel Margin="208,0,0,0" VerticalAlignment="Bottom">
+                        <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Bottom">
                             <TextBlock
+                                
                         x:Name="name"
                         MaxLines="1"
                         Style="{StaticResource HeaderTextBlockStyle}"

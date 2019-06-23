@@ -265,7 +265,6 @@ namespace MusicPlayer.Controls
 
             Loaded += this.TransportControls_Loaded;
 
-            this.SizeChanged += (sender, e) => this.TransportControls_SizeChanged(e.NewSize);
 
         }
         //protected override Size MeasureOverride(Size availableSize)
@@ -279,7 +278,6 @@ namespace MusicPlayer.Controls
         private void TransportControls_Loaded(object sender, RoutedEventArgs e)
         {
             this.SetCommands();
-            this.TransportControls_SizeChanged(new Size(this.ActualWidth, this.ActualHeight));
         }
 
         private void SetCommands()
@@ -320,23 +318,7 @@ namespace MusicPlayer.Controls
         }
 
 
-        private void TransportControls_SizeChanged(Size newSize)
-        {
-            if (newSize.Width < 750)
-                VisualStateManager.GoToState(this, "OverflowCenter1", true);
-            else
-                VisualStateManager.GoToState(this, "OverflowCenterDisabled", true);
-
-            if (newSize.Width < 550)
-                VisualStateManager.GoToState(this, "SmalSize", true);
-            else
-                VisualStateManager.GoToState(this, "NormalSize", true);
-
-            if (newSize.Width < 364)
-            {
-
-            }
-        }
+     
 
         private void MediaPlayer_MediaEnded(MediaPlayer sender, object args)
         {
