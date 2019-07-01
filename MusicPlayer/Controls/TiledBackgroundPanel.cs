@@ -118,7 +118,7 @@ namespace MusicPlayer.Controls
 
         private async void Loop()
         {
-            var library = LocalLibrary.Instance;
+            var library = OneDriveLibrary.Instance;
             while (true)
             {
                 try
@@ -183,7 +183,7 @@ namespace MusicPlayer.Controls
                     while (toUpdate != null)
                     {
 
-                        StorageItemThumbnail thumbnail;
+                        Uri thumbnail;
                         do
                         {
                             var cover = this.covers.Next();
@@ -191,9 +191,8 @@ namespace MusicPlayer.Controls
                             toUpdate.Provider = cover.Provider;
                             thumbnail = await library.GetImage(toUpdate.Id, (int)(toUpdate.Size * this.ActualTileSize), default);
                         } while (thumbnail == null);
-                        var imageSource = new BitmapImage();
+                        var imageSource = new BitmapImage(thumbnail);
                         toUpdate.Image.Source = imageSource;
-                        await imageSource.SetSourceAsync(thumbnail);
                         toUpdate = this.currentLayout.OfType<ImageInformation>().Distinct().Where(x => x.Image.Source == null).FirstOrDefault();
                     }
 
@@ -433,18 +432,16 @@ namespace MusicPlayer.Controls
             };
             image.ImageFailed += async (sender, e) =>
             {
-                var library = LocalLibrary.Instance;
-                StorageItemThumbnail thumbnail;
+                var library = OneDriveLibrary.Instance;
+                Uri uri;
                 do
                 {
                     var cover = this.covers.Next();
                     information.Id = cover.Id;
                     information.Provider = cover.Provider;
-                    thumbnail = await library.GetImage(information.Id, (int)(information.Size * this.ActualTileSize), default);
-                } while (thumbnail == null);
-                var imageSource = new BitmapImage();
-                information.Image.Source = imageSource;
-                await imageSource.SetSourceAsync(thumbnail);
+                    uri = await library.GetImage(information.Id, (int)(information.Size * this.ActualTileSize), default);
+                } while (uri == null);
+                var imageSource = new BitmapImage(uri);
             };
             return image;
         }

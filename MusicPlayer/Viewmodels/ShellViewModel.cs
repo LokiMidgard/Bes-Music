@@ -1,11 +1,10 @@
-﻿using System;
+﻿using MusicPlayer.Helpers;
+using MusicPlayer.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-
-using MusicPlayer.Helpers;
-using MusicPlayer.Services;
 using Windows.Foundation.Metadata;
 using Windows.System;
 using Windows.UI.Xaml.Controls;
@@ -44,6 +43,7 @@ namespace MusicPlayer.Viewmodels
 
         public ICommand ItemInvokedCommand => this._itemInvokedCommand ?? (this._itemInvokedCommand = new RelayCommand<NavigationViewItemInvokedEventArgs>(this.OnItemInvoked));
 
+      
         public ShellViewModel()
         {
         }

@@ -96,13 +96,11 @@
                                             <VisualState.Setters>
                                                     <Setter Target="interprets.Visibility" Value="Collapsed"/>
                                                     <Setter Target="interpretsColumn.Width" Value="0"/>
-                                                    <Setter Target="interpretSubs.Visibility" Value="Visible"/>
 
 
                                                     <Setter Target="albumTitle.Visibility" Value="Collapsed"/>
                                                     <Setter Target="albumTitleColumn.Width" Value="0"/>
 
-                                                    <Setter Target="subSeperator.Visibility" Value="Visible"/>
                                                     <Setter Target="albumTitleSub.Visibility" Value="Visible"/>
 
                                                 </VisualState.Setters>
@@ -131,14 +129,18 @@
                                 <TextBlock Grid.Column="3" HorizontalAlignment="Right" Margin="8,0" Text="{Binding Song.Duration, Converter={StaticResource stringFormat}, ConverterParameter='{}{0:mm\\:ss}'}"/>
 
 
-                                    <StackPanel Orientation="Horizontal" Grid.ColumnSpan="4" Grid.Row="1" Margin="8,0">
-                                        <TextBlock Style="{StaticResource  BodyTextBlockStyle}"  Margin="0,0,0,8"  Foreground="{StaticResource SystemColorGrayTextBrush}" x:Name="albumTitleSub" Text="{Binding Song.AlbumName}" Visibility="Collapsed"/>
-                                        <TextBlock Style="{StaticResource  BodyTextBlockStyle}"  Margin="4,0,4,8"  Foreground="{StaticResource SystemColorGrayTextBrush}" x:Name="subSeperator" Text="&#x2022;" Visibility="Collapsed"/>
-                                        <TextBlock Style="{StaticResource  BodyTextBlockStyle}" Margin="0,0,0,8" Foreground="{StaticResource SystemColorGrayTextBrush}" x:Name="interpretSubs" Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" Visibility="Collapsed" />
-                                    </StackPanel>
-                                
+                                    <TextBlock x:Name="interpretSubs" Visibility="Collapsed" Foreground="{StaticResource SystemColorGrayTextBrush}"  TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource  BodyTextBlockStyle}"  Grid.ColumnSpan="4" Grid.Row="1" Margin="8,0" HorizontalAlignment="Stretch">
+                                        <Run Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" />
+                                    </TextBlock>
 
-                                    <Grid.ContextFlyout>
+
+                                    <TextBlock x:Name="albumTitleSub" Visibility="Collapsed" Foreground="{StaticResource SystemColorGrayTextBrush}"  TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource  BodyTextBlockStyle}"  Grid.ColumnSpan="4" Grid.Row="1" Margin="8,0" HorizontalAlignment="Stretch">
+                                        <Run Text="{Binding Song.AlbumName}" />
+                                        <Run Text="&#x2022;" />
+                                        <Run Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" />
+                                    </TextBlock>
+                                    
+                                <Grid.ContextFlyout>
                                     <MenuFlyout>
                                         <MenuFlyoutItem Text="Remove" Click="MenuFlyoutItem_Click"/>
                                     </MenuFlyout>

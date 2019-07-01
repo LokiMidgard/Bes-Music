@@ -71,7 +71,7 @@ namespace MusicPlayer.Controls
         private async void Albums_Loaded(object sender, RoutedEventArgs e)
         {
             await Core.MusicStore.Instance.Init();
-            await LocalLibrary.Instance.Update(default);
+            //await LocalLibrary.Instance.Update(default);
             this.UpdateSize(new Size(this.ActualWidth, this.ActualHeight));
 
         }

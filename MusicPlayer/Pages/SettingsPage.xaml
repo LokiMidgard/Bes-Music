@@ -1,0 +1,25 @@
+﻿<Page
+    x:Class="MusicPlayer.Pages.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MusicPlayer.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:graphControls="using:Microsoft.Toolkit.Uwp.UI.Controls.Graph"
+    mc:Ignorable="d"
+    
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Image x:Name="image"/>
+        <Button HorizontalAlignment="Center" Click="Button_Click">Test</Button>
+        <graphControls:AadLogin x:Name="Login"
+    HorizontalAlignment="Left"
+    View="SmallProfilePhotoLeft"
+                                
+    AllowSignInAsDifferentUser="False"
+    SignInCompleted="Login_SignInCompleted"
+    SignOutCompleted="Login_SignOutCompleted"
+    />
+    </Grid>
+</Page>

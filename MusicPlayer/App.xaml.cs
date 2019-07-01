@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Services.MicrosoftGraph;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -40,8 +41,10 @@ namespace MusicPlayer
         public App()
         {
             _ = LocalLibrary.Instance;
+            _ = OneDriveLibrary.Instance;
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -53,6 +56,13 @@ namespace MusicPlayer
         /// <param name="e">Details about the launch request and process.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
+            
+
+            MicrosoftGraphService.Instance.AuthenticationModel = MicrosoftGraphEnums.AuthenticationModel.V2;
+            MicrosoftGraphService.Instance.Initialize(SecureConstents.API,
+                MicrosoftGraphEnums.ServicesToInitialize.UserProfile,
+                new[] { "User.Read", "Files.Read", "Files.ReadWrite.AppFolder", "UserActivity.ReadWrite.CreatedByApp" });
+
 
             var rootFrame = Window.Current.Content as Pages.ShellPage;
 

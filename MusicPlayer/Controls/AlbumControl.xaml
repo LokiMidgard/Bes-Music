@@ -29,8 +29,8 @@ x:Name="userControl"
                         <Setter Target="ButtonPanel.(Grid.RowSpan)" Value="3" />
                         <!--<Setter Target="ButtonPanel.(Grid.Row)" Value="1" />-->
 
-                        <Setter Target="userControl.Height" Value="166"/>
-                        <Setter Target="rootBorder.Height" Value="166"/>
+                        <Setter Target="userControl.Height" Value="180"/>
+                        <Setter Target="rootBorder.Height" Value="150"/>
 
                         <Setter Target="name.(Grid.ColumnSpan)" Value="1" />
                         <Setter Target="Artist.(Grid.ColumnSpan)" Value="1" />

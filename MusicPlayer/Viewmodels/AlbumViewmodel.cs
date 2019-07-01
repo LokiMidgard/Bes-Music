@@ -240,15 +240,8 @@ namespace MusicPlayer.Viewmodels
             if (this.cover != null && this.cover.TryGetTarget(out var target))
                 return target;
 
-            var stream = await this.Model.GetCover(300, cancellationToken);
-
-            if (stream is null)
-                return null;
-
-            var bitmapImage = new BitmapImage();
-            await bitmapImage.SetSourceAsync(await stream.OpenReadAsync());
-            this.cover = new WeakReference<BitmapImage>(bitmapImage);
-            return bitmapImage;
+            var stream = await this.Model.GetCoverImageSource(300, cancellationToken);
+            return stream;
         }
 
         public override bool Equals(object obj)
@@ -272,11 +265,12 @@ namespace MusicPlayer.Viewmodels
             this.Model = item ?? throw new ArgumentNullException(nameof(item));
             this.PlayAlbumCommand = new DelegateCommand(async () =>
             {
-
+                await MediaplayerViewmodel.Instance.ClearSongs();
                 foreach (var songGroup in this.Model.Songs)
                 {
                     await MediaplayerViewmodel.Instance.AddSong(songGroup.Songs.First());
                 }
+                await MediaplayerViewmodel.Instance.Play();
 
             });
         }

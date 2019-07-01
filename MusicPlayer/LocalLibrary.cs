@@ -13,16 +13,18 @@ using Windows.Media.Core;
 using Windows.Media.Playback;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace MusicPlayer
 {
-    public class LocalLibrary : ILibrary<MediaSource, StorageItemThumbnail>
+    public class LocalLibrary : ILibrary<MediaSource, ImageSource>
     {
         public string Id => "LOCAL";
 
         public static readonly string[] SUPPORTED_EXTENSIONS = new[] { ".mp3" };
         private readonly SemaphoreSlim imageSemaphore = new SemaphoreSlim(2, 2);
-        public async Task<StorageItemThumbnail> GetImage(string id, int size, CancellationToken cancellationToken)
+        public async Task<ImageSource> GetImage(string id, int size, CancellationToken cancellationToken)
         {
 
             await this.imageSemaphore.WaitAsync();
@@ -32,8 +34,13 @@ namespace MusicPlayer
                     return null;
                 var file = await StorageFile.GetFileFromPathAsync(id);
                 var thumbnail = await file.GetThumbnailAsync(Windows.Storage.FileProperties.ThumbnailMode.MusicView, (uint)size, ThumbnailOptions.UseCurrentScale);
+
                 if (thumbnail.Type == ThumbnailType.Image && !cancellationToken.IsCancellationRequested)
-                    return thumbnail;
+                {
+                    var image = new BitmapImage();
+                    image.SetSource(thumbnail);
+                    return image;
+                }
             }
             finally
             {

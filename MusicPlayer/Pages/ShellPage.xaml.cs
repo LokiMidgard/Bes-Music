@@ -34,6 +34,8 @@ namespace MusicPlayer.Pages
 
         public ShellViewModel ViewModel { get; } = new ShellViewModel();
 
+        public new Frame Frame => this.shellFrame;
+
         public ShellPage()
         {
             this.InitializeComponent();

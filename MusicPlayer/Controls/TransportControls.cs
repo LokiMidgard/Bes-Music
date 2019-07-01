@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MusicPlayer.Helpers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,8 +23,6 @@ namespace MusicPlayer.Controls
 {
     public sealed class TransportControls : MediaTransportControls
     {
-
-
 
 
         public MediaPlaybackList PlayList
@@ -83,6 +82,20 @@ namespace MusicPlayer.Controls
                 this.IsPlaying = currentPlaying;
             }
         }
+
+
+
+        public ICommand GoToSettingsCommand
+        {
+            get { return (ICommand)this.GetValue(GoToSettingsCommandProperty); }
+            set { this.SetValue(GoToSettingsCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for GoToSettingsCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty GoToSettingsCommandProperty =
+            DependencyProperty.Register("GoToSettingsCommand", typeof(ICommand), typeof(TransportControls), new PropertyMetadata(DisabledCommand.Instance));
+
+
 
         public ICommand NextCommand
         {
@@ -301,6 +314,11 @@ namespace MusicPlayer.Controls
                 this.RepeateCommand = new MediaBehaviorWithStateCommand(this.mediaPlayerElement.MediaPlayer.CommandManager.AutoRepeatModeBehavior, this.SwitchRepeat, this.IsRepeate);
                 //this.mediaPlayerElement.RegisterPropertyChangedCallback(MediaPlayerElement.SourceProperty, this.SourceChanged);
 
+                this.GoToSettingsCommand = new DelegateCommand(() =>
+                 {
+                     App.Shell.Frame.Navigate(typeof(Pages.SettingsPage));
+                 });
+
                 this.SwitchFullScreenCommand = new DelegateCommand(() => this.IsFullscreen = !this.IsFullscreen);
                 this.IsShuffled = this.PlayList.ShuffleEnabled;
                 this.IsRepeate = this.PlayList.AutoRepeatEnabled;
@@ -318,7 +336,7 @@ namespace MusicPlayer.Controls
         }
 
 
-     
+
 
         private void MediaPlayer_MediaEnded(MediaPlayer sender, object args)
         {

@@ -61,7 +61,7 @@
                                 Background="{ThemeResource SystemControlTransparentBackgroundBrush}"
                                 BorderBrush="{ThemeResource SystemControlTransparentBorderBrush}"
                                 RenderTransformOrigin="0.5,0.5">
-                               
+
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -221,13 +221,16 @@
                                         </AppBarButton.Icon>
                                     </AppBarButton>
                                 </Border>-->
-
+                                <UserControl x:Name="WrappingControl" IsEnabled="True"
+                                             Grid.Row="2"
+                                    Grid.Column="1"
+                                             >
+                                    
                                 <Border
                                     x:Name="MediaTransportControls_Command_Border"
-                                    Grid.Row="2"
-                                    Grid.Column="1">
+                                    >
 
-                                    <Grid x:Name="MediaControlsCommandBar">
+                                    <Grid x:Name="MediaControlsCommandBar" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
@@ -302,6 +305,8 @@
                                     </Grid>
 
                                 </Border>
+                                </UserControl>
+
                                 <StackPanel
                                             Grid.Column="2"
                                             Grid.Row="2"
@@ -320,6 +325,17 @@
                                         </Viewbox>
                                     </Button>
                                     <Button
+                                        x:Name="SettingsMain"
+                                                Margin="{StaticResource SmalButtonMargin}"
+                                                Width="{StaticResource SmalButtonSize}"
+                                                Height="{StaticResource SmalButtonSize}"
+                                                Command="{TemplateBinding GoToSettingsCommand}"
+                                                Style="{StaticResource RoundButtonStyle}">
+                                        <Viewbox>
+                                            <SymbolIcon Symbol="Setting" />
+                                        </Viewbox>
+                                    </Button>
+                                    <Button
                                         Visibility="Collapsed"
                                         x:Name="MoreButton"
                                                 Margin="{StaticResource SmalButtonMargin}"
@@ -333,9 +349,15 @@
                                             <MenuFlyout>
                                                 <MenuFlyoutItem 
                                                     x:Name="SwitchFullScreenOverflow"
-Visibility="Collapsed"
+                                                    Visibility="Collapsed"
                                                     Text="Full Screen" Icon="FullScreen" 
-                                                Command="{TemplateBinding SwitchFullScreenCommand}"
+                                                    Command="{TemplateBinding SwitchFullScreenCommand}"
+                                                                 />
+                                                <MenuFlyoutItem 
+                                                    x:Name="SettingsOverflow"
+                                                    Visibility="Collapsed"
+                                                    Text="Full Screen" Icon="Setting" 
+                                                    Command="{TemplateBinding GoToSettingsCommand}"
                                                                  />
                                                 <MenuFlyoutSeparator  Visibility="Collapsed"/>
                                                 <ToggleMenuFlyoutItem  Icon="RepeatAll"
@@ -367,7 +389,7 @@ Visibility="Collapsed"
                             </Grid>
                         </Border>
                         <VisualStateManager.VisualStateGroups>
-            
+
                             <VisualStateGroup x:Name="SizeMode">
                                 <VisualState x:Name="LargeSize">
                                     <VisualState.StateTriggers>
@@ -381,10 +403,10 @@ Visibility="Collapsed"
 
                                     <VisualState.Setters>
                                         <Setter Target="RepeatButtonOvervlow.Visibility" Value="Visible" />
-                                    <Setter Target="RepeatButtonMain.Visibility" Value="Collapsed" />
-                                    <Setter Target="ShuffleButtonOverflow.Visibility" Value="Visible" />
-                                    <Setter Target="ShuffleButtonMain.Visibility" Value="Collapsed" />
-                                    <Setter Target="MoreButton.Visibility" Value="Visible" />
+                                        <Setter Target="RepeatButtonMain.Visibility" Value="Collapsed" />
+                                        <Setter Target="ShuffleButtonOverflow.Visibility" Value="Visible" />
+                                        <Setter Target="ShuffleButtonMain.Visibility" Value="Collapsed" />
+                                        <Setter Target="MoreButton.Visibility" Value="Visible" />
                                     </VisualState.Setters>
                                 </VisualState>
                                 <VisualState x:Name="SmalSize">
@@ -395,13 +417,15 @@ Visibility="Collapsed"
                                         <Setter Target="SwitchFullScreenOverflow.Visibility" Value="Visible" />
                                         <Setter Target="SwitchFullScreenMain.Visibility" Value="Collapsed" />
                                         <Setter Target="MoreButton.Visibility" Value="Visible" />
-
+                                        <Setter Target="SettingsOverflow.Visibility" Value="Visible" />
+                                        <Setter Target="SettingsMain.Visibility" Value="Collapsed" />
+                                        
 
                                         <Setter Target="RepeatButtonOvervlow.Visibility" Value="Visible" />
                                         <Setter Target="RepeatButtonMain.Visibility" Value="Collapsed" />
                                         <Setter Target="ShuffleButtonOverflow.Visibility" Value="Visible" />
                                         <Setter Target="ShuffleButtonMain.Visibility" Value="Collapsed" />
-                                        
+
 
                                         <Setter Target="CommandBarLastColumn.Width" Value="Auto"/>
 
@@ -465,6 +489,7 @@ Visibility="Collapsed"
                                 <VisualState x:Name="Loading">
                                     <VisualState.Setters>
                                         <Setter Target="BufferingProgressBar.Visibility" Value="Visible" />
+                                        <Setter Target="WrappingControl.IsEnabled" Value="false" />
                                     </VisualState.Setters>
                                     <Storyboard>
                                         <DoubleAnimation
@@ -472,11 +497,11 @@ Visibility="Collapsed"
                                             Storyboard.TargetProperty="Opacity"
                                             To="0"
                                             Duration="0" />
-                                        <DoubleAnimation
+                                        <!--<DoubleAnimation
                                             Storyboard.TargetName="MediaControlsCommandBar"
                                             Storyboard.TargetProperty="Opacity"
                                             To="0"
-                                            Duration="0" />
+                                            Duration="0" />-->
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Error">

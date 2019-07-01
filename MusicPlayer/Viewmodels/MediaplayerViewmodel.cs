@@ -148,6 +148,44 @@ namespace MusicPlayer.Viewmodels
 
         }
 
+
+        public async Task Play()
+        {
+            if (!this.Dispatcher.HasThreadAccess)
+            {
+                var completionSource = new TaskCompletionSource<object>();
+                await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                {
+                    await this.Play();
+                    completionSource.SetResult(null);
+                });
+                await completionSource.Task;
+            }
+
+            this.transportControls.IsPlaying = true;
+        }
+
+        public async Task ClearSongs()
+        {
+            if (!this.Dispatcher.HasThreadAccess)
+            {
+                var completionSource = new TaskCompletionSource<object>();
+                await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                {
+                    await this.ClearSongs();
+                    completionSource.SetResult(null);
+                });
+                await completionSource.Task;
+            }
+
+            this.mediaPlaybackList.Items.Clear();
+            this.playbackItemLookup.Clear();
+            foreach (var item in this.mediaItemLookup)
+                item.Value.Clear();
+            this.currentPlaylist.Clear();
+            this.mediaItemLookup.Clear();
+        }
+
         public async Task RemoveSong(PlayingSong song)
         {
             if (!this.Dispatcher.HasThreadAccess)
@@ -192,7 +230,7 @@ namespace MusicPlayer.Viewmodels
                 var oldMedia = list.FirstOrDefault()?.MediaPlaybackItem;
                 media = oldMedia?.Source;
                 if (media is null) // Async could add list before mediasource is added.
-                    media = await LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(song.LibraryProvider).GetMediaSource(song.MediaId, default);
+                    media = await LibraryRegistry<MediaSource, Uri>.Get(song.LibraryProvider).GetMediaSource(song.MediaId, default);
                 else
                     oldProperties = oldMedia.GetDisplayProperties();
             }
@@ -200,7 +238,7 @@ namespace MusicPlayer.Viewmodels
             {
                 list = new List<PlayingSong>();
                 this.mediaItemLookup.Add(song, list);
-                media = await LibraryRegistry<MediaSource, StorageItemThumbnail>.Get(song.LibraryProvider).GetMediaSource(song.MediaId, default);
+                media = await LibraryRegistry<MediaSource, Uri>.Get(song.LibraryProvider).GetMediaSource(song.MediaId, default);
             }
 
             var mediaItem = new MediaPlaybackItem(media);
