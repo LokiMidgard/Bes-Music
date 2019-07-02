@@ -151,6 +151,59 @@ namespace MusicPlayer.Core
         private Func<Func<Task>, Task> invoke;
 
 
+
+        public Task RemoveSong(Song song, CancellationToken cancelToken = default)
+        {
+            return this.RunOnUIThread(async () =>
+            {
+                using (var context = await MusicStoreDatabase.CreateContextAsync(cancelToken))
+                {
+                    this.RemoveSong(song, context);
+                    await context.SaveChangesAsync();
+                }
+            });
+        }
+
+        public Task RemoveSong(IEnumerable<Song> songs, CancellationToken cancelToken = default)
+        {
+            songs = songs.ToArray();
+            return this.RunOnUIThread(async () =>
+            {
+                using (var context = await MusicStoreDatabase.CreateContextAsync(cancelToken))
+                {
+                    foreach (var song in songs)
+                        this.RemoveSong(song, context);
+                    await context.SaveChangesAsync();
+                }
+            });
+        }
+        private void RemoveSong(Song song, MusicStoreDatabase context)
+        {
+            var insertionPoint = this.albums.BinarySearch(song, s => (Title: s.AlbumName, s.AlbumInterpret), a => (a.Title, a.AlbumInterpret), (x, y) =>
+            {
+                var result = x.Title.CompareTo(y.Title);
+                if (result != 0)
+                    return result;
+                return x.AlbumInterpret.CompareTo(y.AlbumInterpret);
+            });
+
+            Album album;
+            if (insertionPoint >= 0)
+            {
+                album = this.albums[insertionPoint];
+                album.RemoveSong(song);
+            }
+            context.Remove(song);
+
+        }
+
+        public Song GetSongByMediaId(string providerId, string songId)
+        {
+            if (this.songLoockup.ContainsKey((providerId, songId)))
+                return this.songLoockup[(providerId, songId)];
+            return null;
+        }
+
         public Task<Song> AddSong(string provider, string mediaId,
               string albumInterpret = default,
             string albumName = default,
@@ -328,15 +381,17 @@ namespace MusicPlayer.Core
             return await taskCompletionSource.Task;
         }
 
+
+
         internal void AddSong(Song song)
         {
             var insertionPoint = this.albums.BinarySearch(song, s => (Title: s.AlbumName, s.AlbumInterpret), a => (a.Title, a.AlbumInterpret), (x, y) =>
-             {
-                 var result = x.Title.CompareTo(y.Title);
-                 if (result != 0)
-                     return result;
-                 return x.AlbumInterpret.CompareTo(y.AlbumInterpret);
-             });
+            {
+                var result = x.Title.CompareTo(y.Title);
+                if (result != 0)
+                    return result;
+                return x.AlbumInterpret.CompareTo(y.AlbumInterpret);
+            });
 
             Album album;
             if (insertionPoint < 0)
@@ -421,7 +476,7 @@ namespace MusicPlayer.Core
                 insertionIndex = ~insertionIndex;
                 songGroup = new SongGroup(this, song.Title, song.Track, song.DiscNumber);
                 songGroup.PropertyChanged += this.SongGroup_PropertyChanged;
-                (songGroup.Songs as INotifyCollectionChanged).CollectionChanged += this.Album_CollectionChanged;
+                (songGroup.Songs as INotifyCollectionChanged).CollectionChanged += this.Songroup_CollectionChanged;
                 this.songs.Insert(insertionIndex, songGroup);
             }
             else
@@ -432,14 +487,39 @@ namespace MusicPlayer.Core
             songGroup.AddSong(song);
         }
 
-        private void Album_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        internal void RemoveSong(Song song)
+        {
+            if (song.AlbumInterpret != this.AlbumInterpret
+                || song.AlbumName != this.Title)
+                throw new ArgumentException("Song must match the Properties of this SongGroup", nameof(song));
+
+            var insertionIndex = this.songs.BinarySearch(song, s => (s.DiscNumber, s.Track, s.Title), s => (s.DiscNumber, s.Track, s.Title), (x, y) =>
+            {
+                var result = x.DiscNumber.CompareTo(y.DiscNumber);
+                if (result != 0)
+                    return result;
+                result = x.Track.CompareTo(y.Track);
+                if (result != 0)
+                    return result;
+                return x.Title.CompareTo(y.Title);
+            });
+            SongGroup songGroup;
+            if (insertionIndex >= 0)
+            {
+                songGroup = this.songs[insertionIndex];
+                songGroup.RemoveSong(song);
+            }
+
+        }
+
+        private void Songroup_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             var changedSongGroup = this.songs.First(x => x.Songs == sender);
             if (changedSongGroup.Songs.Count == 0)
             {
                 this.songs.Remove(changedSongGroup);
                 changedSongGroup.PropertyChanged -= this.SongGroup_PropertyChanged;
-                (changedSongGroup.Songs as INotifyCollectionChanged).CollectionChanged -= this.Album_CollectionChanged;
+                (changedSongGroup.Songs as INotifyCollectionChanged).CollectionChanged -= this.Songroup_CollectionChanged;
             }
         }
 
@@ -544,10 +624,10 @@ namespace MusicPlayer.Core
 
 
             var insertionIndex = this.songs.BinarySearch(song, s => s.LibraryProvider, (x, y) =>
-           {
-               var result = x.CompareTo(y);
-               return result;
-           });
+            {
+                var result = x.CompareTo(y);
+                return result;
+            });
 
             if (insertionIndex < 0)
                 insertionIndex = ~insertionIndex;
@@ -558,6 +638,8 @@ namespace MusicPlayer.Core
 
             this.UpdateProperties();
         }
+
+
 
 
 
@@ -584,7 +666,7 @@ namespace MusicPlayer.Core
             }
         }
 
-        private void RemoveSong(Song song)
+        internal void RemoveSong(Song song)
         {
             this.songs.Remove(song);
             song.PropertyChanged -= this.Song_PropertyChanged;
@@ -919,7 +1001,7 @@ namespace MusicPlayer.Core
             if (!this.first)
             {
                 this.first = true;
-                //await this.Database.EnsureDeletedAsync(cancellationToken);
+                // await this.Database.EnsureDeletedAsync(cancellationToken);
             }
 
             await this.Database.EnsureCreatedAsync(cancellationToken);

@@ -57,7 +57,13 @@ namespace MusicPlayer.Pages
                 keyboardAccelerators = new List<KeyboardAccelerator>();
             }
             this.ViewModel.Initialize(this.shellFrame, null, keyboardAccelerators);
+
+            this.Loaded += this.ShellPage_Loaded;
         }
 
+        private async void ShellPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            await Core.MusicStore.Instance.Init();
+        }
     }
 }

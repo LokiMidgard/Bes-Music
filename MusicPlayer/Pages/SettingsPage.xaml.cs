@@ -65,7 +65,10 @@ namespace MusicPlayer.Pages
             await OneDriveLibrary.Instance.Update(default);
         }
 
-
+        private async void Clear(object sender, RoutedEventArgs e)
+        {
+            await OneDriveLibrary.Instance.ClearData();
+        }
     }
 
 }

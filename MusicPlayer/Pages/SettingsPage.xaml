@@ -11,8 +11,17 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <Image x:Name="image"/>
-        <Button HorizontalAlignment="Center" Click="Button_Click">Test</Button>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Margin" Value="12"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                </Style>
+            </StackPanel.Resources>
+
+            <Button HorizontalAlignment="Center" Click="Button_Click">Update</Button>
+            <Button HorizontalAlignment="Center" Click="Clear">Clear Data</Button>
+        </StackPanel>
         <graphControls:AadLogin x:Name="Login"
     HorizontalAlignment="Left"
     View="SmallProfilePhotoLeft"
