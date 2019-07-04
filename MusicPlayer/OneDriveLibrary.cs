@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.Media.Core;
 using Windows.Storage.FileProperties;
 using Windows.UI.Xaml.Media;
@@ -25,6 +26,84 @@ namespace MusicPlayer
             LibraryRegistry.Register(this);
         }
 
+
+
+        //public async Task<Playlist> CreatePlaylist(string name)
+        //{
+        //    if (!MicrosoftGraphService.Instance.IsAuthenticated)
+        //        if (!await MicrosoftGraphService.Instance.TryLoginAsync())
+        //            throw new NotAuthenticatedException();
+
+
+        //    var driveItem = new DriveItem
+        //    {
+        //        Name = name,
+        //        Folder = new Folder
+        //        {
+        //        },
+        //    };
+        //    driveItem.AdditionalData.Add("@microsoft.graph.conflictBehavior", "fail");
+
+        //    DriveItem playlistFolder;
+        //    try
+        //    {
+        //        playlistFolder = await MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Special.AppRoot.ItemWithPath("Playlists").Request().Select(x => x.Id).GetAsync();
+
+        //    }
+        //    catch (Exception e)
+        //    {
+
+        //        throw;
+        //    }
+        //    var result = await MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Items[playlistFolder.Id].Children
+        //        .Request()
+        //        .Select(x => x.Id)
+        //        .AddAsync(driveItem);
+
+        //    var playlist = new Playlist(result.Id, name);
+
+        //    //MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Items[""].CreateUploadSession().Request(new Option[] { new HeaderOption("if-match", ) }).CreateUploadSession().Request().
+        //}
+
+        //public class Playlist
+        //{
+        //    public Playlist(string id, string name)
+        //    {
+        //        this.Id = id;
+        //        this.Name = name;
+        //    }
+
+        //    public string Id { get; }
+        //    public string Name { get; }
+
+        //    public IEnumerable<Song> Songs { get; }
+        //}
+
+        public async Task SelectFolder()
+        {
+            throw new NotSupportedException("This actually is not Working right now :/");
+            var picker = new Windows.Storage.Pickers.FolderPicker();
+            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.List;
+            
+            var result = await picker.PickSingleFolderAsync();
+
+            // first clear the old data. We don't want to leave unused stuff
+            await this.ClearData();
+
+            var cover = await result.CreateFolderAsync("cover", Windows.Storage.CreationCollisionOption.OpenIfExists);
+            var media = await result.CreateFolderAsync("media", Windows.Storage.CreationCollisionOption.OpenIfExists);
+            var playlist = await result.CreateFolderAsync("playlist", Windows.Storage.CreationCollisionOption.OpenIfExists);
+
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            localSettings.Values["cover"] = cover.Path;
+            localSettings.Values["media"] = media.Path;
+            localSettings.Values["playlist"] = playlist.Path;
+
+
+
+        }
+
+
         public async Task ClearData()
         {
 
@@ -33,12 +112,21 @@ namespace MusicPlayer
             await MusicStore.Instance.RemoveSong(toDelete);
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             localSettings.Values.Remove("OneDriveDeltaToken");
-            var coverFolder = await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFolderAsync("cover", Windows.Storage.CreationCollisionOption.OpenIfExists);
-            var mediaFolder = await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFolderAsync("media", Windows.Storage.CreationCollisionOption.OpenIfExists);
+            var coverFolder = await GetDataStoreFolder("cover");
+            var mediaFolder = await  GetDataStoreFolder("media");
             await mediaFolder.DeleteAsync(Windows.Storage.StorageDeleteOption.PermanentDelete);
             await coverFolder.DeleteAsync(Windows.Storage.StorageDeleteOption.PermanentDelete);
             localSettings.DeleteContainer("cData");
 
+        }
+
+        private static IAsyncOperation<Windows.Storage.StorageFolder> GetDataStoreFolder(string name)
+        {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.ContainsKey(name))
+                return Windows.Storage.StorageFolder.GetFolderFromPathAsync(localSettings.Values[name].ToString());
+            else
+                return  Windows.Storage.ApplicationData.Current.LocalFolder.CreateFolderAsync(name, Windows.Storage.CreationCollisionOption.OpenIfExists);
         }
 
         public async Task<Uri> GetImage(string id, int size, CancellationToken cancellationToken)
@@ -47,14 +135,14 @@ namespace MusicPlayer
                 return null;
             try
             {
-                var coverFolder = await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFolderAsync("cover", Windows.Storage.CreationCollisionOption.OpenIfExists);
+                var coverFolder = await  GetDataStoreFolder("cover");
                 var storageItem = await coverFolder.GetFileAsync(id);
                 return new Uri(storageItem.Path);
             }
             catch (FileNotFoundException)
             {
 
-                var mediaFolder = await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFolderAsync("media", Windows.Storage.CreationCollisionOption.OpenIfExists);
+                var mediaFolder = await  GetDataStoreFolder("media");
                 var storageItem = await mediaFolder.GetFileAsync(id);
 
 
@@ -96,7 +184,7 @@ namespace MusicPlayer
 
         public async Task<MediaSource> GetMediaSource(string id, CancellationToken cancellationToken)
         {
-            var mediaFolder = await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFolderAsync("media", Windows.Storage.CreationCollisionOption.OpenIfExists);
+            var mediaFolder = await  GetDataStoreFolder("media");
             var file = await mediaFolder.GetFileAsync(id);
             var mediaSource = MediaSource.CreateFromStorageFile(file);
             return mediaSource;
@@ -113,6 +201,7 @@ namespace MusicPlayer
             var lastToken = localSettings.Values["OneDriveDeltaToken"] as string;
             var container = localSettings.CreateContainer("cData", Windows.Storage.ApplicationDataCreateDisposition.Always);
 
+            //MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Special.AppRoot.CreateUploadSession(new DriveItemUploadableProperties() ).Request()..PostAsync()
 
 
 
@@ -153,8 +242,8 @@ namespace MusicPlayer
 
             async Task UpdateAudo(IEnumerable<DriveItem> toAdd)
             {
-                var mediaFolder = await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFolderAsync("media", Windows.Storage.CreationCollisionOption.OpenIfExists);
-                var coverFolder = await Windows.Storage.ApplicationData.Current.LocalFolder.CreateFolderAsync("cover", Windows.Storage.CreationCollisionOption.OpenIfExists);
+                var mediaFolder = await  GetDataStoreFolder("media");
+                var coverFolder = await  GetDataStoreFolder("cover");
 
                 await Task.WhenAll(toAdd.Select(driveItem => Task.Run(async () =>
                 {

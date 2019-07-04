@@ -69,6 +69,14 @@ namespace MusicPlayer.Pages
         {
             await OneDriveLibrary.Instance.ClearData();
         }
+
+        private async void SelectFolder(object sender, RoutedEventArgs e)
+        {
+            await OneDriveLibrary.Instance.SelectFolder();
+            
+        }
+
+
     }
 
 }

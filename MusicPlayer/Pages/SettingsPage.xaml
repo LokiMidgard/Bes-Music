@@ -21,6 +21,12 @@
 
             <Button HorizontalAlignment="Center" Click="Button_Click">Update</Button>
             <Button HorizontalAlignment="Center" Click="Clear">Clear Data</Button>
+            <Button HorizontalAlignment="Center" Click="SelectFolder">Select Foder</Button>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="Covers"></TextBlock>
+                <TextBlock x:Name="Media"></TextBlock>
+                <TextBlock x:Name="Playlist"></TextBlock>
+            </StackPanel>
         </StackPanel>
         <graphControls:AadLogin x:Name="Login"
     HorizontalAlignment="Left"

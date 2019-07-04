@@ -32,6 +32,7 @@ namespace MusicPlayer.Core
 
         private void UpdateProperties()
         {
+            
             if (!this.IsInitilized)
                 return;
             var oldGenres = this.Genres;
@@ -1001,7 +1002,7 @@ namespace MusicPlayer.Core
             if (!this.first)
             {
                 this.first = true;
-                // await this.Database.EnsureDeletedAsync(cancellationToken);
+                //await this.Database.EnsureDeletedAsync(cancellationToken);
             }
 
             await this.Database.EnsureCreatedAsync(cancellationToken);
