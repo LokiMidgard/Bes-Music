@@ -19,5 +19,7 @@ namespace MusicPlayer.Controls
         public bool CanExecute(object parameter) => this.onCanExecute?.Invoke() ?? true;
 
         public void Execute(object parameter) => this.onExecute();
+
+        internal void FireCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 }

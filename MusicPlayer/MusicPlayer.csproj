@@ -118,6 +118,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Controls\AddToPlayList.cs" />
     <Compile Include="Controls\AlbumControl.xaml.cs">
       <DependentUpon>AlbumControl.xaml</DependentUpon>
     </Compile>
@@ -126,8 +127,12 @@
     </Compile>
     <Compile Include="Controls\DelegateCommand.cs" />
     <Compile Include="Controls\DisabledCommand.cs" />
+    <Compile Include="Converters\ExceptionHandlerConverter.cs" />
     <Compile Include="Controls\MediaBehaviorCommand.cs" />
     <Compile Include="Controls\NowPlayingDisk.cs" />
+    <Compile Include="Controls\PlayListControl.xaml.cs">
+      <DependentUpon>PlayListControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TransportControls.cs" />
     <Compile Include="Controls\UWPToolkit\AadLogin\AadLogin.cs" />
     <Compile Include="Controls\UWPToolkit\AadLogin\AadLogin.Events.cs" />
@@ -156,8 +161,10 @@
     <Compile Include="Controls\UWPToolkit\ProfileCard\ProfileDisplayModeTemplateSelector.cs" />
     <Compile Include="Controls\UWPToolkit\ProfileCard\ViewType.cs" />
     <Compile Include="Converters\BottomThiknessConverter.cs" />
+    <Compile Include="Converters\FileSizeConverter.cs" />
     <Compile Include="Converters\ListConverter.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
+    <Compile Include="DelegateDisposable.cs" />
     <Compile Include="Helpers\ConstantsHelper.cs" />
     <Compile Include="Helpers\CoverExtension.cs" />
     <Compile Include="Helpers\NavHelper.cs" />
@@ -180,6 +187,7 @@
     </Compile>
     <Compile Include="SecureConstents.cs" />
     <Compile Include="Services\NavigationService.cs" />
+    <Compile Include="Viewmodels\AlbumCollectionViewmodel.cs" />
     <Compile Include="Viewmodels\AlbumViewmodel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
@@ -198,9 +206,13 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Viewmodels\AlbumViewmodelComparer.cs" />
+    <Compile Include="Viewmodels\GroupedObservableCollection.cs" />
     <Compile Include="Viewmodels\MediaplayerViewmodel.cs" />
+    <Compile Include="Viewmodels\OneDriveAccessor.cs" />
+    <Compile Include="Viewmodels\PlayListViewmodel.cs" />
     <Compile Include="Viewmodels\ShellViewModel.cs" />
     <Compile Include="Viewmodels\SongViewmodel.cs" />
+    <Compile Include="Viewmodels\SortedGroup.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -275,6 +287,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\PlayListControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\UWPToolkit\AadLogin\AadLogin.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -331,9 +347,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Services">
       <Version>4.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="Nito.AsyncEx">
-      <Version>5.0.0</Version>
     </PackageReference>
     <PackageReference Include="System.Memory">
       <Version>4.5.3</Version>

@@ -12,9 +12,9 @@
     x:Name="root"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
-    
-    
-    
+
+
+
     <Page.Resources>
         <converters:StringFormatConverter x:Key="stringFormat" />
         <converters:ListConverter x:Key="listConverter"></converters:ListConverter>
@@ -56,44 +56,44 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <UserControl>
-                                
-                            <Grid HorizontalAlignment="Stretch">
-                                <Grid.Resources>
-                                    <x:Double x:Key="MinWindowSnapPoint">0</x:Double>
-                                    <x:Double x:Key="MediumWindowSnapPoint">641</x:Double>
-                                    <x:Double x:Key="LargeWindowSnapPoint">1008</x:Double>
-                                </Grid.Resources>
-                                <VisualStateManager.VisualStateGroups>
-                                    <VisualStateGroup>
-                                        
 
-                                        <!-- Large window VisualState -->
-                                        <VisualState x:Name="LargeWindow">
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Grid.Resources>
+                                        <x:Double x:Key="MinWindowSnapPoint">0</x:Double>
+                                        <x:Double x:Key="MediumWindowSnapPoint">641</x:Double>
+                                        <x:Double x:Key="LargeWindowSnapPoint">1008</x:Double>
+                                    </Grid.Resources>
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup>
 
-                                            <!-- Large window trigger -->
-                                            <VisualState.StateTriggers>
-                                                <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowSnapPoint}"/>
-                                            </VisualState.StateTriggers>
 
-                                        </VisualState>
+                                            <!-- Large window VisualState -->
+                                            <VisualState x:Name="LargeWindow">
 
-                                        <!-- Medium window VisualState -->
-                                        <VisualState x:Name="MediumWindow">
-                                            <VisualState.Setters>
-                                                <Setter Target="interprets.Visibility" Value="Collapsed"/>
+                                                <!-- Large window trigger -->
+                                                <VisualState.StateTriggers>
+                                                    <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowSnapPoint}"/>
+                                                </VisualState.StateTriggers>
+
+                                            </VisualState>
+
+                                            <!-- Medium window VisualState -->
+                                            <VisualState x:Name="MediumWindow">
+                                                <VisualState.Setters>
+                                                    <Setter Target="interprets.Visibility" Value="Collapsed"/>
                                                     <Setter Target="interpretsColumn.Width" Value="0"/>
                                                     <Setter Target="interpretSubs.Visibility" Value="Visible"/>
                                                 </VisualState.Setters>
                                                 <!-- Medium window trigger -->
-                                            <VisualState.StateTriggers>
-                                                <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowSnapPoint}"/>
-                                            </VisualState.StateTriggers>
+                                                <VisualState.StateTriggers>
+                                                    <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowSnapPoint}"/>
+                                                </VisualState.StateTriggers>
 
-                                        </VisualState>
+                                            </VisualState>
 
-                                        <!-- Small window VisualState -->
-                                        <VisualState x:Name="SmallWindow">
-                                            <VisualState.Setters>
+                                            <!-- Small window VisualState -->
+                                            <VisualState x:Name="SmallWindow">
+                                                <VisualState.Setters>
                                                     <Setter Target="interprets.Visibility" Value="Collapsed"/>
                                                     <Setter Target="interpretsColumn.Width" Value="0"/>
 
@@ -104,29 +104,29 @@
                                                     <Setter Target="albumTitleSub.Visibility" Value="Visible"/>
 
                                                 </VisualState.Setters>
-                                            <!-- Small window trigger -->
-                                            <VisualState.StateTriggers >
-                                                <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowSnapPoint}"/>
-                                            </VisualState.StateTriggers>
+                                                <!-- Small window trigger -->
+                                                <VisualState.StateTriggers >
+                                                    <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowSnapPoint}"/>
+                                                </VisualState.StateTriggers>
 
-                                        </VisualState>
+                                            </VisualState>
 
-                                    </VisualStateGroup>
-                                </VisualStateManager.VisualStateGroups>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition  x:Name="songTitleColumn" Width="6*"/>
-                                    <ColumnDefinition x:Name="albumTitleColumn"  Width="4*"/>
-                                    <ColumnDefinition x:Name="interpretsColumn"  Width="4*"/>
-                                    <ColumnDefinition   x:Name="durationColumn"  Width="60" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" x:Name="songTitle" Margin="8,0" Text="{Binding Song.Title}" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Song.Title}" />
-                                <TextBlock Grid.Column="1" x:Name="albumTitle" Margin="8,0" Text="{Binding Song.AlbumName}" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Song.AlbumName}" />
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition  x:Name="songTitleColumn" Width="6*"/>
+                                        <ColumnDefinition x:Name="albumTitleColumn"  Width="4*"/>
+                                        <ColumnDefinition x:Name="interpretsColumn"  Width="4*"/>
+                                        <ColumnDefinition   x:Name="durationColumn"  Width="60" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" x:Name="songTitle" Margin="8,0" Text="{Binding Song.Title}" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Song.Title}" />
+                                    <TextBlock Grid.Column="1" x:Name="albumTitle" Margin="8,0" Text="{Binding Song.AlbumName}" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Song.AlbumName}" />
                                     <TextBlock Grid.Column="2"  x:Name="interprets" Margin="8,0" Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" />
-                                <TextBlock Grid.Column="3" HorizontalAlignment="Right" Margin="8,0" Text="{Binding Song.Duration, Converter={StaticResource stringFormat}, ConverterParameter='{}{0:mm\\:ss}'}"/>
+                                    <TextBlock Grid.Column="3" HorizontalAlignment="Right" Margin="8,0" Text="{Binding Song.Duration, Converter={StaticResource stringFormat}, ConverterParameter='{}{0:mm\\:ss}'}"/>
 
 
                                     <TextBlock x:Name="interpretSubs" Visibility="Collapsed" Foreground="{StaticResource SystemColorGrayTextBrush}"  TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource  BodyTextBlockStyle}"  Grid.ColumnSpan="4" Grid.Row="1" Margin="8,0" HorizontalAlignment="Stretch">
@@ -139,19 +139,21 @@
                                         <Run Text="&#x2022;" />
                                         <Run Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" />
                                     </TextBlock>
-                                    
-                                <Grid.ContextFlyout>
-                                    <MenuFlyout>
-                                        <MenuFlyoutItem Text="Remove" Click="MenuFlyoutItem_Click"/>
-                                    </MenuFlyout>
-                                </Grid.ContextFlyout>
-                            </Grid>
+
+                                    <Grid.ContextFlyout>
+                                        <MenuFlyout>
+                                            <MenuFlyoutItem Text="Remove" Click="MenuFlyoutItem_Click"/>
+                                        </MenuFlyout>
+                                    </Grid.ContextFlyout>
+                                </Grid>
                             </UserControl>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
             </PivotItem>
-            <PivotItem Header="Playlists" />
+            <PivotItem Header="Playlists" >
+                <controls:PlayListControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            </PivotItem>
             <PivotItem Header="Albums">
                 <controls:Albums HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 

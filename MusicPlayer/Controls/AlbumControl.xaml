@@ -115,6 +115,9 @@ x:Name="userControl"
                     Style="{StaticResource  RoundButtonStyle}" 
                     Grid.Column="1"
                     >
+                    <Button.Flyout>
+                        <MenuFlyout  local:AddToPlayList.IsPlaylistMenue="{Binding Model }"/>
+                    </Button.Flyout>
                     <SymbolIcon Symbol="Add" />
 
                 </Button>

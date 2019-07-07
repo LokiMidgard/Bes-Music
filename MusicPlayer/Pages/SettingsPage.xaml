@@ -6,11 +6,22 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:graphControls="using:Microsoft.Toolkit.Uwp.UI.Controls.Graph"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
+    xmlns:musicplayer="using:MusicPlayer"
+    xmlns:converters="using:MusicPlayer.Converters"
     mc:Ignorable="d"
     
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.DataContext>
+        <viewmodels:OneDriveAccessor/>
+    </Page.DataContext>
+    <Page.Resources>
+        <converters:FileSizeConverter x:Key="FileSizeConverter"></converters:FileSizeConverter>
+        <converters:ThiknessConverter x:Key="bottomThiknessConverter" />
+        <converters:ExceptionHandlerConverter x:Key="ErrorHandler"/>
+    </Page.Resources>
 
-    <Grid>
+    <Grid DataContext="{Binding Instance}">
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
             <StackPanel.Resources>
                 <Style TargetType="Button">
@@ -19,9 +30,37 @@
                 </Style>
             </StackPanel.Resources>
 
-            <Button HorizontalAlignment="Center" Click="Button_Click">Update</Button>
+            <ComboBox ItemsSource="{x:Bind PossiblePlcations}" SelectedItem="{Binding StorageLocation, Mode=TwoWay}">
+
+            </ComboBox>
+
+            <Button HorizontalAlignment="Center"  Command="{Binding PeekDataCommand}" >Peek</Button>
+            <Button HorizontalAlignment="Center"  Command="{Binding DownloadDataCommand, Converter={StaticResource ErrorHandler}}" Padding="0" >
+                <StackPanel Orientation="Vertical">
+                <TextBlock Margin="8" ><Run Text="Donwload " /><Run Text="{Binding  OneDriveWork.DownloadSizeInBytes , Converter={StaticResource FileSizeConverter}}"/></TextBlock>
+                    <ProgressBar  Value="{Binding BytesDownloaded}" Maximum="{Binding OneDriveWork.DownloadSizeInBytes}" />
+                </StackPanel>
+            </Button>
             <Button HorizontalAlignment="Center" Click="Clear">Clear Data</Button>
-            <Button HorizontalAlignment="Center" Click="SelectFolder">Select Foder</Button>
+                
+                <ListView Height="300" ItemsSource="{Binding OneDriveWork.DriveItems}" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                    <ListView.Style>
+                    <Style TargetType="ListView">
+                            <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
+                        </Style>
+                    </ListView.Style>
+                    <ListView.Resources>
+                        <Style TargetType="ScrollBar">
+                            <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />
+                        </Style>
+                    </ListView.Resources>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock ><Run Text="{Binding Audio.Album}"/><Run Text=" - "/><Run Text="{Binding Audio.Title}"/><Run Text=" - "/><Run Text="{Binding Audio.AlbumArtist}"/></TextBlock>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+            </ListView>
+                
             <StackPanel Orientation="Horizontal">
                 <TextBlock x:Name="Covers"></TextBlock>
                 <TextBlock x:Name="Media"></TextBlock>

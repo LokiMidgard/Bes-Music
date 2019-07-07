@@ -41,7 +41,6 @@ namespace MusicPlayer
         public App()
         {
             _ = LocalLibrary.Instance;
-            _ = OneDriveLibrary.Instance;
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
 

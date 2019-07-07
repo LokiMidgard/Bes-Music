@@ -63,7 +63,22 @@ namespace MusicPlayer.Pages
 
         private async void ShellPage_Loaded(object sender, RoutedEventArgs e)
         {
+            _ = OneDriveLibrary.Instance;
+            _ = AlbumCollectionViewmodel.Instance;
             await Core.MusicStore.Instance.Init();
+            await MusicStore.Instance.SetUITask(this.RunOnDispatcher);
+
         }
+        private Task RunOnDispatcher(Func<Task> f)
+        {
+            if (this.Dispatcher.HasThreadAccess)
+                return f();
+            return this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => f()).AsTask();
+        }
+
+
+
+
+
     }
 }

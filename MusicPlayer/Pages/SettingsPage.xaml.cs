@@ -27,6 +27,8 @@ namespace MusicPlayer.Pages
     {
         private static bool initilized;
 
+        public IEnumerable<StorageLocation> PossiblePlcations { get; } = new StorageLocation[] { StorageLocation.AppData, StorageLocation.Music };
+
         public SettingsPage()
         {
             this.InitializeComponent();
@@ -72,8 +74,8 @@ namespace MusicPlayer.Pages
 
         private async void SelectFolder(object sender, RoutedEventArgs e)
         {
-            await OneDriveLibrary.Instance.SelectFolder();
-            
+            //await OneDriveLibrary.Instance.SelectFolder();
+
         }
 
 

@@ -3,11 +3,16 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.4</TargetFramework>
     <LangVersion>7.1</LangVersion>
+    <NOT_USE_NITO>true</NOT_USE_NITO>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants Condition="'$(NOT_USE_NITO)'=='true'">$(DefineConstants);NOT_USE_NITO</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="1.1.6" />
-    <PackageReference Include="Nito.AsyncEx" Version="5.0.0" />
+    <PackageReference Include="Nito.AsyncEx" Version="5.0.0" Condition="'$(NOT_USE_NITO)'!='true'" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>

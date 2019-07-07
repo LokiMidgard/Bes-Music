@@ -22,6 +22,7 @@ namespace MusicPlayer.Core
         public static MusicStore Instance { get; } = new MusicStore();
 
         private readonly Dictionary<(string provider, string mediaId), Song> songLoockup = new Dictionary<(string provider, string mediaId), Song>();
+        private readonly Dictionary<Guid, PlayList> playListLoockup = new Dictionary<Guid, PlayList>();
 
         public IEnumerable<string> Genres { get; private set; }
         public IEnumerable<string> Interpreters { get; private set; }
@@ -32,7 +33,7 @@ namespace MusicPlayer.Core
 
         private void UpdateProperties()
         {
-            
+
             if (!this.IsInitilized)
                 return;
             var oldGenres = this.Genres;
@@ -85,15 +86,23 @@ namespace MusicPlayer.Core
         private MusicStore()
         {
             this.albums = new ObservableCollection<Album>();
+            this.playLists = new ObservableCollection<PlayList>();
         }
 
 
-        public void Initilize(Func<Func<Task>, Task> invokeOnUi)
+        public async Task SetUITask(Func<Func<Task>, Task> invokeOnUi)
         {
             if (this.invoke != null)
                 return;
             this.invoke = invokeOnUi;
             this.initilisation.Set();
+
+            await this.databaseLoad.WaitAsync();
+            await this.RunOnUIThread(() =>
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Albums)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.IsInitilized)));
+            });
         }
 
         private Lazy<Task> initTask;
@@ -114,30 +123,34 @@ namespace MusicPlayer.Core
                         foreach (var song in await context.songs.ToArrayAsync())
                         {
                             song.TransferFromDatabase();
-                            //await this.RunOnUIThread(async () =>
-                            //{
                             this.songLoockup.Add((song.LibraryProvider, song.MediaId), song);
                             this.AddSong(song);
-                            //await Task.Delay(1);
-                            //});
-
                         }
-                        //await Task.WhenAll((await context.songs.ToArrayAsync()).Select(async song =>
-                        //{
-                        //}));
+                        foreach (var playListEntry in await context.playListEntrys.ToArrayAsync())
+                        {
+                            PlayList playList;
+                            if (this.playListLoockup.ContainsKey(playListEntry.PlayListId))
+                                playList = this.playListLoockup[playListEntry.PlayListId];
+                            else
+                            {
+                                var nameEnttry = await context.PlayListName.FirstOrDefaultAsync(x => x.PlayListId == playListEntry.PlayListId);
+                                playList = new PlayList(nameEnttry?.Name ?? string.Empty, nameEnttry.PlayListId);
+                                this.playLists.Add(playList);
+                                playListLoockup.Add(playList.Id, playList);
+
+                            }
+                            if (this.songLoockup.ContainsKey((playListEntry.LibraryProvider, playListEntry.MediaId)))
+                                playList.songs.Add(this.songLoockup[(playListEntry.LibraryProvider, playListEntry.MediaId)]);
+                        }
                     }
                     this.Albums = new ReadOnlyObservableCollection<Album>(this.albums);
+                    this.PlayLists = new ReadOnlyObservableCollection<PlayList>(this.playLists);
                     this.InitilizeProperties();
                     this.databaseLoad.Set();
 
 
 
 
-                    await this.RunOnUIThread(() =>
-                    {
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Albums)));
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.IsInitilized)));
-                    });
 
                 });
             }
@@ -149,6 +162,10 @@ namespace MusicPlayer.Core
 
         public ReadOnlyObservableCollection<Album> Albums { get; private set; }
         private readonly ObservableCollection<Album> albums;
+        public ReadOnlyObservableCollection<PlayList> PlayLists { get; private set; }
+        private readonly ObservableCollection<PlayList> playLists;
+
+
         private Func<Func<Task>, Task> invoke;
 
 
@@ -205,8 +222,97 @@ namespace MusicPlayer.Core
             return null;
         }
 
+        public Task<PlayList> CreatePlaylist(string name, CancellationToken cancelToken = default)
+        {
+            var newPlayList = new PlayList(name, Guid.NewGuid());
+
+            return this.RunOnUIThread(async () =>
+            {
+                await this.databaseLoad.WaitAsync();
+                using (var context = await MusicStoreDatabase.CreateContextAsync(cancelToken))
+                {
+                    var playlistEntry = new PlayListNameEntry(newPlayList.Name, newPlayList.Id);
+                    await context.AddAsync(playlistEntry, cancelToken);
+                    await context.SaveChangesAsync(cancelToken);
+                    this.playLists.Add(newPlayList);
+                }
+                return newPlayList;
+            });
+        }
+
+        public Task RenamePlaylist(PlayList playlist, string name, CancellationToken cancelToken = default)
+        {
+
+            return this.RunOnUIThread(async () =>
+            {
+                await this.databaseLoad.WaitAsync();
+                using (var context = await MusicStoreDatabase.CreateContextAsync(cancelToken))
+                {
+                    var toRename = await context.PlayListName.FirstOrDefaultAsync(x => x.PlayListId == playlist.Id, cancelToken);
+                    if (toRename is null)
+                        throw new ArgumentOutOfRangeException(nameof(playlist), "The Provided Playlist is not found");
+
+                    context.Attach(toRename);
+                    toRename.Name = name;
+                    await context.SaveChangesAsync(cancelToken);
+                    playlist.Name = name;
+                }
+            });
+        }
+
+        public Task AddPlaylistSong(PlayList playlist, Song song, CancellationToken cancelToken = default)
+        {
+
+            return this.RunOnUIThread(async () =>
+            {
+                await this.databaseLoad.WaitAsync();
+                using (var context = await MusicStoreDatabase.CreateContextAsync(cancelToken))
+                {
+                    var newEntry = new PlayListEntry(song.LibraryProvider, song.MediaId, playlist.Id);
+
+                    await context.AddAsync(newEntry, cancelToken);
+                    await context.SaveChangesAsync(cancelToken);
+
+                    playlist.songs.Add(song);
+                }
+            });
+        }
+        public Task RemovePlaylistSong(PlayList playlist, Song song, CancellationToken cancelToken = default)
+        {
+
+            return this.RunOnUIThread(async () =>
+            {
+                await this.databaseLoad.WaitAsync();
+                using (var context = await MusicStoreDatabase.CreateContextAsync(cancelToken))
+                {
+                    var newEntry = await context.playListEntrys.FirstOrDefaultAsync(x => x.LibraryProvider == song.LibraryProvider && x.MediaId == song.MediaId && x.PlayListId == playlist.Id, cancelToken);
+                    if (newEntry is null)
+                        return;
+                    context.Remove(newEntry);
+                    await context.SaveChangesAsync(cancelToken);
+                    playlist.songs.Remove(song);
+                }
+            });
+        }
+
+        public Task RemovePlaylist(PlayList playlist, CancellationToken cancelToken = default)
+        {
+
+            return this.RunOnUIThread(async () =>
+            {
+                await this.databaseLoad.WaitAsync();
+                using (var context = await MusicStoreDatabase.CreateContextAsync(cancelToken))
+                {
+                    context.playListEntrys.RemoveRange(await context.playListEntrys.AsQueryable().Where(x => x.PlayListId == playlist.Id).ToArrayAsync(cancelToken));
+                    context.PlayListName.Remove(await context.PlayListName.FirstAsync(x => x.PlayListId == playlist.Id, cancelToken));
+                    await context.SaveChangesAsync(cancelToken);
+                    this.playLists.Remove(playlist);
+                }
+            });
+        }
+
         public Task<Song> AddSong(string provider, string mediaId,
-              string albumInterpret = default,
+            string albumInterpret = default,
             string albumName = default,
             IEnumerable<string> composers = default,
             int discNumber = default,
@@ -640,10 +746,6 @@ namespace MusicPlayer.Core
             this.UpdateProperties();
         }
 
-
-
-
-
         private void Song_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
@@ -721,6 +823,101 @@ namespace MusicPlayer.Core
         public IEnumerable<string> Composers { get; private set; }
         public IEnumerable<(string providerId, string imageId)> LibraryImages { get; private set; }
 
+    }
+
+    public class PlayListNameEntry : IEquatable<PlayListNameEntry>
+    {
+        private PlayListNameEntry()
+        {
+
+        }
+        public PlayListNameEntry(string name, Guid playListId)
+        {
+            this.Name = name ?? throw new ArgumentNullException(nameof(name));
+            this.PlayListId = playListId;
+        }
+
+        public string Name { get; internal set; }
+        public Guid PlayListId { get; private set; }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as PlayListNameEntry);
+        }
+
+        public bool Equals(PlayListNameEntry other)
+        {
+            return other != null &&
+                   this.Name == other.Name &&
+                   this.PlayListId.Equals(other.PlayListId);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 300557564;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.Name);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Guid>.Default.GetHashCode(this.PlayListId);
+            return hashCode;
+        }
+
+        public static bool operator ==(PlayListNameEntry left, PlayListNameEntry right)
+        {
+            return EqualityComparer<PlayListNameEntry>.Default.Equals(left, right);
+        }
+
+        public static bool operator !=(PlayListNameEntry left, PlayListNameEntry right)
+        {
+            return !(left == right);
+        }
+    }
+    public class PlayListEntry : IEquatable<PlayListEntry>
+    {
+        private PlayListEntry()
+        {
+
+        }
+        public PlayListEntry(string libraryProvider, string mediaId, Guid playListId)
+        {
+            this.LibraryProvider = libraryProvider ?? throw new ArgumentNullException(nameof(libraryProvider));
+            this.MediaId = mediaId ?? throw new ArgumentNullException(nameof(mediaId));
+            this.PlayListId = playListId;
+        }
+
+        public string LibraryProvider { get; private set; }
+        public string MediaId { get; private set; }
+        public Guid PlayListId { get; private set; }
+
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as PlayListEntry);
+        }
+
+        public bool Equals(PlayListEntry other)
+        {
+            return other != null &&
+                   this.LibraryProvider == other.LibraryProvider &&
+                   this.MediaId == other.MediaId &&
+                   this.PlayListId.Equals(other.PlayListId);
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 282779457;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.LibraryProvider);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.MediaId);
+            hashCode = hashCode * -1521134295 + EqualityComparer<Guid>.Default.GetHashCode(this.PlayListId);
+            return hashCode;
+        }
+
+        public static bool operator ==(PlayListEntry left, PlayListEntry right)
+        {
+            return EqualityComparer<PlayListEntry>.Default.Equals(left, right);
+        }
+
+        public static bool operator !=(PlayListEntry left, PlayListEntry right)
+        {
+            return !(left == right);
+        }
     }
 
     public class Song : INotifyPropertyChanged, IEquatable<Song>
@@ -980,6 +1177,8 @@ namespace MusicPlayer.Core
     internal sealed class MusicStoreDatabase : DbContext
     {
         internal DbSet<Song> songs { get; set; }
+        internal DbSet<PlayListEntry> playListEntrys { get; set; }
+        internal DbSet<PlayListNameEntry> PlayListName { get; set; }
 
         public IQueryable<string> CoverIds(ILibrary library) => this.songs.Where(x => x.LibraryProvider == library.Id).Select(x => x.LibraryImageId);
 
@@ -1027,6 +1226,12 @@ namespace MusicPlayer.Core
 
             modelBuilder.Entity<Song>()
                 .HasKey(s => new { s.MediaId, s.LibraryProvider });
+
+            modelBuilder.Entity<PlayListEntry>()
+                            .HasKey(s => new { s.MediaId, s.LibraryProvider, s.PlayListId });
+
+            modelBuilder.Entity<PlayListNameEntry>()
+                            .HasKey(s => new { s.Name, s.PlayListId });
 
             modelBuilder.Entity<Song>().Property(x => x.GenreSong);
             modelBuilder.Entity<Song>().Property(x => x.InterpreterSong);
