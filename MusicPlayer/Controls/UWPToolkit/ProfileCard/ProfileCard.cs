@@ -17,7 +17,7 @@ namespace Microsoft.Toolkit.Uwp.UI.Controls.Graph
     /// </summary>
     public partial class ProfileCard : Control
     {
-        private static readonly BitmapImage PersonPhoto = new BitmapImage(new Uri("ms-appx:///Microsoft.Toolkit.Uwp.UI.Controls.Graph/Assets/person.png"));
+        private static readonly BitmapImage PersonPhoto = new BitmapImage(new Uri("ms-appx:///Controls/UWPToolkit/Assets/person.png"));
         private ContentControl _contentPresenter;
 
         /// <summary>

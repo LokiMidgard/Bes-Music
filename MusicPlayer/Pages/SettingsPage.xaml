@@ -13,67 +13,122 @@
     
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.DataContext>
-        <viewmodels:OneDriveAccessor/>
+        <viewmodels:OneDriveAccessor OnAskForPermission="OneDriveAccessor_OnAskForPermission"/>
     </Page.DataContext>
     <Page.Resources>
         <converters:FileSizeConverter x:Key="FileSizeConverter"></converters:FileSizeConverter>
         <converters:ThiknessConverter x:Key="bottomThiknessConverter" />
-        <converters:ExceptionHandlerConverter x:Key="ErrorHandler"/>
+        <converters:ExceptionHandlerConverter x:Key="ErrorHandler"  OnError="ExceptionHandlerConverter_OnError"/>
+        <converters:VisibleCollapsedOnEmpty x:Key="VisibleCount"  />
     </Page.Resources>
 
     <Grid DataContext="{Binding Instance}">
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <StackPanel.Resources>
-                <Style TargetType="Button">
-                    <Setter Property="Margin" Value="12"/>
-                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                </Style>
-            </StackPanel.Resources>
 
-            <ComboBox ItemsSource="{x:Bind PossiblePlcations}" SelectedItem="{Binding StorageLocation, Mode=TwoWay}">
 
-            </ComboBox>
-
-            <Button HorizontalAlignment="Center"  Command="{Binding PeekDataCommand}" >Peek</Button>
-            <Button HorizontalAlignment="Center"  Command="{Binding DownloadDataCommand, Converter={StaticResource ErrorHandler}}" Padding="0" >
-                <StackPanel Orientation="Vertical">
-                <TextBlock Margin="8" ><Run Text="Donwload " /><Run Text="{Binding  OneDriveWork.DownloadSizeInBytes , Converter={StaticResource FileSizeConverter}}"/></TextBlock>
-                    <ProgressBar  Value="{Binding BytesDownloaded}" Maximum="{Binding OneDriveWork.DownloadSizeInBytes}" />
-                </StackPanel>
-            </Button>
-            <Button HorizontalAlignment="Center" Click="Clear">Clear Data</Button>
-                
-                <ListView Height="300" ItemsSource="{Binding OneDriveWork.DriveItems}" ScrollViewer.VerticalScrollBarVisibility="Visible">
-                    <ListView.Style>
-                    <Style TargetType="ListView">
-                            <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
+        <ListView Grid.Row="1" Grid.ColumnSpan="50" ItemsSource="{Binding OneDriveWork.DriveItems}" ScrollViewer.VerticalScrollBarVisibility="Visible" MaxWidth="800">
+            <ListView.Header>
+                <Grid Padding="0,0,0,48">
+                    <Grid.Resources>
+                        <Style TargetType="FrameworkElement" x:Key="centerButton">
+                            <Setter Property="Margin" Value="0,0,0,12"/>
+                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalAlignment" Value="Stretch"/>
                         </Style>
-                    </ListView.Style>
-                    <ListView.Resources>
-                        <Style TargetType="ScrollBar">
-                            <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />
+
+                        <Style TargetType="FrameworkElement"  x:Key="leftButton">
+                            <Setter Property="Margin" Value="0,0,6,12"/>
+                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalAlignment" Value="Stretch"/>
                         </Style>
-                    </ListView.Resources>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock ><Run Text="{Binding Audio.Album}"/><Run Text=" - "/><Run Text="{Binding Audio.Title}"/><Run Text=" - "/><Run Text="{Binding Audio.AlbumArtist}"/></TextBlock>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-            </ListView>
-                
-            <StackPanel Orientation="Horizontal">
-                <TextBlock x:Name="Covers"></TextBlock>
-                <TextBlock x:Name="Media"></TextBlock>
-                <TextBlock x:Name="Playlist"></TextBlock>
-            </StackPanel>
-        </StackPanel>
-        <graphControls:AadLogin x:Name="Login"
-    HorizontalAlignment="Left"
+                        <Style  TargetType="FrameworkElement"  x:Key="rightButton">
+                            <Setter Property="Margin" Value="6,0,0,12"/>
+                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                            <Setter Property="VerticalAlignment" Value="Stretch"/>
+                        </Style>
+                        <Visibility x:Key="collapsed">Collapsed</Visibility>
+                    </Grid.Resources>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <graphControls:AadLogin x:Name="Login"
+                                            Grid.ColumnSpan="2"
+                                          
+    Margin="0,48,0,12"
+                                            HorizontalAlignment="Stretch"
+    
     View="SmallProfilePhotoLeft"
                                 
     AllowSignInAsDifferentUser="False"
     SignInCompleted="Login_SignInCompleted"
     SignOutCompleted="Login_SignOutCompleted"
     />
+
+                    <Button Grid.Column="0" Grid.Row="1" Style="{StaticResource leftButton}" Command="{Binding PeekDataCommand, Converter={StaticResource ErrorHandler}}" >Peek</Button>
+                    <Button Grid.Column="1" Grid.Row="1" Style="{StaticResource rightButton}" HorizontalContentAlignment="Stretch" Command="{Binding DownloadDataCommand, Converter={StaticResource ErrorHandler}}" Padding="0" >
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" >
+                            <TextBlock Margin="8" HorizontalAlignment="Center" ><Run Text="Donwload " /><Run Text="{Binding  OneDriveWork.DownloadSizeInBytes , Converter={StaticResource FileSizeConverter}}"/></TextBlock>
+                            <ProgressBar  HorizontalAlignment="Stretch" Value="{Binding BytesDownloaded}" Maximum="{Binding OneDriveWork.DownloadSizeInBytes}" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.ColumnSpan="2" Grid.Row="2" Style="{StaticResource centerButton}"    Command="{Binding SyncPlaylistCommand, Converter={StaticResource ErrorHandler}}" Content="Sync Playlists" ></Button>
+                    <Button Grid.Column="0" Grid.Row="3" Style="{StaticResource leftButton}"   Command="{Binding CancelCommand, Converter={StaticResource ErrorHandler}}" Content="Cancel" ></Button>
+                    <Button Grid.Column="1" Grid.Row="3" Style="{StaticResource rightButton}"  Command="{Binding ClearDataCommand, Converter={StaticResource ErrorHandler}}" >Clear Data</Button>
+
+                    <ComboBox Grid.ColumnSpan="2" Grid.Row="4" Style="{StaticResource centerButton}" ItemsSource="{x:Bind PossiblePlcations}" SelectedItem="{Binding StorageLocation, Mode=TwoWay}" />
+                    <TextBlock Grid.ColumnSpan="2" Grid.Row="5" Text="Current Downloading" Style="{StaticResource TitleTextBlockStyle}" Foreground="{StaticResource SystemControlHighlightAccentBrush}"
+                               Visibility="{Binding OneDriveWork.CurrentWork.Count, Converter={StaticResource VisibleCount},FallbackValue={StaticResource collapsed}}"
+                               />
+                    <Border Grid.ColumnSpan="2" Height="390" Grid.Row="6" BorderBrush="{StaticResource SystemControlHighlightAccentBrush}" BorderThickness="1"
+                            Visibility="{Binding OneDriveWork.CurrentWork.Count, Converter={StaticResource VisibleCount},FallbackValue={StaticResource collapsed}}">
+
+                        <ItemsControl  ItemsSource="{Binding OneDriveWork.CurrentWork}" HorizontalContentAlignment="Stretch">
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="4,4,4,12">
+                                    <TextBlock ><Run Text="{Binding CurrentItem.Audio.Album}"/><Run Text=" - "/><Run Text="{Binding CurrentItem.Audio.Title}"/><Run Text=" - "/><Run Text="{Binding CurrentItem.Audio.AlbumArtist}"/></TextBlock>
+                                    <ProgressBar Value="{Binding CurrentRead}" Maximum="{Binding MaximumToRead}" HorizontalAlignment="Stretch" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    </Border>
+
+                </Grid>
+            </ListView.Header>
+            <ListView.Style>
+                <Style TargetType="ListView">
+                    <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
+                </Style>
+            </ListView.Style>
+            <ListView.Resources>
+                <Style TargetType="ScrollBar">
+                    <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />
+                </Style>
+            </ListView.Resources>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock ><Run Text="{Binding Audio.Album}"/><Run Text=" - "/><Run Text="{Binding Audio.Title}"/><Run Text=" - "/><Run Text="{Binding Audio.AlbumArtist}"/></TextBlock>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
     </Grid>
 </Page>

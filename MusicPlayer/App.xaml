@@ -10,8 +10,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="base.xaml"/>
                 <ResourceDictionary Source="themeresources.xaml"/>
-                <ResourceDictionary Source="Controls/UWPToolkit/AadLogin/AadLogin.xaml"/>
                 <ResourceDictionary Source="Controls/UWPToolkit/ProfileCard/ProfileCard.xaml"/>
+                <ResourceDictionary Source="Controls/UWPToolkit/AadLogin/AadLogin.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <SolidColorBrush x:Key="SystemControlTransparentBackgroundBrush" Color="#c0888888"></SolidColorBrush>

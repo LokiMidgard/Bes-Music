@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -62,23 +64,35 @@ namespace MusicPlayer.Pages
             //RootFrame.Navigate(typeof(HomePage));
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+
+        
+
+        private async void ExceptionHandlerConverter_OnError(Exception exception)
         {
-            await OneDriveLibrary.Instance.Update(default);
+            var dialog = new MessageDialog(exception.Message);
+            await dialog.ShowAsync();
         }
 
-        private async void Clear(object sender, RoutedEventArgs e)
+        private async System.Threading.Tasks.Task<bool> OneDriveAccessor_OnAskForPermission(string messageText)
         {
-            await OneDriveLibrary.Instance.ClearData();
+            var dialog = new MessageDialog(messageText)
+            {
+                Options = MessageDialogOptions.AcceptUserInputAfterDelay
+            };
+
+            var completionSorce = new TaskCompletionSource<bool>();
+            var yesCommand = new UICommand("Yes", cmd => completionSorce.SetResult(true));
+            var cancelCommand = new UICommand("Cancel", cmd => completionSorce.SetResult(false));
+
+            dialog.Commands.Add(yesCommand);
+            dialog.Commands.Add(cancelCommand);
+
+            dialog.DefaultCommandIndex = 1;
+            dialog.CancelCommandIndex = 1;
+            await dialog.ShowAsync();
+
+            return await completionSorce.Task;
         }
-
-        private async void SelectFolder(object sender, RoutedEventArgs e)
-        {
-            //await OneDriveLibrary.Instance.SelectFolder();
-
-        }
-
-
     }
 
 }

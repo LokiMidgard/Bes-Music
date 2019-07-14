@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MusicPlayer.Controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -57,11 +58,14 @@ namespace MusicPlayer.Converters
 
             public bool CanExecute(object parameter) => this.command.CanExecute(parameter);
 
-            public void Execute(object parameter)
+            public async void Execute(object parameter)
             {
                 try
                 {
-                    this.command.Execute(parameter);
+                    if (this.command is DelegateCommand delegateCommand)
+                        await delegateCommand.Execute(parameter);
+                    else
+                        this.command.Execute(parameter);
                 }
                 catch (Exception e)
                 {

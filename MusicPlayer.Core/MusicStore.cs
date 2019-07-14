@@ -30,6 +30,7 @@ namespace MusicPlayer.Core
         public IEnumerable<(string providerId, string imageId)> LibraryImages { get; private set; }
 
         public bool IsInitilized => this.databaseLoad.IsSet;
+        public Task WhenInitilized => this.initilisation.WaitAsync();
 
         private void UpdateProperties()
         {
@@ -136,7 +137,7 @@ namespace MusicPlayer.Core
                                 var nameEnttry = await context.PlayListName.FirstOrDefaultAsync(x => x.PlayListId == playListEntry.PlayListId);
                                 playList = new PlayList(nameEnttry?.Name ?? string.Empty, nameEnttry.PlayListId);
                                 this.playLists.Add(playList);
-                                playListLoockup.Add(playList.Id, playList);
+                                this.playListLoockup.Add(playList.Id, playList);
 
                             }
                             if (this.songLoockup.ContainsKey((playListEntry.LibraryProvider, playListEntry.MediaId)))
@@ -1201,7 +1202,7 @@ namespace MusicPlayer.Core
             if (!this.first)
             {
                 this.first = true;
-                //await this.Database.EnsureDeletedAsync(cancellationToken);
+                // await this.Database.EnsureDeletedAsync(cancellationToken);
             }
 
             await this.Database.EnsureCreatedAsync(cancellationToken);
