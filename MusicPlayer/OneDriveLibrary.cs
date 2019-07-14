@@ -970,205 +970,229 @@ namespace MusicPlayer
                     //var problems = toAdd.GroupBy(x => x.Id).Where(x => x.Count() > 1).ToArray();
                     failedItems = new System.Collections.Concurrent.ConcurrentBag<DriveItem>();
 
-                    var toAddReult = await Task.WhenAll(toAdd.Select(driveItem => Task.Run(async () =>
-                    {
-                        try
-                        {
-
-                            if (driveItem.Deleted != null)
-                            {
-                                try
-                                {
-                                    var mediaFile = await mediaFolder.CreateFileAsync(driveItem.Id, Windows.Storage.CreationCollisionOption.OpenIfExists);
-                                    await mediaFile.DeleteAsync(Windows.Storage.StorageDeleteOption.PermanentDelete);
-
-                                }
-                                catch (Exception)
-                                {
-
-                                }
-                                try
-                                {
-                                    var coverFile = await coverFolder.CreateFileAsync(driveItem.Id, Windows.Storage.CreationCollisionOption.OpenIfExists);
-                                    await coverFile.DeleteAsync(Windows.Storage.StorageDeleteOption.PermanentDelete);
-                                }
-                                catch (Exception)
-                                {
 
 
-                                }
-                                container.Values.Remove(driveItem.Id);
+                    var allTasks = toAdd.Select(driveItem => new Task<Task<bool>>(async () =>
+                     {
+                         try
+                         {
 
-                                var song = MusicStore.Instance.GetSongByMediaId(this.Id, driveItem.Id);
-                                if (song != null)
-                                    await MusicStore.Instance.RemoveSong(song);
+                             if (driveItem.Deleted != null)
+                             {
+                                 try
+                                 {
+                                     var mediaFile = await mediaFolder.CreateFileAsync(driveItem.Id, Windows.Storage.CreationCollisionOption.OpenIfExists);
+                                     await mediaFile.DeleteAsync(Windows.Storage.StorageDeleteOption.PermanentDelete);
 
-                            }
-                            else
-                            {
-                                var downloadMuediaFileTask = Task.Run(async () =>
-                                {
-                                    CurrentDownload currentDownload = null;
+                                 }
+                                 catch (Exception)
+                                 {
 
-
-                                    string[] composers = default;
-                                    string[] performers = default;
-                                    string[] genres = default;
-                                    uint year = default;
-                                    string joinedAlbumArtists = default;
-                                    string album = default;
-                                    string title = default;
-                                    int track = default;
-                                    int disc = default;
-                                    TimeSpan duration = default;
-                                    TagLib.IPicture picture = default;
-
-                                    if (token.IsCancellationRequested)
-                                        return (composers, performers, genres, year, joinedAlbumArtists, album, title, track, disc, duration, picture);
-
-                                    await this.imageSemaphore.WaitAsync(token);
-                                    try
-                                    {
-                                        await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                                        {
-                                            currentDownload = new CurrentDownload(driveItem)
-                                            {
-                                                MaximumToRead = 1
-                                            };
+                                 }
+                                 try
+                                 {
+                                     var coverFile = await coverFolder.CreateFileAsync(driveItem.Id, Windows.Storage.CreationCollisionOption.OpenIfExists);
+                                     await coverFile.DeleteAsync(Windows.Storage.StorageDeleteOption.PermanentDelete);
+                                 }
+                                 catch (Exception)
+                                 {
 
 
-                                            work.CurrentWork.Add(currentDownload);
-                                        });
+                                 }
+                                 container.Values.Remove(driveItem.Id);
 
-                                        var extension = Path.GetExtension(driveItem.Name);
+                                 var song = MusicStore.Instance.GetSongByMediaId(this.Id, driveItem.Id);
+                                 if (song != null)
+                                     await MusicStore.Instance.RemoveSong(song);
 
-                                        var temporaryFile = await mediaFolder.CreateFileAsync(driveItem.Id, CreationCollisionOption.GenerateUniqueName);
-                                        var content = await MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Items[driveItem.Id].Content.Request().GetAsync(token);
+                             }
+                             else
+                             {
+                                 var downloadMuediaFileTask = Task.Run(async () =>
+                                 {
+                                     CurrentDownload currentDownload = null;
 
+                                     string[] composers = default;
+                                     string[] performers = default;
+                                     string[] genres = default;
+                                     uint year = default;
+                                     string joinedAlbumArtists = default;
+                                     string album = default;
+                                     string title = default;
+                                     int track = default;
+                                     int disc = default;
+                                     TimeSpan duration = default;
+                                     TagLib.IPicture picture = default;
 
-                                        using (var destinationStream = await temporaryFile.OpenAsync(FileAccessMode.ReadWrite, StorageOpenOptions.None))
-                                        using (var sourceStream = content)
-                                        using (var dStream = destinationStream.AsStream())
-                                        {
-                                            Progress<long> progress = null;
-                                            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                                            {
-                                                currentDownload.MaximumToRead = dStream.Length;
-                                                progress = new Progress<long>((readed) => currentDownload.CurrentRead = readed);
-                                            });
-                                            await sourceStream.CopyToAsync(dStream, token, progress);
-                                            dStream.Seek(0, SeekOrigin.Begin);
-                                            var abstracStream = new TagLib.StreamFileAbstraction(Path.ChangeExtension(temporaryFile.Name, extension), dStream, null);
+                                     if (token.IsCancellationRequested)
+                                         return (composers, performers, genres, year, joinedAlbumArtists, album, title, track, disc, duration, picture);
 
-
-
-                                            using (var tagFile = TagLib.File.Create(abstracStream))
-                                            {
-
-                                                var tag = tagFile.Tag;
-
-                                                composers = tag.Composers;
-                                                performers = tag.Performers;
-                                                genres = tag.Genres;
-                                                year = tag.Year;
-                                                joinedAlbumArtists = tag.JoinedAlbumArtists;
-                                                album = tag.Album;
-                                                title = tag.Title;
-                                                track = (int)tag.Track;
-                                                disc = (int)tag.Disc;
-
-                                                picture = tag.Pictures.FirstOrDefault(x => x.Type == TagLib.PictureType.FrontCover) ?? tag.Pictures.FirstOrDefault();
-                                            }
-
-                                            var musicProperties = await temporaryFile.Properties.GetMusicPropertiesAsync();
-                                            duration = musicProperties.Duration;
-
-                                        }
-                                        if (temporaryFile.Name != driveItem.Id)
-                                        {
-                                            // It seems that closing the stream takes some time. tring to rename the file can fail.
-                                            await Task.Delay(3);
-                                            var mediaFile = await mediaFolder.CreateFileAsync(driveItem.Id, Windows.Storage.CreationCollisionOption.OpenIfExists);
-                                            System.Diagnostics.Debug.WriteLine($"BEFORE RENAME {mediaFile.Path}");
-                                            await temporaryFile.MoveAndReplaceAsync(mediaFile);
-                                        }
+                                     await this.imageSemaphore.WaitAsync(token);
+                                     try
+                                     {
+                                         await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                                         {
+                                             currentDownload = new CurrentDownload(driveItem)
+                                             {
+                                                 MaximumToRead = 1
+                                             };
 
 
-                                        return (composers, performers, genres, year, joinedAlbumArtists, album, title, track, disc, duration, picture);
-                                    }
-                                    finally
-                                    {
-                                        this.imageSemaphore.Release();
-                                        await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                                        {
-                                            if (currentDownload != null)
-                                            {
+                                             work.CurrentWork.Add(currentDownload);
+                                         });
 
-                                                work.CurrentWork.Remove(currentDownload);
-                                            }
-                                        });
-                                   }
-                                });
+                                         var extension = Path.GetExtension(driveItem.Name);
+
+                                         var temporaryFile = await mediaFolder.CreateFileAsync(driveItem.Id, CreationCollisionOption.GenerateUniqueName);
+                                         var content = await MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Items[driveItem.Id].Content.Request().GetAsync(token);
 
 
-                                var mediaData = await downloadMuediaFileTask;
-                                if (token.IsCancellationRequested)
-                                    return false;
-                                if (mediaData.picture != null)
-                                {
-                                    var temporaryFile = await coverFolder.CreateFileAsync(driveItem.Id, Windows.Storage.CreationCollisionOption.ReplaceExisting);
-                                    using (var destinationStream = await temporaryFile.OpenAsync(FileAccessMode.ReadWrite, StorageOpenOptions.None))
-                                    using (var sourceStream = new MemoryStream(mediaData.picture.Data.Data))
-                                    using (var dstram = destinationStream.AsStream())
-                                        await sourceStream.CopyToAsync(dstram);
-                                }
+                                         using (var destinationStream = await temporaryFile.OpenAsync(FileAccessMode.ReadWrite, StorageOpenOptions.None))
+                                         using (var sourceStream = content)
+                                         using (var dStream = destinationStream.AsStream())
+                                         {
+                                             Progress<long> progress = null;
+                                             await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                                             {
+                                                 currentDownload.MaximumToRead = dStream.Length;
+                                                 progress = new Progress<long>((readed) => currentDownload.CurrentRead = readed);
+                                             });
+                                             await sourceStream.CopyToAsync(dStream, token, progress);
+                                             dStream.Seek(0, SeekOrigin.Begin);
+                                             var abstracStream = new TagLib.StreamFileAbstraction(Path.ChangeExtension(temporaryFile.Name, extension), dStream, null);
 
 
 
+                                             using (var tagFile = TagLib.File.Create(abstracStream))
+                                             {
 
-                                var song = await MusicStore.Instance.AddSong(this.Id, driveItem.Id,
-                                            duration: mediaData.duration,
-                                            composers: mediaData.composers,
-                                            interpreters: mediaData.performers,
-                                            genres: mediaData.genres,
-                                            year: mediaData.year,
-                                            libraryImageId: mediaData.picture != null ? driveItem.Id : string.Empty,
-                                            albumInterpret: mediaData.joinedAlbumArtists,
-                                            albumName: mediaData.album,
-                                            title: mediaData.title,
-                                            track: mediaData.track,
-                                            discNumber: mediaData.disc,
-                                            cancelToken: token);
+                                                 var tag = tagFile.Tag;
 
-                                container.Values[driveItem.Id] = driveItem.CTag;
+                                                 composers = tag.Composers;
+                                                 performers = tag.Performers;
+                                                 genres = tag.Genres;
+                                                 year = tag.Year;
+                                                 joinedAlbumArtists = tag.JoinedAlbumArtists;
+                                                 album = tag.Album;
+                                                 title = tag.Title;
+                                                 track = (int)tag.Track;
+                                                 disc = (int)tag.Disc;
 
-                                await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                                {
-                                    this.BytesDownloaded += driveItem.Size ?? 0;
-                                });
-                            }
-                        }
-                        catch (System.OperationCanceledException)
-                        {
-                            // We do not rescedule cancled downloads
-                            return false;
-                        }
-                        catch (Exception ex)
-                        {
-                            System.Diagnostics.Debug.WriteLine(ex.Message);
-                            failedItems.Add(driveItem);
-                            return false;
-                        }
-                        await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => work.DriveItems.Remove(driveItem));
-                        return true;
+                                                 picture = tag.Pictures.FirstOrDefault(x => x.Type == TagLib.PictureType.FrontCover) ?? tag.Pictures.FirstOrDefault();
+                                             }
 
-                    })));
+                                             var musicProperties = await temporaryFile.Properties.GetMusicPropertiesAsync();
+                                             duration = musicProperties.Duration;
+
+                                         }
+                                         if (temporaryFile.Name != driveItem.Id)
+                                         {
+                                             // It seems that closing the stream takes some time. tring to rename the file can fail.
+                                             await Task.Delay(3);
+                                             var mediaFile = await mediaFolder.CreateFileAsync(driveItem.Id, Windows.Storage.CreationCollisionOption.OpenIfExists);
+                                             System.Diagnostics.Debug.WriteLine($"BEFORE RENAME {mediaFile.Path}");
+                                             await temporaryFile.MoveAndReplaceAsync(mediaFile);
+                                         }
+
+
+                                         return (composers, performers, genres, year, joinedAlbumArtists, album, title, track, disc, duration, picture);
+                                     }
+                                     finally
+                                     {
+                                         this.imageSemaphore.Release();
+                                         await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                                         {
+                                             if (currentDownload != null)
+                                             {
+
+                                                 work.CurrentWork.Remove(currentDownload);
+                                             }
+                                         });
+                                     }
+                                 });
+
+
+                                 var mediaData = await downloadMuediaFileTask;
+                                 if (token.IsCancellationRequested)
+                                     return false;
+                                 if (mediaData.picture != null)
+                                 {
+                                     var temporaryFile = await coverFolder.CreateFileAsync(driveItem.Id, Windows.Storage.CreationCollisionOption.ReplaceExisting);
+                                     using (var destinationStream = await temporaryFile.OpenAsync(FileAccessMode.ReadWrite, StorageOpenOptions.None))
+                                     using (var sourceStream = new MemoryStream(mediaData.picture.Data.Data))
+                                     using (var dstram = destinationStream.AsStream())
+                                         await sourceStream.CopyToAsync(dstram);
+                                 }
+
+
+
+
+                                 var song = await MusicStore.Instance.AddSong(this.Id, driveItem.Id,
+                                             duration: mediaData.duration,
+                                             composers: mediaData.composers,
+                                             interpreters: mediaData.performers,
+                                             genres: mediaData.genres,
+                                             year: mediaData.year,
+                                             libraryImageId: mediaData.picture != null ? driveItem.Id : string.Empty,
+                                             albumInterpret: mediaData.joinedAlbumArtists,
+                                             albumName: mediaData.album,
+                                             title: mediaData.title,
+                                             track: mediaData.track,
+                                             discNumber: mediaData.disc,
+                                             cancelToken: token);
+
+                                 container.Values[driveItem.Id] = driveItem.CTag;
+
+                                 await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                                 {
+                                     this.BytesDownloaded += driveItem.Size ?? 0;
+                                 });
+                             }
+                         }
+                         catch (System.OperationCanceledException)
+                         {
+                             // We do not rescedule cancled downloads
+                             return false;
+                         }
+                         catch (Exception ex)
+                         {
+                             System.Diagnostics.Debug.WriteLine(ex.Message);
+                             failedItems.Add(driveItem);
+                             return false;
+                         }
+                         await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => work.DriveItems.Remove(driveItem));
+                         return true;
+
+                     }));
+
+                    await RunInParallel(allTasks, 10, token);
+
+                    var toAddReult = await Task.WhenAll(allTasks.Select(x => x.Unwrap()));
+
                     if (toAddReult.All(x => x)) // if we had an error, we don't want to save the delta token. Otherwise we will not download the errored file...
                         localSettings.Values[ONE_DRIVE_MUSIC_DELTA_TOKEN] = work.NextRequest;
                     toAdd = failedItems;
                 } while (failedItems.Count > 0 && !token.IsCancellationRequested);
                 this.OneDriveWork = null;
             }
+        }
+
+
+        private async static Task RunInParallel<T>(IEnumerable<Task<Task<T>>> tasks, int maxParalesm, CancellationToken cancellationToken)
+        {
+            var allTasks = new List<Task>(); // this wll help us to get all exceptions
+            using (var semaphor = new SemaphoreSlim(maxParalesm))
+            {
+
+                foreach (var t in tasks)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await semaphor.WaitAsync(cancellationToken);
+                    allTasks.Add(t.ContinueWith(c => c.Result.ContinueWith(c2 => { if (!cancellationToken.IsCancellationRequested) semaphor.Release(); })));
+                    t.Start();
+                }
+            }
+            await Task.WhenAll(allTasks);
         }
     }
 
