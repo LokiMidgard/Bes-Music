@@ -866,6 +866,7 @@ namespace MusicPlayer
             {
                 var coverFolder = await this.GetDataStoreFolder(StorageType.Cover);
                 var storageItem = await coverFolder.GetFileAsync(id);
+
                 return new Uri(storageItem.Path);
             }
             catch (FileNotFoundException)

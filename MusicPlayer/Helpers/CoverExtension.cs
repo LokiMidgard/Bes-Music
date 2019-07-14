@@ -25,7 +25,14 @@ namespace System
             if (image is null)
                 return null;
             else
-                return RandomAccessStreamReference.CreateFromFile(await StorageFile.GetFileFromPathAsync(image.ToString()));
+            {
+                var path = image.ToString();
+                if (path.StartsWith("file:///"))
+                    path = path.Substring("file:///".Length).Replace('/', '\\');
+
+                var file = await StorageFile.GetFileFromPathAsync(path);
+                return RandomAccessStreamReference.CreateFromFile(file);
+            }
         }
 
         public static async Task<RandomAccessStreamReference> GetCover(this Album album, int size, CancellationToken cancellationToken = default)
@@ -41,7 +48,13 @@ namespace System
             if (image is null)
                 return null;
             else
-                return RandomAccessStreamReference.CreateFromFile(await StorageFile.GetFileFromPathAsync(image.ToString()));
+            {
+                var path = image.ToString();
+                if (path.StartsWith("file:///"))
+                    path = path.Substring("file:///".Length).Replace('/', '\\');
+
+                return RandomAccessStreamReference.CreateFromFile(await StorageFile.GetFileFromPathAsync(path));
+            }
             //return RandomAccessStreamReference.CreateFromUri(image);
         }
 
@@ -53,7 +66,9 @@ namespace System
             if (uri is null)
                 return null;
             else
+            {
                 return new BitmapImage(uri);
+            }
         }
 
         public static async Task<ImageSource> GetCoverImageSource(this Album album, int size, CancellationToken cancellationToken = default)
