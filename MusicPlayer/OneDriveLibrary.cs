@@ -1192,8 +1192,13 @@ namespace MusicPlayer
                     allTasks.Add(t.ContinueWith(c => c.Result.ContinueWith(c2 => { if (!cancellationToken.IsCancellationRequested) semaphor.Release(); })));
                     t.Start();
                 }
+                await Task.WhenAll(allTasks);
+
+                // consume the completed semaphore Then we know we did released every still running task.
+                for (int i = 0; i < maxParalesm; i++)
+                    await semaphor.WaitAsync();
+                
             }
-            await Task.WhenAll(allTasks);
         }
     }
 
