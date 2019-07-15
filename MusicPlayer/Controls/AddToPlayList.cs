@@ -15,16 +15,6 @@ namespace MusicPlayer.Controls
     {
 
 
-        public static Song GetIsPlaylistMenue(MenuFlyoutSubItem obj)
-        {
-            return (Song)obj.GetValue(IsPlaylistMenueProperty);
-        }
-
-        public static void SetIsPlaylistMenue(MenuFlyoutSubItem obj, Song value)
-        {
-            obj.SetValue(IsPlaylistMenueProperty, value);
-        }
-
         public static Song GetIsPlaylistMenue(MenuFlyout obj)
         {
             return (Song)obj.GetValue(IsPlaylistMenueProperty);
@@ -35,9 +25,23 @@ namespace MusicPlayer.Controls
             obj.SetValue(IsPlaylistMenueProperty, value);
         }
 
+        public static Song GetIsPlaylistSubMenue(MenuFlyoutSubItem obj)
+        {
+            return (Song)obj.GetValue(IsPlaylistSubMenueProperty);
+        }
+
+        public static void SetIsPlaylistSubMenue(MenuFlyoutSubItem obj, Song value)
+        {
+            obj.SetValue(IsPlaylistSubMenueProperty, value);
+        }
+
         // Using a DependencyProperty as the backing store for IsPlaylistMenue.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsPlaylistMenueProperty =
             DependencyProperty.RegisterAttached("IsPlaylistMenue", typeof(Song), typeof(AddToPlayList), new PropertyMetadata(null, Changed));
+        // Using a DependencyProperty as the backing store for IsPlaylistMenue.  This enables animation, styling, binding, etc...
+
+        public static readonly DependencyProperty IsPlaylistSubMenueProperty =
+            DependencyProperty.RegisterAttached("IsPlaylistSubMenue", typeof(Song), typeof(AddToPlayList), new PropertyMetadata(null, Changed));
 
         private static ConditionalWeakTable<MenuFlyout, NotifyCollectionChangedEventHandler> menuLookUp = new ConditionalWeakTable<MenuFlyout, NotifyCollectionChangedEventHandler>();
 

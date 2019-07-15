@@ -711,6 +711,8 @@ namespace MusicPlayer.Core
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public Song PreferedSong => songs.FirstOrDefault();
+
         internal SongGroup(Album album, string title, int track, int discNumber)
         {
             this.songs = new ObservableCollection<Song>();

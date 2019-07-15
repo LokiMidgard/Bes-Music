@@ -134,6 +134,8 @@
     </Compile>
     <Compile Include="Controls\DelegateCommand.cs" />
     <Compile Include="Controls\DisabledCommand.cs" />
+    <Compile Include="Controls\UWPToolkit\Extensions\ListViewBase\ListViewExtensions.cs" />
+    <Compile Include="Controls\UWPToolkit\Extensions\ListViewBase\StretchDirection.cs" />
     <Compile Include="Converters\ExceptionHandlerConverter.cs" />
     <Compile Include="Controls\MediaBehaviorCommand.cs" />
     <Compile Include="Controls\NowPlayingDisk.cs" />
@@ -168,6 +170,7 @@
     <Compile Include="Controls\UWPToolkit\ProfileCard\ProfileDisplayModeTemplateSelector.cs" />
     <Compile Include="Controls\UWPToolkit\ProfileCard\ViewType.cs" />
     <Compile Include="Converters\BottomThiknessConverter.cs" />
+    <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Converters\VisibleCollapsedOnEmpty.cs" />
     <Compile Include="Converters\FileSizeConverter.cs" />
     <Compile Include="Converters\ListConverter.cs" />

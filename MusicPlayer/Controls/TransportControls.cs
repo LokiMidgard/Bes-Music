@@ -78,8 +78,11 @@ namespace MusicPlayer.Controls
                     return;
                 var currentPlaying = this.IsPlaying;
                 this.PlayList.MoveTo((uint)index);
-                await Task.Delay(10);
-                this.IsPlaying = currentPlaying;
+                if (currentPlaying)
+                {
+                    await Task.Delay(10);
+                    this.IsPlaying = currentPlaying;
+                }
             }
         }
 

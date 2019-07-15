@@ -25,6 +25,19 @@ namespace MusicPlayer.Viewmodels
 
 
 
+
+        public bool HasMultipleDiscs
+        {
+            get { return (bool)this.GetValue(HasMultipleDiscsProperty); }
+            set { this.SetValue(HasMultipleDiscsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for HasMultipleDiscs.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HasMultipleDiscsProperty =
+            DependencyProperty.Register("HasMultipleDiscs", typeof(bool), typeof(AlbumViewmodel), new PropertyMetadata(false));
+
+
+
         private WeakReference<BitmapImage> cover;
 
         public async Task<ImageSource> LoadCoverAsync(CancellationToken cancellationToken)
@@ -55,16 +68,29 @@ namespace MusicPlayer.Viewmodels
         public AlbumViewmodel(Album item)
         {
             this.Model = item ?? throw new ArgumentNullException(nameof(item));
-            this.PlayAlbumCommand = new DelegateCommand(async () =>
+            this.PlayAlbumCommand = new DelegateCommand<Song>(async (song) =>
             {
                 await MediaplayerViewmodel.Instance.ClearSongs();
                 foreach (var songGroup in this.Model.Songs)
                 {
                     await MediaplayerViewmodel.Instance.AddSong(songGroup.Songs.First());
                 }
+                if (song != null)
+                    MediaplayerViewmodel.Instance.CurrentPlayingIndex = MediaplayerViewmodel.Instance.CurrentPlaylist.Select((value, index) => (value, index)).FirstOrDefault(x => x.value.Song == song).index;
+                await Task.Delay(3); // I HATE THIS ThERE MUST BE A BETTER WAY!!!
                 await MediaplayerViewmodel.Instance.Play();
 
             });
+
+            ((System.Collections.Specialized.INotifyCollectionChanged)this.Model.Songs).CollectionChanged += this.AlbumViewmodel_CollectionChanged;
+            this.CollectionUpdated();
+        }
+
+        private void AlbumViewmodel_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) => this.CollectionUpdated();
+
+        private void CollectionUpdated()
+        {
+            this.HasMultipleDiscs = this.Model.Songs.Select(x => x.DiscNumber).Distinct().Skip(1).Any();
         }
 
         public static bool operator ==(AlbumViewmodel viewmodel1, AlbumViewmodel viewmodel2)
