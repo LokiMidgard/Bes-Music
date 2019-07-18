@@ -134,6 +134,7 @@
     </Compile>
     <Compile Include="Controls\DelegateCommand.cs" />
     <Compile Include="Controls\DisabledCommand.cs" />
+    <Compile Include="Controls\StateListener.cs" />
     <Compile Include="Controls\UWPToolkit\Extensions\ListViewBase\ListViewExtensions.cs" />
     <Compile Include="Controls\UWPToolkit\Extensions\ListViewBase\StretchDirection.cs" />
     <Compile Include="Converters\ExceptionHandlerConverter.cs" />

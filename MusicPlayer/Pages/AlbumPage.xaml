@@ -19,104 +19,255 @@
         <converters:VisibilityConverter x:Key="visibilityTrue" OnTrue="Visible"/>
         <converters:VisibilityConverter x:Key="visibilityFalse" OnTrue="Collapsed"/>
     </Page.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        
-        <ListView
+    <controls:StateListener >
+
+
+        <Grid>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="TouchGroup">
+                    <VisualState x:Name="Touch">
+                        <VisualState.Setters>
+                            <Setter Target="list.IsItemClickEnabled" Value="true"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="NoTouch">
+                        <VisualState.Setters>
+                            <Setter Target="list.IsItemClickEnabled" Value="false"/>
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+
+            </VisualStateManager.VisualStateGroups>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <ListView x:Name="list" 
             HorizontalContentAlignment="Stretch"
             extensions:ListViewExtensions.AlternateColor="#33AAAAAA"
              extensions:ListViewExtensions.StretchItemContainerDirection="Both"
+                      ItemClick="List_ItemClick"
 SelectionMode="None"
             ItemsSource="{Binding Model.Songs}">
-            <ListView.Header>
-                <Border Background="{StaticResource SystemControlBackgroundBaseLowBrush}">
-                    <Grid
+                <ListView.Header>
+                    <Border Background="{StaticResource SystemControlBackgroundBaseLowBrush}">
+                        <Grid
                 Margin="100,100,0,24"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Image
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Image
                     x:Name="cover"
                     Width="200"
                     Height="200"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top" />
-                        <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Bottom">
-                            <TextBlock
+                            <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Bottom">
+                                <TextBlock
                                 
                         x:Name="name"
                         MaxLines="1"
                         Style="{StaticResource HeaderTextBlockStyle}"
                         Text="{Binding Model.Title}"
                         TextTrimming="CharacterEllipsis" />
-                            <TextBlock
+                                <TextBlock
                         MaxLines="1"
                         Style="{StaticResource SubheaderTextBlockStyle}"
                         Text="{Binding Model.Interpreters, Converter={StaticResource listConverter}}" />
-                        </StackPanel>
-                    </Grid>
-                </Border>
-            </ListView.Header>
-            
-            <ListView.Style>
-                <Style TargetType="ListView">
-                    <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
-                </Style>
-            </ListView.Style>
-            <ListView.Resources>
-                <Style TargetType="ScrollBar">
-                    <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />
-                </Style>
-            </ListView.Resources>
-            <!--<ListView.ItemContainerStyle>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ListView.Header>
+
+                <ListView.Style>
+                    <Style TargetType="ListView">
+                        <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
+                    </Style>
+                </ListView.Style>
+                <ListView.Resources>
+                    <Style TargetType="ScrollBar">
+                        <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />
+                    </Style>
+                </ListView.Resources>
+                <!--<ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 </Style>
             </ListView.ItemContainerStyle>-->
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="core:SongGroup">
-                    <Grid HorizontalAlignment="Stretch">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="5*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="4*" />
-                            <ColumnDefinition Width="1*" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button x:Name="AddButton" 
-                                        Margin="8,0,0,0" 
-Background="Transparent"
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="core:SongGroup">
+                        <controls:StateListener VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch"  HorizontalContentAlignment="Stretch" DisplayMode="ShowNeverInTouchMode">
+                            <Grid IsRightTapEnabled="False" x:Name="rowGrid" Height="50" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" Background="Transparent" >
+
+                                <Grid.Resources>
+                                    <x:Double x:Key="MinWindowSnapPoint">0</x:Double>
+                                    <x:Double x:Key="MediumWindowSnapPoint">641</x:Double>
+                                    <x:Double x:Key="LargeWindowSnapPoint">1008</x:Double>
+                                    <!--<x:Double x:Key="LargeWindowSnapPoint">700</x:Double>-->
+                                    <Style TargetType="MenuFlyoutPresenter" x:Key="MenuFlyoutPresenterShowItem">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </Style>
+                                    <Style TargetType="MenuFlyoutPresenter" x:Key="MenuFlyoutPresenterHideItem">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </Style>
+
+                                </Grid.Resources>
+                                
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="Width">
+                                        <!-- Large window VisualState -->
+                                        <VisualState x:Name="LargeWindow">
+
+                                            <!-- Large window trigger -->
+                                            <VisualState.StateTriggers>
+                                                <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowSnapPoint}"/>
+                                            </VisualState.StateTriggers>
+
+                                        </VisualState>
+
+                                        <!-- Medium window VisualState -->
+                                        <VisualState x:Name="MediumWindow">
+                                            <VisualState.Setters>
+
+                                            </VisualState.Setters>
+                                            <!-- Medium window trigger -->
+                                            <VisualState.StateTriggers>
+                                                <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowSnapPoint}"/>
+                                            </VisualState.StateTriggers>
+
+                                        </VisualState>
+
+                                        <!-- Small window VisualState -->
+                                        <VisualState x:Name="SmallWindow">
+                                            <VisualState.Setters>
+
+                                                <Setter Target="interprets.Visibility" Value="Collapsed"/>
+                                                <Setter Target="interpretsColumn.Width" Value="0"/>
+                                                <Setter Target="interpretSubs.Visibility" Value="Visible"/>
+                                                <Setter Target="ButtonPanel.(Grid.RowSpan)" Value="2"/>
+                                                <Setter Target="duration.(Grid.RowSpan)" Value="2"/>
+                                                <Setter Target="interpreterRow.Height" Value="Auto"/>
+
+                                                <!--<Setter Target="interprets.Visibility" Value="Collapsed"/>
+                                            <Setter Target="interpretsColumn.Width" Value="0"/>
+
+
+                                            <Setter Target="albumTitle.Visibility" Value="Collapsed"/>
+                                            <Setter Target="albumTitleColumn.Width" Value="0"/>
+
+                                            <Setter Target="albumTitleSub.Visibility" Value="Visible"/>-->
+
+                                            </VisualState.Setters>
+                                            <!-- Small window trigger -->
+                                            <VisualState.StateTriggers >
+                                                <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowSnapPoint}"/>
+                                            </VisualState.StateTriggers>
+
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="Button">
+                                        <VisualState x:Name="Normal">
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0:0:0.2" To="0"
+                                                 Storyboard.TargetProperty="Opacity"
+                                                 Storyboard.TargetName="AddButton" d:IsOptimized="True"/>
+                                                <DoubleAnimation Duration="0:0:0.2" To="0"
+                                                 Storyboard.TargetProperty="Opacity"
+                                                 Storyboard.TargetName="PlayButton" d:IsOptimized="True"/>
+                                            </Storyboard>
+
+                                        </VisualState>
+                                        <VisualState x:Name="DoingOver">
+                                            <!--<VisualState.StateTriggers>
+                                            <AdaptiveTrigger MinWindowWidth="700" />
+                                        </VisualState.StateTriggers>-->
+
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0:0:0.5" To="1"
+                                                 Storyboard.TargetProperty="Opacity"
+                                                 Storyboard.TargetName="AddButton" d:IsOptimized="True"/>
+                                                <DoubleAnimation Duration="0:0:0.5" To="1"
+                                                 Storyboard.TargetProperty="Opacity"
+                                                 Storyboard.TargetName="PlayButton" d:IsOptimized="True"/>
+                                            </Storyboard>
+
+                                            <!--<VisualState.Setters>-->
+                                            <!--<Setter Target="AddButton.Opacity" Value="1"></Setter>-->
+                                            <!--</VisualState.Setters>-->
+                                        </VisualState>
+                                    </VisualStateGroup>
+
+                                    <VisualStateGroup x:Name="TouchGroup">
+                                        <VisualState x:Name="Touch">
+                                            <VisualState.Setters>
+                                                <Setter Target="GridMenuFlyout.MenuFlyoutPresenterStyle" Value="{ThemeResource MenuFlyoutPresenterShowItem}"/>
+                                                <Setter Target="rowGrid.IsRightTapEnabled" Value="true"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                        <VisualState x:Name="NoTouch">
+                                            <VisualState.Setters>
+                                                <Setter Target="GridMenuFlyout.MenuFlyoutPresenterStyle" Value="{ThemeResource MenuFlyoutPresenterHideItem}"/>
+                                                <Setter Target="rowGrid.IsRightTapEnabled" Value="false"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+
+                                <Grid.ContextFlyout>
+                                    <MenuFlyout x:Name="GridMenuFlyout">
+                                        <MenuFlyoutItem Text="Play"></MenuFlyoutItem>
+                                        <MenuFlyoutSubItem Text="Add" controls:AddToPlayList.IsPlaylistSubMenue="{x:Bind PreferedSong}" />
+                                    </MenuFlyout>
+                                </Grid.ContextFlyout>
+                                
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="5*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition x:Name="interpretsColumn" Width="4*" />
+                                    <ColumnDefinition Width="60"   />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition x:Name="interpreterRow" Height="0"/>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Column="1" x:Name="ButtonPanel" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Right">
+                                    <Button x:Name="AddButton"    
+                                        Margin="8,0,0,0"   
+                                        Opacity="0"
+                                            Width="50"
+                    Background="Transparent" 
                     VerticalAlignment="Stretch"
                     HorizontalAlignment="Right"
                      
                     
                     >
-                                <Button.Flyout>
-                                    <MenuFlyout  controls:AddToPlayList.IsPlaylistMenue="{x:Bind PreferedSong}"/>
-                                </Button.Flyout>
-                                <SymbolIcon Symbol="Add" />
+                                        <Button.Flyout>
+                                            <MenuFlyout  controls:AddToPlayList.IsPlaylistMenue="{x:Bind PreferedSong}"/>
+                                        </Button.Flyout>
+                                        <SymbolIcon Symbol="Add" />
 
-                            </Button>
-                            <Button x:Name="PlayButton" 
+                                    </Button>
+                                    <Button x:Name="PlayButton" 
                     Margin="0,0,8,0" 
-Background="Transparent"
+Background="Transparent" Opacity="0"
 VerticalAlignment="Stretch"
+                                            Width="50"
                                     HorizontalAlignment="Right"
     
                     
                    Command="{Binding DataContext.PlayAlbumCommand, ElementName=root}"
                                     CommandParameter="{x:Bind PreferedSong}"
                     >
-                                <SymbolIcon Symbol="Play" />
+                                        <SymbolIcon Symbol="Play" />
 
-                            </Button>
+                                    </Button>
 
-                            <!--<Button
+                                    <!--<Button
                             Grid.Column="0"
                             Click="Button_Click"
                             Tag="{x:Bind}">
@@ -129,23 +280,27 @@ VerticalAlignment="Stretch"
                             Tag="{x:Bind}">
                                 <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="" />
                             </Button>-->
-                        </StackPanel>
-                        <!--<TextBlock Grid.Column="0" Text="{x:Bind Title}" />-->
-                        <TextBlock VerticalAlignment="Center" Grid.Column="0" Margin="3,0" Visibility="{Binding DataContext.HasMultipleDiscs, ElementName=root,Converter={StaticResource visibilityTrue}}">
+                                </StackPanel>
+                                <!--<TextBlock Grid.Column="0" Text="{x:Bind Title}" />-->
+                                <TextBlock VerticalAlignment="Center" Grid.Column="0" Margin="3,0"  Visibility="{Binding DataContext.HasMultipleDiscs, ElementName=root,Converter={StaticResource visibilityTrue}}">
                             <Run Text="(Disc"  Foreground="{StaticResource SystemControlForegroundChromeDisabledLowBrush}" />
                             <Run Text="{x:Bind DiscNumber}" Foreground="{StaticResource SystemControlForegroundChromeDisabledLowBrush}" /><Run Text=")"  Foreground="{StaticResource SystemControlForegroundChromeDisabledLowBrush}"/>
                             <Run Text="{x:Bind Track}" /><Run Text="." />
                             <Run Text="{x:Bind Title}" />
-                        </TextBlock>
-                        <TextBlock VerticalAlignment="Center" Grid.Column="0" Margin="3,0" Visibility="{Binding DataContext.HasMultipleDiscs, ElementName=root,Converter={StaticResource visibilityFalse}}">
+                                </TextBlock>
+                                <TextBlock VerticalAlignment="Center" Grid.Column="0" Margin="3,0" Visibility="{Binding DataContext.HasMultipleDiscs, ElementName=root,Converter={StaticResource visibilityFalse}}">
                             <Run Text="{x:Bind Track}" /><Run Text="." />
                             <Run Text="{x:Bind Title}" />
-                        </TextBlock>
-                        <TextBlock VerticalAlignment="Center" Grid.Column="2" Text="{x:Bind Interpreters, Converter={StaticResource listConverter}}" />
-                        <TextBlock VerticalAlignment="Center" Grid.Column="3" Text="{x:Bind PreferedSong.Duration}" />
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </Grid>
+                                </TextBlock>
+                                <TextBlock x:Name="interprets" VerticalAlignment="Center" Grid.Column="2" Text="{x:Bind Interpreters, Converter={StaticResource listConverter}}" />
+                                <TextBlock x:Name="interpretSubs" Margin="0,0,0,4" Foreground="{StaticResource SystemColorGrayTextBrush}"  VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Visibility="Collapsed" Text="{x:Bind Interpreters, Converter={StaticResource listConverter}}" />
+
+                                <TextBlock x:Name="duration" VerticalAlignment="Center" Grid.Column="3" Text="{x:Bind PreferedSong.Duration}"  HorizontalAlignment="Right" />
+                            </Grid>
+                        </controls:StateListener>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </controls:StateListener>
 </Page>

@@ -66,5 +66,10 @@ namespace MusicPlayer.Pages
 
 
         }
+
+        private void List_ItemClick(object sender, ItemClickEventArgs e)
+        {
+
+        }
     }
 }
