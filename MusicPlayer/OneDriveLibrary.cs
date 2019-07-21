@@ -455,7 +455,18 @@ namespace MusicPlayer
                     var nextUpdate = lastResponse.AdditionalData["@odata.deltaLink"]?.ToString();
 
 
-                    var lastPlayList = localSettings.Values[LOCAL_SETTINGS_LASTPLAYLIST_STATE] as string;
+                    var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+                    var playlistFile = await localFolder.CreateFileAsync(LOCAL_SETTINGS_LASTPLAYLIST_STATE, CreationCollisionOption.OpenIfExists);
+                    var basicProperties = await playlistFile.GetBasicPropertiesAsync();
+                    string lastPlayList;
+                    if (basicProperties.Size != 0)
+                    {
+                        lastPlayList = await FileIO.ReadTextAsync(playlistFile);
+                        // already Existed
+                    }
+                    else
+                        lastPlayList = null;
+
                     var lastState = PlayListCollectionState.LoadFromString(lastPlayList);
                     var currentState = await GetCurrentPlayListState();
                     var localChanges = lastState.GetChanges(currentState);
@@ -466,7 +477,7 @@ namespace MusicPlayer
                     {
                         await PerformRemoteChanges(downloadProposes);
                         var newCurrentState = await GetCurrentPlayListState();
-                        localSettings.Values[LOCAL_SETTINGS_LASTPLAYLIST_STATE] = newCurrentState.Persist();
+                        await FileIO.WriteTextAsync(playlistFile, newCurrentState.Persist());
                     }
                     localSettings.Values[ONE_DRIVE_PLAYLIST_DELTA_TOKEN] = nextUpdate;
                     cancellationToken.ThrowIfCancellationRequested();
@@ -632,7 +643,7 @@ namespace MusicPlayer
                                     {
                                         var toChange = MusicStore.Instance.PlayLists.FirstOrDefault(x => x.Id == id);
                                         if (toChange is null) // we need to create it
-                                            await MusicStore.Instance.CreatePlaylist(item.Audio.Album);
+                                            await MusicStore.Instance.CreatePlaylist(item.Audio.Album,id);
                                         else // otherwise rename it
                                             toChange.Name = item.Audio.Album;
                                     }
@@ -796,8 +807,16 @@ namespace MusicPlayer
         }
         private static async Task DeleteFile(DriveItem folder, string name, CancellationToken cancellationToken)
         {
-            await MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Items[folder.Id].ItemWithPath(name).Request().DeleteAsync(cancellationToken);
+            try
+            {
+                await MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Items[folder.Id].ItemWithPath(name).Request().DeleteAsync(cancellationToken);
 
+            }
+            catch (Microsoft.Graph.ServiceException e) when (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+
+                // It was already deleted.
+            }
         }
 
         private async Task ClearData()
@@ -1197,7 +1216,7 @@ namespace MusicPlayer
                 // consume the completed semaphore Then we know we did released every still running task.
                 for (int i = 0; i < maxParalesm; i++)
                     await semaphor.WaitAsync();
-                
+
             }
         }
     }

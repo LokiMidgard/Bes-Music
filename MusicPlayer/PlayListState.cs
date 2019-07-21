@@ -9,17 +9,18 @@ using System.Xml;
 namespace MusicPlayer
 {
     [DataContract]
-    internal struct PlayListCollectionState
+    internal class PlayListCollectionState
     {
-        public PlayListCollectionState(ImmutableArray<PlaylistState> playlists)
+        public PlayListCollectionState(IEnumerable<PlaylistState> playlists)
         {
-            this.playlists = playlists;
+            this.playlists = playlists.ToList();
         }
 
         [DataMember]
-        private readonly ImmutableArray<PlaylistState> playlists;
-        public ImmutableArray<PlaylistState> Playlists => this.playlists.IsDefault ? ImmutableArray<PlaylistState>.Empty : this.playlists;
-        public static PlayListCollectionState Empty => default;
+        private readonly List<PlaylistState> playlists;
+        [IgnoreDataMember]
+        public List<PlaylistState> Playlists => this.playlists is null ? new List<PlaylistState>() : this.playlists;
+        public static PlayListCollectionState Empty => new PlayListCollectionState(Array.Empty<PlaylistState>());
 
         public static PlayListCollectionState LoadFromString(string str)
         {
@@ -28,7 +29,11 @@ namespace MusicPlayer
             var serelizer = new DataContractSerializer(typeof(PlayListCollectionState));
             using (var stringReader = new StringReader(str))
             using (var xmlReader = XmlReader.Create(stringReader))
-                return (PlayListCollectionState)serelizer.ReadObject(xmlReader);
+            {
+
+                var @object = serelizer.ReadObject(xmlReader);
+                return (PlayListCollectionState)@object;
+            }
         }
 
         public string Persist()
@@ -163,29 +168,30 @@ namespace MusicPlayer
     {
         public string Name { get; set; }
 
-        public ImmutableArray<SongState> Songs { get; set; }
+        public List<SongState> Songs { get; set; }
     }
 
 
     [DataContract]
-    struct PlaylistState : IEquatable<PlaylistState>
+    class PlaylistState : IEquatable<PlaylistState>
     {
-        public PlaylistState(Guid id, string name, ImmutableArray<SongState> songs)
+        public PlaylistState(Guid id, string name, IEnumerable<SongState> songs)
         {
             this.Id = id;
             this.Name = name ?? throw new ArgumentNullException(nameof(name));
-            this.songs = songs;
+            this.songs = songs.ToList();
         }
 
         [DataMember]
-        public Guid Id { get; }
+        public Guid Id { get; set; }
 
         [DataMember]
-        public string Name { get; }
+        public string Name { get; set; }
 
         [DataMember]
-        public readonly ImmutableArray<SongState> songs;
-        public ImmutableArray<SongState> Songs => this.songs.IsDefault ? ImmutableArray<SongState>.Empty : this.songs;
+        private readonly List<SongState> songs;
+        [IgnoreDataMember]
+        public List<SongState> Songs => this.songs is null ? new List<SongState>() : this.songs;
 
         public override bool Equals(object obj)
         {
@@ -214,7 +220,7 @@ namespace MusicPlayer
     }
 
     [DataContract]
-    struct SongState : IEquatable<SongState>
+    class SongState : IEquatable<SongState>
     {
         public SongState(string libraryProvider, string mediaId)
         {
@@ -223,9 +229,9 @@ namespace MusicPlayer
         }
 
         [DataMember]
-        public string LibraryProvider { get; }
+        public string LibraryProvider { get; set; }
         [DataMember]
-        public string MediaId { get; }
+        public string MediaId { get; set; }
 
         public override bool Equals(object obj)
         {

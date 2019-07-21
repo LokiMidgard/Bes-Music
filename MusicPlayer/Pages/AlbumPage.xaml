@@ -109,9 +109,11 @@ SelectionMode="None"
                                     <!--<x:Double x:Key="LargeWindowSnapPoint">700</x:Double>-->
                                     <Style TargetType="MenuFlyoutPresenter" x:Key="MenuFlyoutPresenterShowItem">
                                         <Setter Property="Visibility" Value="Visible"/>
+                                        <Setter Property="IsEnabled" Value="True"/>
                                     </Style>
                                     <Style TargetType="MenuFlyoutPresenter" x:Key="MenuFlyoutPresenterHideItem">
                                         <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Setter Property="IsEnabled" Value="False"/>
                                     </Style>
 
                                 </Grid.Resources>

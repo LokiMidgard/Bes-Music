@@ -102,6 +102,7 @@ namespace MusicPlayer.Core
             await this.RunOnUIThread(() =>
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Albums)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.PlayLists)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.IsInitilized)));
             });
         }
@@ -225,7 +226,11 @@ namespace MusicPlayer.Core
 
         public Task<PlayList> CreatePlaylist(string name, CancellationToken cancelToken = default)
         {
-            var newPlayList = new PlayList(name, Guid.NewGuid());
+            return this.CreatePlaylist(name, Guid.NewGuid(), cancelToken);
+        }
+        public Task<PlayList> CreatePlaylist(string name, Guid id, CancellationToken cancelToken = default)
+        {
+            var newPlayList = new PlayList(name, id);
 
             return this.RunOnUIThread(async () =>
             {
