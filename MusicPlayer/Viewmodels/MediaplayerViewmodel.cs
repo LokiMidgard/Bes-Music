@@ -1,12 +1,16 @@
 ﻿using MusicPlayer.Controls;
 using MusicPlayer.Core;
+
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+
 using Windows.Media.Core;
 using Windows.Media.Playback;
 using Windows.Storage.FileProperties;
@@ -55,7 +59,7 @@ namespace MusicPlayer.Viewmodels
         public ReadOnlyObservableCollection<PlayingSong> CurrentPlaylist { get; }
         private readonly ObservableCollection<PlayingSong> currentPlaylist;
 
-
+        private readonly System.Threading.SemaphoreSlim semaphore = new System.Threading.SemaphoreSlim(1, 1);
 
         public int CurrentPlayingIndex
         {
@@ -67,24 +71,29 @@ namespace MusicPlayer.Viewmodels
         public static readonly DependencyProperty CurrentPlayingIndexProperty =
             DependencyProperty.Register("CurrentPlayingIndex", typeof(int), typeof(MediaplayerViewmodel), new PropertyMetadata(-1, CurrentPlayingIndexChanged));
 
-        private void CurrentPlayingIndexChanged(int newIndex)
+        private async void CurrentPlayingIndexChanged(int newIndex)
         {
-            if (newIndex > -1)
+            using (await this.semaphore.Lock())
             {
-                var newItem = this.CurrentPlaylist[newIndex];
-                this.transportControls.CurrentMediaPlaybackItem = newItem.MediaPlaybackItem;
+                if (newIndex > -1)
+                {
+                    var newItem = this.CurrentPlaylist[newIndex];
+                    this.transportControls.CurrentMediaPlaybackItem = newItem.MediaPlaybackItem;
+                }
+                else
+                {
+                    this.transportControls.CurrentMediaPlaybackItem = null;
+                }
             }
-            else
-            {
-                this.transportControls.CurrentMediaPlaybackItem = null;
-            }
-
         }
-        private static void CurrentPlayingIndexChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static async void CurrentPlayingIndexChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var newIndex = (int)e.NewValue;
             var me = (MediaplayerViewmodel)d;
-            me.CurrentPlayingIndexChanged(newIndex);
+            using (await me.semaphore.Lock())
+            {
+                var newIndex = (int)e.NewValue;
+                me.CurrentPlayingIndexChanged(newIndex);
+            }
         }
 
         private MediaplayerViewmodel(TransportControls transportControls)
@@ -99,27 +108,31 @@ namespace MusicPlayer.Viewmodels
             this.currentPlaylist = new ObservableCollection<PlayingSong>();
             this.CurrentPlaylist = new ReadOnlyObservableCollection<PlayingSong>(this.currentPlaylist);
 
-            transportControls.RegisterPropertyChangedCallback(TransportControls.IsShuffledProperty, (sender, e) =>
+            transportControls.RegisterPropertyChangedCallback(TransportControls.IsShuffledProperty, async (sender, e) =>
             {
-                this.ResetSorting();
+                using (await this.semaphore.Lock())
+                    this.ResetSorting();
             });
 
             transportControls.RegisterPropertyChangedCallback(TransportControls.CurrentMediaPlaybackItemProperty, (sender, e) => this.RefresCurrentIndex());
 
         }
 
-        private void RefresCurrentIndex()
+        private async void RefresCurrentIndex()
         {
-            var currentItem = this.transportControls.CurrentMediaPlaybackItem;
-            int index;
-            if (currentItem is null)
-                index = -1;
-            else
+            using (await this.semaphore.Lock())
             {
-                var viewmodel = this.playbackItemLookup[currentItem];
-                index = this.CurrentPlaylist.IndexOf(viewmodel);
+                var currentItem = this.transportControls.CurrentMediaPlaybackItem;
+                int index;
+                if (currentItem is null)
+                    index = -1;
+                else
+                {
+                    var viewmodel = this.playbackItemLookup[currentItem];
+                    index = this.CurrentPlaylist.IndexOf(viewmodel);
+                }
+                this.CurrentPlayingIndex = index;
             }
-            this.CurrentPlayingIndex = index;
         }
 
         public static void Init(TransportControls transportControls)
@@ -131,7 +144,7 @@ namespace MusicPlayer.Viewmodels
             initilized.SetResult(null);
         }
 
-        private async Task ResetSorting()
+        private void ResetSorting()
         {
             var currentItem = this.transportControls.CurrentMediaPlaybackItem;
             this.currentPlaylist.Clear();
@@ -145,7 +158,6 @@ namespace MusicPlayer.Viewmodels
             var newIndex = this.currentPlaylist.Select((value, index) => (value, index)).First(x => x.value.MediaPlaybackItem.Equals(currentItem)).index;
 
             this.CurrentPlayingIndex = newIndex;
-
         }
 
 
@@ -161,7 +173,13 @@ namespace MusicPlayer.Viewmodels
                 });
                 await completionSource.Task;
             }
+            else
+                using (await this.semaphore.Lock())
+                    this.PlayInternal();
+        }
 
+        private void PlayInternal()
+        {
             this.transportControls.IsPlaying = true;
         }
 
@@ -177,7 +195,17 @@ namespace MusicPlayer.Viewmodels
                 });
                 await completionSource.Task;
             }
+            else
+            {
+                using (await this.semaphore.Lock())
+                {
+                    this.ClearSongsInternal();
+                }
+            }
+        }
 
+        private void ClearSongsInternal()
+        {
             this.mediaPlaybackList.Items.Clear();
             this.playbackItemLookup.Clear();
             foreach (var item in this.mediaItemLookup)
@@ -198,13 +226,75 @@ namespace MusicPlayer.Viewmodels
                 });
                 await completionSource.Task;
             }
-            this.mediaPlaybackList.Items.Remove(song.MediaPlaybackItem);
-            this.playbackItemLookup.Remove(song.MediaPlaybackItem);
-            var list = this.mediaItemLookup[song.Song];
-            this.currentPlaylist.Remove(song);
-            list.Remove(song);
-            if (list.Count == 0)
-                this.mediaItemLookup.Remove(song.Song);
+            else
+            {
+                using (await this.semaphore.Lock())
+                {
+                    this.mediaPlaybackList.Items.Remove(song.MediaPlaybackItem);
+                    this.playbackItemLookup.Remove(song.MediaPlaybackItem);
+                    var list = this.mediaItemLookup[song.Song];
+                    this.currentPlaylist.Remove(song);
+                    list.Remove(song);
+                    if (list.Count == 0)
+                        this.mediaItemLookup.Remove(song.Song);
+                }
+            }
+        }
+
+        private CancellationTokenSource resetCancelation = new CancellationTokenSource();
+        public async Task ResetSongs(ImmutableArray<Song> songs, Song startingSong = null)
+        {
+            if (!this.Dispatcher.HasThreadAccess)
+            {
+                var completionSource = new TaskCompletionSource<object>();
+                await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    var result = this.ResetSongs(songs);
+                    completionSource.SetResult(result);
+                });
+                await completionSource.Task;
+            }
+            else
+            {
+                var currentCancelation = new CancellationTokenSource();
+
+                var oldCancelation = Interlocked.Exchange(ref this.resetCancelation, currentCancelation);
+                oldCancelation.Cancel();
+                oldCancelation.Dispose();
+
+                using (await this.semaphore.Lock())
+                {
+                    this.ClearSongsInternal();
+
+                    bool first = true;
+                    foreach (var s in songs)
+                    {
+                        if (currentCancelation.IsCancellationRequested)
+                            break;
+                        await this.AddSongInternal(s);
+                        if (startingSong == null && first)
+                        {
+                            first = false;
+                            await Task.Delay(1000); // I HATE THIS ThERE MUST BE A BETTER WAY!!!
+                            this.PlayInternal();
+                        }
+                    }
+                    if (!currentCancelation.IsCancellationRequested)
+                    {
+                        if (startingSong != null)
+                        {
+                            this.CurrentPlayingIndex = this.CurrentPlaylist.Select((value, index) => (value, index)).FirstOrDefault(x => x.value.Song == startingSong).index;
+
+                            await Task.Delay(3); // I HATE THIS ThERE MUST BE A BETTER WAY!!!
+                            this.PlayInternal();
+                        }
+                        else if (!this.transportControls.IsPlaying)
+                        {
+                            this.PlayInternal();
+                        }
+                    }
+                }
+            }
         }
 
         public async Task<PlayingSong> AddSong(Song song)
@@ -219,7 +309,14 @@ namespace MusicPlayer.Viewmodels
                 });
                 return await completionSource.Task.Unwrap();
             }
+            using (await this.semaphore.Lock())
+            {
+                return await this.AddSongInternal(song);
+            }
+        }
 
+        private async Task<PlayingSong> AddSongInternal(Song song)
+        {
             Task getCover;
             MediaSource media;
             List<PlayingSong> list;
@@ -242,6 +339,8 @@ namespace MusicPlayer.Viewmodels
             }
 
             var mediaItem = new MediaPlaybackItem(media);
+
+
             var viewModel = new PlayingSong(mediaItem, song);
             this.playbackItemLookup.Add(mediaItem, viewModel);
             list.Add(viewModel);
@@ -299,5 +398,38 @@ namespace MusicPlayer.Viewmodels
 
         public MediaPlaybackItem MediaPlaybackItem { get; }
         public Song Song { get; }
+    }
+
+    internal static class SemaphoreExtensions
+    {
+        public static async Task<IDisposable> Lock(this System.Threading.SemaphoreSlim semaphore)
+        {
+            await semaphore.WaitAsync();
+            return new LockRelease(semaphore);
+        }
+
+        private sealed class LockRelease : IDisposable
+        {
+            private readonly SemaphoreSlim semaphore;
+            private bool disposedValue = false; // To detect redundant calls
+
+            public LockRelease(SemaphoreSlim semaphore)
+            {
+                this.semaphore = semaphore;
+            }
+
+            #region IDisposable Support
+            // This code added to correctly implement the disposable pattern.
+            public void Dispose()
+            {
+                if (!this.disposedValue)
+                {
+                    this.semaphore.Release();
+                    this.disposedValue = true;
+                }
+            }
+            #endregion
+
+        }
     }
 }

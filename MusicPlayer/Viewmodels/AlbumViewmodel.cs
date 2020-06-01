@@ -1,12 +1,15 @@
 ﻿using MusicPlayer.Controls;
 using MusicPlayer.Core;
+
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+
 using Windows.Media.Core;
 using Windows.Storage.FileProperties;
 using Windows.UI.Xaml;
@@ -70,16 +73,7 @@ namespace MusicPlayer.Viewmodels
             this.Model = item ?? throw new ArgumentNullException(nameof(item));
             this.PlayAlbumCommand = new DelegateCommand<Song>(async (song) =>
             {
-                await MediaplayerViewmodel.Instance.ClearSongs();
-                foreach (var songGroup in this.Model.Songs)
-                {
-                    await MediaplayerViewmodel.Instance.AddSong(songGroup.Songs.First());
-                }
-                if (song != null)
-                    MediaplayerViewmodel.Instance.CurrentPlayingIndex = MediaplayerViewmodel.Instance.CurrentPlaylist.Select((value, index) => (value, index)).FirstOrDefault(x => x.value.Song == song).index;
-                await Task.Delay(3); // I HATE THIS ThERE MUST BE A BETTER WAY!!!
-                await MediaplayerViewmodel.Instance.Play();
-
+                await MediaplayerViewmodel.Instance.ResetSongs(this.Model.Songs.Select(x => x.Songs.First()).ToImmutableArray(), song);
             });
 
             ((System.Collections.Specialized.INotifyCollectionChanged)this.Model.Songs).CollectionChanged += this.AlbumViewmodel_CollectionChanged;

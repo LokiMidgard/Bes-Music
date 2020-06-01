@@ -1,10 +1,13 @@
 ﻿using MusicPlayer.Core;
 using MusicPlayer.Viewmodels;
+
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -25,15 +28,11 @@ namespace MusicPlayer.Controls
         {
             this.InitializeComponent();
         }
-
         private async void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is PlayList playList)
             {
-                await MediaplayerViewmodel.Instance.ClearSongs();
-                foreach (var song in playList.Songs)
-                    await MediaplayerViewmodel.Instance.AddSong(song);
-                await MediaplayerViewmodel.Instance.Play();
+                await MediaplayerViewmodel.Instance.ResetSongs(playList.Songs.ToImmutableArray());
             }
         }
     }
