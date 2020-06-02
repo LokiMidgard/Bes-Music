@@ -14,6 +14,7 @@
     x:Name="root"
     mc:Ignorable="d">
     <Page.Resources>
+        <converters:StringFormatConverter x:Key="stringFormat" />
         <converters:ListConverter x:Key="listConverter" />
         <converters:ThiknessConverter x:Key="bottomThiknessConverter" />
         <converters:VisibilityConverter x:Key="visibilityTrue" OnTrue="Visible"/>
@@ -297,7 +298,7 @@ VerticalAlignment="Stretch"
                                 <TextBlock x:Name="interprets" VerticalAlignment="Center" Grid.Column="2" Text="{x:Bind Interpreters, Converter={StaticResource listConverter}}" />
                                 <TextBlock x:Name="interpretSubs" Margin="0,0,0,4" Foreground="{StaticResource SystemColorGrayTextBrush}"  VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Visibility="Collapsed" Text="{x:Bind Interpreters, Converter={StaticResource listConverter}}" />
 
-                                <TextBlock x:Name="duration" VerticalAlignment="Center" Grid.Column="3" Text="{x:Bind PreferedSong.Duration}"  HorizontalAlignment="Right" />
+                                <TextBlock x:Name="duration" VerticalAlignment="Center" Grid.Column="3" Text="{x:Bind PreferedSong.Duration, Converter={StaticResource stringFormat}, ConverterParameter='{}{0:mm\\\\:ss}'}"  HorizontalAlignment="Right" />
                             </Grid>
                         </controls:StateListener>
                     </DataTemplate>
