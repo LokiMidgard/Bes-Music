@@ -643,7 +643,7 @@ namespace MusicPlayer
                                     {
                                         var toChange = MusicStore.Instance.PlayLists.FirstOrDefault(x => x.Id == id);
                                         if (toChange is null) // we need to create it
-                                            await MusicStore.Instance.CreatePlaylist(item.Audio.Album,id);
+                                            await MusicStore.Instance.CreatePlaylist(item.Audio.Album, id);
                                         else // otherwise rename it
                                             toChange.Name = item.Audio.Album;
                                     }
@@ -1043,9 +1043,10 @@ namespace MusicPlayer
                                      int disc = default;
                                      TimeSpan duration = default;
                                      TagLib.IPicture picture = default;
+                                     string targetFileName = default;
 
                                      if (token.IsCancellationRequested)
-                                         return (composers, performers, genres, year, joinedAlbumArtists, album, title, track, disc, duration, picture);
+                                         return (composers, performers, genres, year, joinedAlbumArtists, album, title, track, disc, duration, picture, targetFileName);
 
                                      await this.imageSemaphore.WaitAsync(token);
                                      try
@@ -1062,8 +1063,8 @@ namespace MusicPlayer
                                          });
 
                                          var extension = Path.GetExtension(driveItem.Name);
-
-                                         var temporaryFile = await mediaFolder.CreateFileAsync(driveItem.Id, CreationCollisionOption.GenerateUniqueName);
+                                         targetFileName = $"{driveItem.Id}{extension}";
+                                         var temporaryFile = await mediaFolder.CreateFileAsync(targetFileName, CreationCollisionOption.GenerateUniqueName);
                                          var content = await MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Items[driveItem.Id].Content.Request().GetAsync(token);
 
 
@@ -1105,7 +1106,7 @@ namespace MusicPlayer
                                              duration = musicProperties.Duration;
 
                                          }
-                                         if (temporaryFile.Name != driveItem.Id)
+                                         if (temporaryFile.Name != targetFileName)
                                          {
                                              // It seems that closing the stream takes some time. tring to rename the file can fail.
                                              await Task.Delay(3);
@@ -1115,7 +1116,7 @@ namespace MusicPlayer
                                          }
 
 
-                                         return (composers, performers, genres, year, joinedAlbumArtists, album, title, track, disc, duration, picture);
+                                         return (composers, performers, genres, year, joinedAlbumArtists, album, title, track, disc, duration, picture, targetFileName);
                                      }
                                      finally
                                      {
@@ -1147,7 +1148,7 @@ namespace MusicPlayer
 
 
 
-                                 var song = await MusicStore.Instance.AddSong(this.Id, driveItem.Id,
+                                 var song = await MusicStore.Instance.AddSong(this.Id, mediaData.targetFileName,
                                              duration: mediaData.duration,
                                              composers: mediaData.composers,
                                              interpreters: mediaData.performers,
@@ -1183,7 +1184,7 @@ namespace MusicPlayer
                          await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => work.DriveItems.Remove(driveItem));
                          return true;
 
-                     }));
+                     })).ToArray();
 
                     await RunInParallel(allTasks, 10, token);
 
