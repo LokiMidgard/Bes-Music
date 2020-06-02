@@ -73,7 +73,7 @@ namespace MusicPlayer.Viewmodels
 
         private async void CurrentPlayingIndexChanged(int newIndex)
         {
-            using (await this.semaphore.Lock())
+            //using (await this.semaphore.Lock())
             {
                 if (newIndex > -1)
                 {
@@ -89,10 +89,10 @@ namespace MusicPlayer.Viewmodels
         private static async void CurrentPlayingIndexChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var me = (MediaplayerViewmodel)d;
-            using (await me.semaphore.Lock())
+            //using (await me.semaphore.Lock())
             {
                 var newIndex = (int)e.NewValue;
-                me.CurrentPlayingIndexChanged(newIndex);
+                //me.CurrentPlayingIndexChanged(newIndex);
             }
         }
 
@@ -110,8 +110,8 @@ namespace MusicPlayer.Viewmodels
 
             transportControls.RegisterPropertyChangedCallback(TransportControls.IsShuffledProperty, async (sender, e) =>
             {
-                using (await this.semaphore.Lock())
-                    this.ResetSorting();
+                //using (await this.semaphore.Lock())
+                this.ResetSorting();
             });
 
             transportControls.RegisterPropertyChangedCallback(TransportControls.CurrentMediaPlaybackItemProperty, (sender, e) => this.RefresCurrentIndex());
@@ -120,7 +120,7 @@ namespace MusicPlayer.Viewmodels
 
         private async void RefresCurrentIndex()
         {
-            using (await this.semaphore.Lock())
+            //using (await this.semaphore.Lock())
             {
                 var currentItem = this.transportControls.CurrentMediaPlaybackItem;
                 int index;
@@ -283,8 +283,9 @@ namespace MusicPlayer.Viewmodels
                     {
                         if (startingSong != null)
                         {
-                            this.CurrentPlayingIndex = this.CurrentPlaylist.Select((value, index) => (value, index)).FirstOrDefault(x => x.value.Song == startingSong).index;
-
+                            var newIndex = this.CurrentPlaylist.Select((value, index) => (value, index)).FirstOrDefault(x => x.value.Song == startingSong).index;
+                            //this.CurrentPlayingIndex = newIndex;
+                            this.transportControls.CurrentMediaPlaybackItem = this.CurrentPlaylist[newIndex].MediaPlaybackItem;
                             await Task.Delay(3); // I HATE THIS ThERE MUST BE A BETTER WAY!!!
                             this.PlayInternal();
                         }

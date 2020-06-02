@@ -19,12 +19,82 @@
         <converters:ThiknessConverter x:Key="bottomThiknessConverter" />
         <converters:VisibilityConverter x:Key="visibilityTrue" OnTrue="Visible"/>
         <converters:VisibilityConverter x:Key="visibilityFalse" OnTrue="Collapsed"/>
+        <x:Double x:Key="MinWindowSnapPoint">0</x:Double>
+        <x:Double x:Key="MediumWindowSnapPoint">641</x:Double>
+        <x:Double x:Key="LargeWindowSnapPoint">1008</x:Double>
     </Page.Resources>
     <controls:StateListener >
 
 
         <Grid>
+
+
+
             <VisualStateManager.VisualStateGroups>
+
+                <VisualStateGroup x:Name="Width">
+                    <!-- Large window VisualState -->
+                    <VisualState x:Name="LargeWindow">
+
+                        <!-- Large window trigger -->
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowSnapPoint}"/>
+                        </VisualState.StateTriggers>
+
+                    </VisualState>
+
+                    <!-- Medium window VisualState -->
+                    <VisualState x:Name="MediumWindow">
+                        <VisualState.Setters>
+                            <Setter Target="CaptionBox.(Grid.Row)" Value="1"/>
+                            <Setter Target="cover.(Grid.Column)" Value="1"/>
+                            <Setter Target="cover.(Grid.Column)" Value="1"/>
+                            <Setter Target="cover.HorizontalAlignment" Value="Center"/>
+                            <Setter Target="HeaderGrid.HorizontalAlignment" Value="Center"/>
+                            <Setter Target="HeaderGrid.Margin" Value="24,100,24,24"/>
+                            <!--<Setter Target="HeaderGrid.HeaderColumn.Width" Value="0"/>-->
+
+                        </VisualState.Setters>
+                        <!-- Medium window trigger -->
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowSnapPoint}">
+                                
+                            </AdaptiveTrigger>
+                        </VisualState.StateTriggers>
+
+                    </VisualState>
+
+                    <!-- Small window VisualState -->
+                    <VisualState x:Name="SmallWindow">
+                        <VisualState.Setters>
+                            <Setter Target="CaptionBox.(Grid.Row)" Value="1"/>
+                            <Setter Target="cover.(Grid.Column)" Value="1"/>
+                            <Setter Target="cover.(Grid.Column)" Value="1"/>
+                            <Setter Target="cover.HorizontalAlignment" Value="Center"/>
+                            <Setter Target="HeaderGrid.HorizontalAlignment" Value="Center"/>
+                            <Setter Target="HeaderGrid.Margin" Value="0,100,0,24"/>
+
+                            <!--<Setter Target="CaptionBox.(Grid.Row)" Value="1"/>
+                            <Setter Target="CaptionBox.(Grid.Column)" Value="0"/>-->
+
+                            <!--<Setter Target="interprets.Visibility" Value="Collapsed"/>
+                                            <Setter Target="interpretsColumn.Width" Value="0"/>
+
+
+                                            <Setter Target="albumTitle.Visibility" Value="Collapsed"/>
+                                            <Setter Target="albumTitleColumn.Width" Value="0"/>
+
+                                            <Setter Target="albumTitleSub.Visibility" Value="Visible"/>-->
+
+                        </VisualState.Setters>
+                        <!-- Small window trigger -->
+                        <VisualState.StateTriggers >
+                            <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowSnapPoint}"/>
+                        </VisualState.StateTriggers>
+
+                    </VisualState>
+                </VisualStateGroup>
+
                 <VisualStateGroup x:Name="TouchGroup">
                     <VisualState x:Name="Touch">
                         <VisualState.Setters>
@@ -48,35 +118,47 @@
             extensions:ListViewExtensions.AlternateColor="#33AAAAAA"
              extensions:ListViewExtensions.StretchItemContainerDirection="Both"
                       ItemClick="List_ItemClick"
+                      
 SelectionMode="None"
             ItemsSource="{Binding Model.Songs}">
                 <ListView.Header>
-                    <Border Background="{StaticResource SystemControlBackgroundBaseLowBrush}">
-                        <Grid
+                    <Border x:Name="headerBackground"  Background="{StaticResource SystemControlBackgroundBaseLowBrush}">
+
+
+
+                        <Grid 
                 Margin="100,100,0,24"
+                            x:Name="HeaderGrid"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition x:Name="HeaderColumn" Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="*" ></RowDefinition>
+                            </Grid.RowDefinitions>
                             <Image
                     x:Name="cover"
                     Width="200"
+                                
+                                ImageOpened="Cover_Loaded"
                     Height="200"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top" />
-                            <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Bottom">
+                            <StackPanel x:Name="CaptionBox" Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Bottom">
                                 <TextBlock
                                 
                         x:Name="name"
                         MaxLines="1"
                         Style="{StaticResource HeaderTextBlockStyle}"
                         Text="{Binding Model.Title}"
-                        TextTrimming="CharacterEllipsis" />
+                        TextTrimming="CharacterEllipsis" TextWrapping="WrapWholeWords" />
                                 <TextBlock
                         MaxLines="1"
                         Style="{StaticResource SubheaderTextBlockStyle}"
+                                    TextTrimming="CharacterEllipsis"
                         Text="{Binding Model.Interpreters, Converter={StaticResource listConverter}}" />
                             </StackPanel>
                         </Grid>
@@ -104,9 +186,7 @@ SelectionMode="None"
                             <Grid IsRightTapEnabled="False" x:Name="rowGrid" Height="50" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" Background="Transparent" >
 
                                 <Grid.Resources>
-                                    <x:Double x:Key="MinWindowSnapPoint">0</x:Double>
-                                    <x:Double x:Key="MediumWindowSnapPoint">641</x:Double>
-                                    <x:Double x:Key="LargeWindowSnapPoint">1008</x:Double>
+                                
                                     <!--<x:Double x:Key="LargeWindowSnapPoint">700</x:Double>-->
                                     <Style TargetType="MenuFlyoutPresenter" x:Key="MenuFlyoutPresenterShowItem">
                                         <Setter Property="Visibility" Value="Visible"/>

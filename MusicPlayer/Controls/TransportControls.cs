@@ -78,6 +78,7 @@ namespace MusicPlayer.Controls
                     return;
                 var currentPlaying = this.IsPlaying;
                 this.PlayList.MoveTo((uint)index);
+                var current = this.PlayList.CurrentItem;
                 if (currentPlaying)
                 {
                     await Task.Delay(10);
@@ -348,29 +349,30 @@ namespace MusicPlayer.Controls
 
         private async void MediaPlayer_CurrentStateChanged(MediaPlayer sender, object args)
         {
-            await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            if (!this.Dispatcher.HasThreadAccess)
+            {
+                await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    this.MediaPlayer_CurrentStateChanged(sender, args);
+                });
+            }
+            else
             {
                 switch (sender.PlaybackSession.PlaybackState)
                 {
                     case MediaPlaybackState.None:
-                        this.IsPlaying = false;
-                        break;
                     case MediaPlaybackState.Opening:
-                        this.IsPlaying = false;
-                        break;
+                    case MediaPlaybackState.Paused:
                     case MediaPlaybackState.Buffering:
                         this.IsPlaying = false;
                         break;
                     case MediaPlaybackState.Playing:
                         this.IsPlaying = true;
                         break;
-                    case MediaPlaybackState.Paused:
-                        this.IsPlaying = false;
-                        break;
                     default:
                         break;
                 }
-            });
+            }
         }
 
         private async void PlayList_CurrentItemChanged(MediaPlaybackList sender, CurrentMediaPlaybackItemChangedEventArgs args)

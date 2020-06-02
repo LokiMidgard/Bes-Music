@@ -23,6 +23,7 @@
         x:Name="toRender"
         ContainerContentChanging="ToRender_ContainerContentChanging"
         IsItemClickEnabled="True"
+        
         ItemClick="AlbumClicked"
         HorizontalContentAlignment="Stretch"
         ItemsSource="{Binding Source={StaticResource groupInfoCVS}}">
