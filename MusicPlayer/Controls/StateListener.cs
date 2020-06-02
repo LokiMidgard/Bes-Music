@@ -55,6 +55,8 @@ namespace MusicPlayer.Controls
 
         private void StateListener_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+            if (App.Current is null)
+                return;
             App.Current.PropertyChanged += this.Current_PropertyChanged;
             this.isTouch = App.Current.IsTochMode;
             if (this.isTouch)
