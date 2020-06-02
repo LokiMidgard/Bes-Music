@@ -342,6 +342,7 @@ namespace MusicPlayer.Core
                     if (this.songLoockup.ContainsKey((provider, mediaId)))
                     {
                         song = this.songLoockup[(provider, mediaId)];
+                        context.Attach(song);
                         newSong = false;
                     }
                     else
@@ -376,6 +377,8 @@ namespace MusicPlayer.Core
 
                     if (newSong)
                         await context.AddAsync(song, cancelToken);
+                    
+                        
 
                     await context.SaveChangesAsync();
                     this.AddSong(song);
