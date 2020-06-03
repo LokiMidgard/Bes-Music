@@ -1,11 +1,13 @@
 ﻿using MusicPlayer.Core;
 using MusicPlayer.Viewmodels;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Media.Core;
@@ -65,8 +67,10 @@ namespace MusicPlayer.Pages
         {
             _ = OneDriveLibrary.Instance;
             _ = AlbumCollectionViewmodel.Instance;
+            this.ProgreessIndecator.IsActive = true;
             await Core.MusicStore.Instance.Init();
             await MusicStore.Instance.SetUITask(this.RunOnDispatcher);
+            this.ProgreessIndecator.IsActive = false;
 
         }
         private Task RunOnDispatcher(Func<Task> f)

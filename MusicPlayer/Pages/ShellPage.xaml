@@ -9,10 +9,10 @@
     xmlns:playback="using:Windows.Media.Playback"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
-    
-    
-    
-    
+
+
+
+
     <Page.Resources>
         <ControlTemplate x:Key="CommandBarTemplate1" TargetType="CommandBar">
             <Grid>
@@ -37,6 +37,11 @@
         <controls:TransportControls Grid.Row="1" />-->
 
         <Frame x:Name="shellFrame" Grid.RowSpan="2" />
+        <ProgressRing
+            x:Name="ProgreessIndecator"
+            Grid.RowSpan="2"
+            Width="200"
+            Height="200" />
 
         <MediaPlayerElement
             x:Name="mediaPlayer"
