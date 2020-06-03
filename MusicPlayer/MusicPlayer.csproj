@@ -200,7 +200,9 @@
     </Compile>
     <Compile Include="PlayListState.cs" />
     <Compile Include="SecureConstents.cs" />
+    <Compile Include="Services\FirstRunDisplayService.cs" />
     <Compile Include="Services\NavigationService.cs" />
+    <Compile Include="Services\WhatsNewDisplayService.cs" />
     <Compile Include="Viewmodels\AlbumCollectionViewmodel.cs" />
     <Compile Include="Viewmodels\AlbumViewmodel.cs" />
     <Compile Include="App.xaml.cs">
@@ -227,6 +229,12 @@
     <Compile Include="Viewmodels\ShellViewModel.cs" />
     <Compile Include="Viewmodels\SongViewmodel.cs" />
     <Compile Include="Viewmodels\SortedGroup.cs" />
+    <Compile Include="Views\FirstRunDialog.xaml.cs">
+      <DependentUpon>FirstRunDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WhatsNewDialog.xaml.cs">
+      <DependentUpon>WhatsNewDialog.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -234,6 +242,7 @@
     </AppxManifest>
     <None Include="Controls\UWPToolkit\license.md" />
     <None Include="MusicPlayer_TemporaryKey.pfx" />
+    <PRIResource Include="Strings\en-us\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\LargeTile.scale-100.png" />
@@ -346,6 +355,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\FirstRunDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\WhatsNewDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

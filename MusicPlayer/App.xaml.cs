@@ -1,4 +1,5 @@
 ﻿using Microsoft.Toolkit.Services.MicrosoftGraph;
+using MusicPlayer.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -106,6 +107,8 @@ namespace MusicPlayer
                 Window.Current.SizeChanged += this.WindowSizeChanged;
                 this.UpdateIsTouch();
 
+                await FirstRunDisplayService.ShowIfAppropriateAsync();
+                await WhatsNewDisplayService.ShowIfAppropriateAsync();
 
             }
             // Set the application minimum window size

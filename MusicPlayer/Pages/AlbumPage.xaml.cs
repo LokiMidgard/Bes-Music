@@ -89,7 +89,7 @@ namespace MusicPlayer.Pages
                     //using (IRandomAccessStream stream = await random.OpenReadAsync())
                     {
                         var decoder = await BitmapDecoder.CreateAsync(stream.AsRandomAccessStream());
-                        var x = await colorThief.GetColor(decoder,1);
+                        var x = await colorThief.GetColor(decoder);
                         this.headerBackground.Background = new SolidColorBrush(new Windows.UI.Color()
                         {
                             //A = x.Color.A,
