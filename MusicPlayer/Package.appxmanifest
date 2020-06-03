@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" IgnorableNamespaces="uap mp uap3">
-  <Identity Name="Midgard.BesMusic-1f95-4f15-9ab1-9a28d699ee70" Publisher="CN=patri" Version="1.0.0.0" />
-  <mp:PhoneIdentity PhoneProductId="e54df8f3-1f95-4f15-9ab1-9a28d699ee70" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="51791Midgard.BesMusic" Publisher="CN=Midgard" Version="0.4.4.0" />
+  <mp:PhoneIdentity PhoneProductId="ac4cb4c5-64a1-483e-99ad-c2dcb8c09124" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>MusicPlayer</DisplayName>
-    <PublisherDisplayName>Patrick Kranz</PublisherDisplayName>
+    <DisplayName>Bes Music</DisplayName>
+    <PublisherDisplayName>Midgard</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
