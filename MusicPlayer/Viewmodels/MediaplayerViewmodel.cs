@@ -71,7 +71,7 @@ namespace MusicPlayer.Viewmodels
         public static readonly DependencyProperty CurrentPlayingIndexProperty =
             DependencyProperty.Register("CurrentPlayingIndex", typeof(int), typeof(MediaplayerViewmodel), new PropertyMetadata(-1, CurrentPlayingIndexChanged));
 
-        private async void CurrentPlayingIndexChanged(int newIndex)
+        private void CurrentPlayingIndexChanged(int newIndex)
         {
             //using (await this.semaphore.Lock())
             {
@@ -86,7 +86,7 @@ namespace MusicPlayer.Viewmodels
                 }
             }
         }
-        private static async void CurrentPlayingIndexChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void CurrentPlayingIndexChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var me = (MediaplayerViewmodel)d;
             //using (await me.semaphore.Lock())
@@ -108,7 +108,7 @@ namespace MusicPlayer.Viewmodels
             this.currentPlaylist = new ObservableCollection<PlayingSong>();
             this.CurrentPlaylist = new ReadOnlyObservableCollection<PlayingSong>(this.currentPlaylist);
 
-            transportControls.RegisterPropertyChangedCallback(TransportControls.IsShuffledProperty, async (sender, e) =>
+            transportControls.RegisterPropertyChangedCallback(TransportControls.IsShuffledProperty, (sender, e) =>
             {
                 //using (await this.semaphore.Lock())
                 this.ResetSorting();
@@ -118,7 +118,7 @@ namespace MusicPlayer.Viewmodels
 
         }
 
-        private async void RefresCurrentIndex()
+        private void RefresCurrentIndex()
         {
             //using (await this.semaphore.Lock())
             {

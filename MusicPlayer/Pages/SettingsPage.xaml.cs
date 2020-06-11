@@ -45,7 +45,7 @@ namespace MusicPlayer.Pages
 
         private void SettingsPage_Loaded(object sender, RoutedEventArgs e)
         {
-            const string path = @"C:\Users\patri\AppData\Local\Packages\e54df8f3-1f95-4f15-9ab1-9a28d699ee70_d86wfgk7f981m\LocalState\cover\634529B99B5BB82C!63260";
+            //const string path = @"C:\Users\patri\AppData\Local\Packages\e54df8f3-1f95-4f15-9ab1-9a28d699ee70_d86wfgk7f981m\LocalState\cover\634529B99B5BB82C!63260";
         }
 
         private void Login_SignInCompleted(object sender, Microsoft.Toolkit.Uwp.UI.Controls.Graph.SignInEventArgs e)

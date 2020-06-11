@@ -67,7 +67,7 @@ namespace MusicPlayer.Viewmodels
             InitAsync();
         }
 
-        private async void InitAsync()
+        private  void InitAsync()
         {
         }
 

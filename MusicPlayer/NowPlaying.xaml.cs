@@ -1,9 +1,12 @@
 ﻿using MusicPlayer.Controls;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
+
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -26,14 +29,15 @@ namespace MusicPlayer
         public NowPlaying()
         {
             this.InitializeComponent();
-            this.InitAsync();
+            _ = this.InitAsync();
         }
 
-        private async System.Threading.Tasks.Task InitAsync()
+        private System.Threading.Tasks.Task InitAsync()
         {
 
             var covers = Core.MusicStore.Instance.LibraryImages.Select(x => new CoverData() { Id = x.imageId, Provider = x.providerId });
             this.backgroundLarge.Covers = covers;
+            return Task.CompletedTask;
         }
     }
 }

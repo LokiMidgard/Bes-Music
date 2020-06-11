@@ -318,13 +318,13 @@ namespace MusicPlayer
             if (this.Dispatcher.HasThreadAccess)
                 Increment();
             else
-                this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, Increment);
+                _=this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, Increment);
             return new DelegateDisposable(() =>
             {
                 if (this.Dispatcher.HasThreadAccess)
                     Decrement();
                 else
-                    this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, Decrement);
+                  _=  this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, Decrement);
 
             });
 
@@ -1080,7 +1080,7 @@ namespace MusicPlayer
                                              });
                                              await sourceStream.CopyToAsync(dStream, token, progress);
                                              dStream.Seek(0, SeekOrigin.Begin);
-                                             var abstracStream = new TagLib.StreamFileAbstraction(Path.ChangeExtension(temporaryFile.Name, extension), dStream, null);
+                                             var abstracStream = new TagLib.StreamFileAbstraction(temporaryFile.Name, dStream, null);
 
 
 

@@ -1,7 +1,5 @@
 ﻿using MusicPlayer.Viewmodels;
 using System;
-using System;
-using System.Collections.Generic;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -68,7 +66,7 @@ namespace MusicPlayer.Controls
             this.Loaded += this.Albums_Loaded;
         }
 
-        private async void Albums_Loaded(object sender, RoutedEventArgs e)
+        private void Albums_Loaded(object sender, RoutedEventArgs e)
         {
             //await LocalLibrary.Instance.Update(default);
             this.UpdateSize(new Size(this.ActualWidth, this.ActualHeight));

@@ -136,7 +136,7 @@ namespace MusicPlayer.Controls
 
             var flyOut = GenerateFlyOut(song, album);
 
-            newPlaylist.Click += async (sender, e) =>
+            newPlaylist.Click += (sender, e) =>
             {
                 flyOut.ShowAt(App.Shell);
             };

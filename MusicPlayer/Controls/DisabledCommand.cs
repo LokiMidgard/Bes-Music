@@ -12,7 +12,11 @@ namespace MusicPlayer.Controls
         {
         }
 
-        public event EventHandler CanExecuteChanged;
+        event EventHandler ICommand.CanExecuteChanged
+        {
+            add { }
+            remove { }
+        }
 
         public bool CanExecute(object parameter) => false;
 

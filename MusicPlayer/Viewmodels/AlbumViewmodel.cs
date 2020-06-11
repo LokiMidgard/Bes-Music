@@ -41,7 +41,7 @@ namespace MusicPlayer.Viewmodels
 
 
 
-        private WeakReference<BitmapImage> cover;
+        private WeakReference<ImageSource> cover;
 
         public async Task<ImageSource> LoadCoverAsync(CancellationToken cancellationToken)
         {
@@ -49,6 +49,7 @@ namespace MusicPlayer.Viewmodels
                 return target;
 
             var stream = await this.Model.GetCoverImageSource(300, cancellationToken);
+            this.cover = new WeakReference<ImageSource>(stream);
             return stream;
         }
 
