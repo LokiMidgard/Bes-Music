@@ -20,17 +20,40 @@
             ItemClick="ListView_ItemClick"
             ItemsSource="{Binding PlayList}"
             SelectionMode="None">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <!--<Setter Property="Background" Value="Green" />-->
+                    <!--<Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+
+                            <TextBlock Text="{Binding}"/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>-->
+                    <Setter Property="ContextFlyout">
+                        <Setter.Value>
+                            <MenuFlyout Opening="MenuFlyout_Opening" >
+                                <MenuFlyoutItem
+                                    Click="MenuFlyoutItemPlay_Click"
+                                    Text="Play" />
+                                <MenuFlyoutSeparator />
+                                <MenuFlyoutItem Click="MenuFlyoutItemAddToCurrentPlaylist_Click" Text="Add to current Playlist" />
+                                <MenuFlyoutItem
+                                    Click="MenuFlyoutItemDelete_Click"
+                                    DataContext="{Binding}"
+                                    Text="Delete" />
+                            </MenuFlyout>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}">
-                        <TextBlock.ContextFlyout>
-                            <MenuFlyout>
-                                <MenuFlyoutItem Text="Play" />
-                                <MenuFlyoutSeparator />
-                                <MenuFlyoutItem Text="Add to current Playlist" />
-                                <MenuFlyoutItem Text="Delete" />
-                            </MenuFlyout>
-                        </TextBlock.ContextFlyout>
+                        <!--<TextBlock.ContextFlyout>
+
+                        </TextBlock.ContextFlyout>-->
                     </TextBlock>
                 </DataTemplate>
             </ListView.ItemTemplate>

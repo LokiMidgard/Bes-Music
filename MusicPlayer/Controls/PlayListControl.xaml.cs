@@ -35,5 +35,40 @@ namespace MusicPlayer.Controls
                 await MediaplayerViewmodel.Instance.ResetSongs(playList.Songs.ToImmutableArray());
             }
         }
+
+        private async void MenuFlyoutItemPlay_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuFlyoutItem item && item.DataContext is PlayList playList)
+            {
+                await MediaplayerViewmodel.Instance.ResetSongs(playList.Songs.ToImmutableArray());
+            }
+        }
+        private async void MenuFlyoutItemAddToCurrentPlaylist_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuFlyoutItem item && item.DataContext is PlayList playList)
+            {
+                foreach (var song in playList.Songs)
+                {
+                    await MediaplayerViewmodel.Instance.AddSong(song);
+                }
+            }
+        }
+        private async void MenuFlyoutItemDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuFlyoutItem item && item.DataContext is PlayList playList)
+            {
+                await MusicStore.Instance.RemovePlaylist(playList);
+            }
+        }
+
+        private void MenuFlyout_Opening(object sender, object e)
+        {
+            var t = sender as MenuFlyout;
+            var dataContext = t.Target?.DataContext ?? (t.Target as ContentControl)?.Content;
+            foreach (var item in t.Items)
+            {
+                item.DataContext = dataContext;
+            }
+        }
     }
 }
