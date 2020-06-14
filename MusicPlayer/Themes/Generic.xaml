@@ -7,7 +7,7 @@
     xmlns:local2="using:MusicPlayer.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-
+    <BitmapImage x:Key="FallbackCover" UriSource="/Assets/DiscPlaceholder.png" />
     <x:Double x:Key="NormalMediaControlHeight">100</x:Double>
     <x:Double x:Key="NormalCoverControlHeight">92</x:Double>
     <x:Double x:Key="SmallMediaControlHeight">58</x:Double>
@@ -51,7 +51,11 @@
                             <x:Double x:Key="SmalButtonSize">36</x:Double>
                             <Thickness x:Key="SmalButtonMargin">6</Thickness>
                         </Grid.Resources>
-                        <Border Visibility="Visible" Background="{x:Null}" Height="1" Width="1">
+                        <Border
+                            Width="1"
+                            Height="1"
+                            Background="{x:Null}"
+                            Visibility="Visible">
                             <helpers:ConstantsHelper PlayListHeightSet="{Binding ElementName=RootGrid, Path=Height, Mode=OneWay}" />
                         </Border>
                         <Border x:Name="ControlPanel_ControlPanelVisibilityStates_Border">
@@ -89,12 +93,12 @@
                                     </Grid.RowDefinitions>
 
                                     <local2:NowPlayingDisk
+                                        x:Name="SpinningCover"
                                         Grid.RowSpan="2"
                                         Grid.Column="0"
-                                        Margin="4"
-                                        x:Name="SpinningCover"
                                         Width="{StaticResource NormalCoverControlHeight}"
                                         Height="{StaticResource NormalCoverControlHeight}"
+                                        Margin="4"
                                         Cover="{Binding CurrentSong.Thumbnail, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                         IsPlaying="{TemplateBinding IsPlaying}"
                                         Position="{Binding ElementName=ProgressSlider, Path=Value}"
@@ -108,23 +112,23 @@
                                         Stretch="UniformToFill" />-->
                                     <!--  Source="{TemplateBinding CurrentSong.Thumbnail}"  -->
                                     <TextBlock
+                                        x:Name="TitleLable"
                                         Grid.Row="0"
                                         Grid.Column="1"
                                         Margin="8,0,0,0"
                                         VerticalAlignment="Bottom"
                                         MaxLines="1"
-                                        x:Name="TitleLable"
                                         Style="{StaticResource TitleTextBlockStyle}"
                                         Text="{Binding CurrentSong.Title, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                         TextTrimming="CharacterEllipsis"
                                         TextWrapping="NoWrap" />
                                     <!--  Text="{TemplateBinding CurrentSong.Title}"  -->
                                     <TextBlock
+                                        x:Name="ArtistLable"
                                         Grid.Row="1"
                                         Grid.Column="1"
                                         Margin="8,0,0,0"
                                         VerticalAlignment="Top"
-                                        x:Name="ArtistLable"
                                         MaxLines="1"
                                         Style="{StaticResource SubtitleTextBlockStyle}"
                                         Text="{Binding CurrentSong.Artist, RelativeSource={RelativeSource Mode=TemplatedParent}}"
@@ -181,9 +185,9 @@
                                             x:Name="TimeTextGrid"
                                             Grid.Row="1"
                                             Height="15"
-                                            Orientation="Horizontal"
                                             Margin="12,0"
-                                            HorizontalAlignment="Center">
+                                            HorizontalAlignment="Center"
+                                            Orientation="Horizontal">
                                             <TextBlock
                                                 x:Name="TimeElapsedElement"
                                                 Margin="0"
@@ -221,157 +225,153 @@
                                         </AppBarButton.Icon>
                                     </AppBarButton>
                                 </Border>-->
-                                <UserControl x:Name="WrappingControl" IsEnabled="True"
-                                             Grid.Row="2"
+                                <UserControl
+                                    x:Name="WrappingControl"
+                                    Grid.Row="2"
                                     Grid.Column="1"
-                                             >
-                                    
-                                <Border
-                                    x:Name="MediaTransportControls_Command_Border"
-                                    >
+                                    IsEnabled="True">
 
-                                    <Grid x:Name="MediaControlsCommandBar" >
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition  Width="*" />
-                                        </Grid.ColumnDefinitions>
+                                    <Border x:Name="MediaTransportControls_Command_Border">
 
-                                        <StackPanel Grid.Column="0" HorizontalAlignment="Left" />
-                                        <StackPanel
-                                            Grid.Column="1"
-                                            HorizontalAlignment="Center"
-                                            Orientation="Horizontal">
-                                            <ToggleButton
-                                                IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ShuffleCommand.IsEnabled, Mode=TwoWay}"                                                   
-                                            IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsShuffled, Mode=TwoWay}"
-                                                                       x:Name="ShuffleButtonMain"
-                                            
-                                            Width="{StaticResource SmalButtonSize}"
-                                                Height="{StaticResource SmalButtonSize}"
-                                                Margin="{StaticResource SmalButtonMargin}"
+                                        <Grid x:Name="MediaControlsCommandBar">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
 
-                                                Style="{StaticResource RoundToggleButtonStyle}">
-                                                <Viewbox>
-                                                    <SymbolIcon Symbol="Shuffle" />
-                                                </Viewbox>
-                                            </ToggleButton>
-                                            <Button
-                                                Width="{StaticResource MediumButtonSize}"
-                                                Height="{StaticResource MediumButtonSize}"
-                                                Margin="{StaticResource MediumButtonMargin}"
-                                                Command="{TemplateBinding PreviousCommand}"
-                                                Style="{StaticResource RoundButtonStyle}">
-                                                <Viewbox>
-                                                    <SymbolIcon Symbol="Previous" />
-                                                </Viewbox>
-                                            </Button>
-                                            <Button
-                                                x:Name="PausePlayButton"
-                                                Width="{StaticResource BigButtonSize}"
-                                                Height="{StaticResource BigButtonSize}"
-                                                Margin="{StaticResource BigButtonMargin}"
-                                                Command="{TemplateBinding PlayCommand}"
-                                                Style="{StaticResource RoundButtonStyle}">
-                                                <Viewbox>
-                                                    <SymbolIcon x:Name="PlayPauseSymbol" Symbol="Play" />
-                                                </Viewbox>
-                                            </Button>
-                                            <Button
-                                                Width="{StaticResource MediumButtonSize}"
-                                                Height="{StaticResource MediumButtonSize}"
-                                                Margin="{StaticResource MediumButtonMargin}"
-                                                Command="{TemplateBinding NextCommand}"
-                                                Style="{StaticResource RoundButtonStyle}">
-                                                <Viewbox>
-                                                    <SymbolIcon Symbol="Next" />
-                                                </Viewbox>
-                                            </Button>
-                                            <ToggleButton
-                                                Width="{StaticResource SmalButtonSize}"
-                                                Height="{StaticResource SmalButtonSize}"
-                                                Margin="{StaticResource SmalButtonMargin}"
-                                                IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsRepeate, Mode=TwoWay}"
-                                                                       x:Name="RepeatButtonMain"
-                                                                       
-                                                                                                IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=RepeateCommand.IsEnabled, Mode=TwoWay}"
-                                                
-                                                Style="{StaticResource RoundToggleButtonStyle}">
-                                                <Viewbox>
-                                                    <SymbolIcon Symbol="RepeatAll" />
-                                                </Viewbox>
-                                            </ToggleButton>
-                                        </StackPanel>
-                                    </Grid>
+                                            <StackPanel Grid.Column="0" HorizontalAlignment="Left" />
+                                            <StackPanel
+                                                Grid.Column="1"
+                                                HorizontalAlignment="Center"
+                                                Orientation="Horizontal">
+                                                <ToggleButton
+                                                    x:Name="ShuffleButtonMain"
+                                                    Width="{StaticResource SmalButtonSize}"
+                                                    Height="{StaticResource SmalButtonSize}"
+                                                    Margin="{StaticResource SmalButtonMargin}"
+                                                    IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsShuffled, Mode=TwoWay}"
+                                                    IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ShuffleCommand.IsEnabled, Mode=TwoWay}"
+                                                    Style="{StaticResource RoundToggleButtonStyle}">
+                                                    <Viewbox>
+                                                        <SymbolIcon Symbol="Shuffle" />
+                                                    </Viewbox>
+                                                </ToggleButton>
+                                                <Button
+                                                    Width="{StaticResource MediumButtonSize}"
+                                                    Height="{StaticResource MediumButtonSize}"
+                                                    Margin="{StaticResource MediumButtonMargin}"
+                                                    Command="{TemplateBinding PreviousCommand}"
+                                                    Style="{StaticResource RoundButtonStyle}">
+                                                    <Viewbox>
+                                                        <SymbolIcon Symbol="Previous" />
+                                                    </Viewbox>
+                                                </Button>
+                                                <Button
+                                                    x:Name="PausePlayButton"
+                                                    Width="{StaticResource BigButtonSize}"
+                                                    Height="{StaticResource BigButtonSize}"
+                                                    Margin="{StaticResource BigButtonMargin}"
+                                                    Command="{TemplateBinding PlayCommand}"
+                                                    Style="{StaticResource RoundButtonStyle}">
+                                                    <Viewbox>
+                                                        <SymbolIcon x:Name="PlayPauseSymbol" Symbol="Play" />
+                                                    </Viewbox>
+                                                </Button>
+                                                <Button
+                                                    Width="{StaticResource MediumButtonSize}"
+                                                    Height="{StaticResource MediumButtonSize}"
+                                                    Margin="{StaticResource MediumButtonMargin}"
+                                                    Command="{TemplateBinding NextCommand}"
+                                                    Style="{StaticResource RoundButtonStyle}">
+                                                    <Viewbox>
+                                                        <SymbolIcon Symbol="Next" />
+                                                    </Viewbox>
+                                                </Button>
+                                                <ToggleButton
+                                                    x:Name="RepeatButtonMain"
+                                                    Width="{StaticResource SmalButtonSize}"
+                                                    Height="{StaticResource SmalButtonSize}"
+                                                    Margin="{StaticResource SmalButtonMargin}"
+                                                    IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsRepeate, Mode=TwoWay}"
+                                                    IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=RepeateCommand.IsEnabled, Mode=TwoWay}"
+                                                    Style="{StaticResource RoundToggleButtonStyle}">
+                                                    <Viewbox>
+                                                        <SymbolIcon Symbol="RepeatAll" />
+                                                    </Viewbox>
+                                                </ToggleButton>
+                                            </StackPanel>
+                                        </Grid>
 
-                                </Border>
+                                    </Border>
                                 </UserControl>
 
                                 <StackPanel
-                                            Grid.Column="2"
-                                            Grid.Row="2"
-                                            HorizontalAlignment="Right"
-                                    
-                                            Orientation="Horizontal">
+                                    Grid.Row="2"
+                                    Grid.Column="2"
+                                    HorizontalAlignment="Right"
+                                    Orientation="Horizontal">
                                     <Button
                                         x:Name="SwitchFullScreenMain"
-                                                Margin="{StaticResource SmalButtonMargin}"
-                                                Width="{StaticResource SmalButtonSize}"
-                                                Height="{StaticResource SmalButtonSize}"
-                                                Command="{TemplateBinding SwitchFullScreenCommand}"
-                                                Style="{StaticResource RoundButtonStyle}">
+                                        Width="{StaticResource SmalButtonSize}"
+                                        Height="{StaticResource SmalButtonSize}"
+                                        Margin="{StaticResource SmalButtonMargin}"
+                                        Command="{TemplateBinding SwitchFullScreenCommand}"
+                                        Style="{StaticResource RoundButtonStyle}">
                                         <Viewbox>
                                             <SymbolIcon x:Name="FullWindowSymbol" Symbol="FullScreen" />
                                         </Viewbox>
                                     </Button>
                                     <Button
                                         x:Name="SettingsMain"
-                                                Margin="{StaticResource SmalButtonMargin}"
-                                                Width="{StaticResource SmalButtonSize}"
-                                                Height="{StaticResource SmalButtonSize}"
-                                                Command="{TemplateBinding GoToSettingsCommand}"
-                                                Style="{StaticResource RoundButtonStyle}">
+                                        Width="{StaticResource SmalButtonSize}"
+                                        Height="{StaticResource SmalButtonSize}"
+                                        Margin="{StaticResource SmalButtonMargin}"
+                                        Command="{TemplateBinding GoToSettingsCommand}"
+                                        Style="{StaticResource RoundButtonStyle}">
                                         <Viewbox>
                                             <SymbolIcon Symbol="Setting" />
                                         </Viewbox>
                                     </Button>
                                     <Button
-                                        Visibility="Collapsed"
                                         x:Name="MoreButton"
-                                                Margin="{StaticResource SmalButtonMargin}"
-                                                Width="{StaticResource SmalButtonSize}"
-                                                Height="{StaticResource SmalButtonSize}"
-                                                Style="{StaticResource RoundButtonStyle}">
+                                        Width="{StaticResource SmalButtonSize}"
+                                        Height="{StaticResource SmalButtonSize}"
+                                        Margin="{StaticResource SmalButtonMargin}"
+                                        Style="{StaticResource RoundButtonStyle}"
+                                        Visibility="Collapsed">
                                         <Viewbox>
                                             <SymbolIcon Symbol="More" />
                                         </Viewbox>
                                         <Button.Flyout>
                                             <MenuFlyout>
-                                                <MenuFlyoutItem 
+                                                <MenuFlyoutItem
                                                     x:Name="SwitchFullScreenOverflow"
-                                                    Visibility="Collapsed"
-                                                    Text="Full Screen" Icon="FullScreen" 
                                                     Command="{TemplateBinding SwitchFullScreenCommand}"
-                                                                 />
-                                                <MenuFlyoutItem 
+                                                    Icon="FullScreen"
+                                                    Text="Full Screen"
+                                                    Visibility="Collapsed" />
+                                                <MenuFlyoutItem
                                                     x:Name="SettingsOverflow"
-                                                    Visibility="Collapsed"
-                                                    Text="Full Screen" Icon="Setting" 
                                                     Command="{TemplateBinding GoToSettingsCommand}"
-                                                                 />
-                                                <MenuFlyoutSeparator  Visibility="Collapsed"/>
-                                                <ToggleMenuFlyoutItem  Icon="RepeatAll"
-                                                                       Text="Repeate"
-                                                                       Visibility="Collapsed"
-                                                                       x:Name="RepeatButtonOvervlow"
-                                                IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsRepeate, Mode=TwoWay}"
-                                                IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=RepeateCommand.IsEnabled, Mode=TwoWay}"                                                    />
-                                                <ToggleMenuFlyoutItem  Icon="Shuffle"
-                                                                       Visibility="Collapsed"
-                                                                       Text="Shuffle"
-                                                                       x:Name="ShuffleButtonOverflow"
-                                                IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsShuffled, Mode=TwoWay}"
-                                                IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ShuffleCommand.IsEnabled, Mode=TwoWay}"                                                    />
+                                                    Icon="Setting"
+                                                    Text="Settings"
+                                                    Visibility="Collapsed" />
+                                                <MenuFlyoutSeparator Visibility="Collapsed" />
+                                                <ToggleMenuFlyoutItem
+                                                    x:Name="RepeatButtonOvervlow"
+                                                    Icon="RepeatAll"
+                                                    IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsRepeate, Mode=TwoWay}"
+                                                    IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=RepeateCommand.IsEnabled, Mode=TwoWay}"
+                                                    Text="Repeate"
+                                                    Visibility="Collapsed" />
+                                                <ToggleMenuFlyoutItem
+                                                    x:Name="ShuffleButtonOverflow"
+                                                    Icon="Shuffle"
+                                                    IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsShuffled, Mode=TwoWay}"
+                                                    IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ShuffleCommand.IsEnabled, Mode=TwoWay}"
+                                                    Text="Shuffle"
+                                                    Visibility="Collapsed" />
 
                                                 <!--<ToggleButton
                                                 Width="{StaticResource SmalButtonSize}"
@@ -393,12 +393,12 @@
                             <VisualStateGroup x:Name="SizeMode">
                                 <VisualState x:Name="LargeSize">
                                     <VisualState.StateTriggers>
-                                        <AdaptiveTrigger MinWindowWidth="750"/>
+                                        <AdaptiveTrigger MinWindowWidth="750" />
                                     </VisualState.StateTriggers>
                                 </VisualState>
                                 <VisualState x:Name="NormalSize">
                                     <VisualState.StateTriggers>
-                                        <AdaptiveTrigger MinWindowWidth="550"/>
+                                        <AdaptiveTrigger MinWindowWidth="550" />
                                     </VisualState.StateTriggers>
 
                                     <VisualState.Setters>
@@ -411,7 +411,7 @@
                                 </VisualState>
                                 <VisualState x:Name="SmalSize">
                                     <VisualState.StateTriggers>
-                                        <AdaptiveTrigger MinWindowWidth="0"/>
+                                        <AdaptiveTrigger MinWindowWidth="0" />
                                     </VisualState.StateTriggers>
                                     <VisualState.Setters>
                                         <Setter Target="SwitchFullScreenOverflow.Visibility" Value="Visible" />
@@ -419,7 +419,7 @@
                                         <Setter Target="MoreButton.Visibility" Value="Visible" />
                                         <Setter Target="SettingsOverflow.Visibility" Value="Visible" />
                                         <Setter Target="SettingsMain.Visibility" Value="Collapsed" />
-                                        
+
 
                                         <Setter Target="RepeatButtonOvervlow.Visibility" Value="Visible" />
                                         <Setter Target="RepeatButtonMain.Visibility" Value="Collapsed" />
@@ -427,22 +427,22 @@
                                         <Setter Target="ShuffleButtonMain.Visibility" Value="Collapsed" />
 
 
-                                        <Setter Target="CommandBarLastColumn.Width" Value="Auto"/>
+                                        <Setter Target="CommandBarLastColumn.Width" Value="Auto" />
 
-                                        <Setter Target="PausePlayButton.Width" Value="{StaticResource MediumButtonSize}"/>
-                                        <Setter Target="PausePlayButton.Height" Value="{StaticResource MediumButtonSize}"/>
-                                        <Setter Target="PausePlayButton.Margin" Value="{StaticResource MediumButtonMargin}"/>
+                                        <Setter Target="PausePlayButton.Width" Value="{StaticResource MediumButtonSize}" />
+                                        <Setter Target="PausePlayButton.Height" Value="{StaticResource MediumButtonSize}" />
+                                        <Setter Target="PausePlayButton.Margin" Value="{StaticResource MediumButtonMargin}" />
 
-                                        <Setter Target="RootGrid.Height" Value="{StaticResource SmallMediaControlHeight}"/>
+                                        <Setter Target="RootGrid.Height" Value="{StaticResource SmallMediaControlHeight}" />
                                         <Setter Target="SpinningCover.Height" Value="{StaticResource SmallCoverControlHeight}" />
                                         <Setter Target="SpinningCover.Width" Value="{StaticResource SmallCoverControlHeight}" />
-                                        <Setter Target="TimeTextGrid.Visibility" Value="Collapsed"/>
+                                        <Setter Target="TimeTextGrid.Visibility" Value="Collapsed" />
 
-                                        <Setter Target="TitleLable.FontSize" Value="13"/>
-                                        <Setter Target="TitleLable.Margin" Value="0,0,0,0"/>
-                                        <Setter Target="ArtistLable.Margin" Value="0,0,0,0"/>
-                                        <Setter Target="TitleLable.FontWeight" Value="SemiBold"/>
-                                        <Setter Target="ArtistLable.FontSize" Value="12"/>
+                                        <Setter Target="TitleLable.FontSize" Value="13" />
+                                        <Setter Target="TitleLable.Margin" Value="0,0,0,0" />
+                                        <Setter Target="ArtistLable.Margin" Value="0,0,0,0" />
+                                        <Setter Target="TitleLable.FontWeight" Value="SemiBold" />
+                                        <Setter Target="ArtistLable.FontSize" Value="12" />
                                     </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>
@@ -665,7 +665,8 @@
                                 </EventTrigger>
                             </Ellipse.Triggers>-->
                             <Ellipse.Fill>
-                                <ImageBrush ImageSource="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Cover}" />
+                                <ImageBrush ImageSource="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Cover, TargetNullValue={StaticResource FallbackCover}}" />
+                                <!--<ImageBrush ImageSource="/Controls/UWPToolkit/Assets/genericfile.png" />-->
                             </Ellipse.Fill>
                         </Ellipse>
                     </Grid>
