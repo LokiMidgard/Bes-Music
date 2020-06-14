@@ -92,7 +92,7 @@ namespace MusicPlayer.Viewmodels
             //using (await me.semaphore.Lock())
             {
                 var newIndex = (int)e.NewValue;
-                //me.CurrentPlayingIndexChanged(newIndex);
+                me.CurrentPlayingIndexChanged(newIndex);
             }
         }
 
