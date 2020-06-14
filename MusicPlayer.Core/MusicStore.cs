@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 using Nito.AsyncEx;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -376,9 +378,7 @@ namespace MusicPlayer.Core
                         song.Year = year;
 
                     if (newSong)
-                        await context.AddAsync(song, cancelToken);
-                    
-                        
+                        context.Add(song);
 
                     await context.SaveChangesAsync();
                     this.AddSong(song);

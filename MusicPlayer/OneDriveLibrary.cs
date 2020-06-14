@@ -1,7 +1,9 @@
 ﻿using Microsoft.Graph;
 using Microsoft.Toolkit.Services.MicrosoftGraph;
+
 using MusicPlayer.Controls;
 using MusicPlayer.Core;
+
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -12,6 +14,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+
 using Windows.Media.Core;
 using Windows.Networking.Connectivity;
 using Windows.Storage;
@@ -318,13 +321,13 @@ namespace MusicPlayer
             if (this.Dispatcher.HasThreadAccess)
                 Increment();
             else
-                _=this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, Increment);
+                _ = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, Increment);
             return new DelegateDisposable(() =>
             {
                 if (this.Dispatcher.HasThreadAccess)
                     Decrement();
                 else
-                  _=  this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, Decrement);
+                    _ = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, Decrement);
 
             });
 
@@ -1047,10 +1050,11 @@ namespace MusicPlayer
 
                                      if (token.IsCancellationRequested)
                                          return (composers, performers, genres, year, joinedAlbumArtists, album, title, track, disc, duration, picture, targetFileName);
-
-                                     await this.imageSemaphore.WaitAsync(token);
                                      try
                                      {
+
+                                         await this.imageSemaphore.WaitAsync(token);
+
                                          await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                                          {
                                              currentDownload = new CurrentDownload(driveItem)
@@ -1068,53 +1072,65 @@ namespace MusicPlayer
                                          var content = await MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Items[driveItem.Id].Content.Request().GetAsync(token);
 
 
-                                         using (var destinationStream = await temporaryFile.OpenAsync(FileAccessMode.ReadWrite, StorageOpenOptions.None))
-                                         using (var sourceStream = content)
-                                         using (var dStream = destinationStream.AsStream())
+
+                                         try
                                          {
-                                             Progress<long> progress = null;
-                                             await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                                             using (var destinationStream = await temporaryFile.OpenAsync(FileAccessMode.ReadWrite, StorageOpenOptions.None))
+                                             using (var sourceStream = content)
+                                             using (var dStream = destinationStream.AsStream())
                                              {
-                                                 currentDownload.MaximumToRead = dStream.Length;
-                                                 progress = new Progress<long>((readed) => currentDownload.CurrentRead = readed);
-                                             });
-                                             await sourceStream.CopyToAsync(dStream, token, progress);
-                                             dStream.Seek(0, SeekOrigin.Begin);
-                                             var abstracStream = new TagLib.StreamFileAbstraction(temporaryFile.Name, dStream, null);
+                                                 Progress<long> progress = null;
+                                                 var streamLength = content.Length;
+                                                 await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                                                 {
+                                                     currentDownload.MaximumToRead = streamLength;
+                                                     progress = new Progress<long>((readed) => currentDownload.CurrentRead = readed);
+                                                 });
+                                                 await sourceStream.CopyToAsync(dStream, token, progress);
+                                                 dStream.Seek(0, SeekOrigin.Begin);
+                                                 var abstracStream = new TagLib.StreamFileAbstraction(temporaryFile.Name, dStream, null);
 
 
 
-                                             using (var tagFile = TagLib.File.Create(abstracStream))
-                                             {
+                                                 using (var tagFile = TagLib.File.Create(abstracStream))
+                                                 {
 
-                                                 var tag = tagFile.Tag;
+                                                     var tag = tagFile.Tag;
 
-                                                 composers = tag.Composers;
-                                                 performers = tag.Performers;
-                                                 genres = tag.Genres;
-                                                 year = tag.Year;
-                                                 joinedAlbumArtists = tag.JoinedAlbumArtists;
-                                                 album = tag.Album;
-                                                 title = tag.Title;
-                                                 track = (int)tag.Track;
-                                                 disc = (int)tag.Disc;
+                                                     composers = tag.Composers;
+                                                     performers = tag.Performers;
+                                                     genres = tag.Genres;
+                                                     year = tag.Year;
+                                                     joinedAlbumArtists = tag.JoinedAlbumArtists;
+                                                     album = tag.Album;
+                                                     title = tag.Title;
+                                                     track = (int)tag.Track;
+                                                     disc = (int)tag.Disc;
 
-                                                 picture = tag.Pictures.FirstOrDefault(x => x.Type == TagLib.PictureType.FrontCover) ?? tag.Pictures.FirstOrDefault();
+                                                     picture = tag.Pictures.FirstOrDefault(x => x.Type == TagLib.PictureType.FrontCover) ?? tag.Pictures.FirstOrDefault();
+                                                 }
+
+
                                              }
 
                                              var musicProperties = await temporaryFile.Properties.GetMusicPropertiesAsync();
                                              duration = musicProperties.Duration;
 
-                                         }
-                                         if (temporaryFile.Name != targetFileName)
-                                         {
-                                             // It seems that closing the stream takes some time. tring to rename the file can fail.
-                                             await Task.Delay(3);
-                                             var mediaFile = await mediaFolder.CreateFileAsync(driveItem.Id, Windows.Storage.CreationCollisionOption.OpenIfExists);
-                                             System.Diagnostics.Debug.WriteLine($"BEFORE RENAME {mediaFile.Path}");
-                                             await temporaryFile.MoveAndReplaceAsync(mediaFile);
-                                         }
+                                             if (temporaryFile.Name != targetFileName)
+                                             {
+                                                 // It seems that closing the stream takes some time. tring to rename the file can fail.
+                                                 await Task.Delay(3);
+                                                 var mediaFile = await mediaFolder.CreateFileAsync(driveItem.Id, Windows.Storage.CreationCollisionOption.OpenIfExists);
+                                                 System.Diagnostics.Debug.WriteLine($"BEFORE RENAME {mediaFile.Path}");
+                                                 await temporaryFile.MoveAndReplaceAsync(mediaFile);
+                                             }
 
+                                         }
+                                         catch (System.OperationCanceledException)
+                                         {
+                                             await temporaryFile.DeleteAsync();
+                                             throw;
+                                         }
 
                                          return (composers, performers, genres, year, joinedAlbumArtists, album, title, track, disc, duration, picture, targetFileName);
                                      }
@@ -1298,6 +1314,7 @@ namespace MusicPlayer
         // From source.dot.net
         private static int GetCopyBufferSize(this Stream source)
         {
+            //const int DefaultCopyBufferSize = 1024;
             const int DefaultCopyBufferSize = 81920;
             int bufferSize = DefaultCopyBufferSize;
 
