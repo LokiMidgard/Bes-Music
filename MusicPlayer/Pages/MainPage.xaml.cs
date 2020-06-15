@@ -70,7 +70,10 @@ namespace MusicPlayer.Pages
             await Viewmodels.MediaplayerViewmodel.Instance.RemoveSong(selectedSong);
         }
 
-    
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            MusicPlayer.Services.NavigationService.Navigate<NowPlaying>();
+        }
     }
 
     

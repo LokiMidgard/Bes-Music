@@ -28,8 +28,7 @@
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <Use64BitCompiler>true</Use64BitCompiler>
-    <PackageCertificateThumbprint>
-    </PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>82822751F00DDC0C896A507A755C4B1E4AC131E6</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>MusicPlayer_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <!-- <ShortcutGenericAnalysis>true</ShortcutGenericAnalysis> -->

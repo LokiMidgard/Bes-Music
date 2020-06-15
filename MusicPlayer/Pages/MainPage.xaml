@@ -43,6 +43,9 @@
                             <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
                         </Style>
                     </ListView.Style>
+                    <ListView.Header>
+                        <Button Click="Button_Click">Show</Button>
+                    </ListView.Header>
                     <ListView.Resources>
                         <Style TargetType="ScrollBar">
                             <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />
