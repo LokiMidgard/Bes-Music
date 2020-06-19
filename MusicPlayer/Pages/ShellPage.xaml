@@ -52,7 +52,7 @@
             <MediaPlayerElement.TransportControls>
 
                 <controls:TransportControls
-                    x:Name="TransportControls"
+                    x:Name="TransportControls" 
                     IsCompact="False"
                     IsNextTrackButtonVisible="True"
                     IsPreviousTrackButtonVisible="True" />

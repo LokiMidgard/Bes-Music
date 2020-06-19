@@ -10,7 +10,7 @@ using Windows.UI.Xaml.Data;
 
 namespace MusicPlayer.Converters
 {
-    class ThiknessConverter : IValueConverter
+    internal class ThiknessConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
@@ -20,9 +20,16 @@ namespace MusicPlayer.Converters
             if (!(value is double d))
                 throw new NotImplementedException();
 
+            ThiknessType configuration;
+            try
+            {
+                configuration = (ThiknessType)(parameter ?? ThiknessType.None);
+            }
+            catch (InvalidCastException)
+            {
+                configuration = default;
+            }
 
-
-            var configuration = parameter as ThiknessType? ?? default;
 
             var left = configuration.HasFlag(ThiknessType.Left) ? d : 0;
             var top = configuration.HasFlag(ThiknessType.Top) ? d : 0;
@@ -108,13 +115,14 @@ namespace MusicPlayer.Converters
     }
 
     [Flags]
-    public enum ThiknessType 
+    public enum ThiknessType
     {
         None = 0,
         Left = 1,
         Right = 2,
         Top = 4,
         Bottom = 8,
+        AllSides = Left | Right | Top | Bottom,
         Margin = 16,
         Padding = 32
     }

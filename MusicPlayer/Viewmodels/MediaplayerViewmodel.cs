@@ -7,6 +7,7 @@ using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,11 @@ using Windows.Media.Core;
 using Windows.Media.Playback;
 using Windows.Storage.FileProperties;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Data;
+
+using static MusicPlayer.Controls.TransportControls;
+
+using Binding = Windows.UI.Xaml.Data.Binding;
 
 namespace MusicPlayer.Viewmodels
 {
@@ -60,6 +66,9 @@ namespace MusicPlayer.Viewmodels
         private readonly ObservableCollection<PlayingSong> currentPlaylist;
 
         private readonly System.Threading.SemaphoreSlim semaphore = new System.Threading.SemaphoreSlim(1, 1);
+
+
+
 
         public int CurrentPlayingIndex
         {
@@ -115,7 +124,41 @@ namespace MusicPlayer.Viewmodels
             });
 
             transportControls.RegisterPropertyChangedCallback(TransportControls.CurrentMediaPlaybackItemProperty, (sender, e) => this.RefresCurrentIndex());
+        }
 
+        public Binding BindIsPlaying(DependencyObject obj, DependencyProperty property)
+        {
+            var myBinding = new Binding
+            {
+                Source = this.transportControls,
+                Path = new PropertyPath(nameof(this.transportControls.IsPlaying)),
+                Mode = BindingMode.OneWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            };
+            BindingOperations.SetBinding(obj, property, myBinding);
+            return myBinding;
+        }
+
+        public Binding BindCurrentCover(DependencyObject obj, DependencyProperty property)
+        {
+            var myBinding = new Binding
+            {
+                Source = this.transportControls,
+                Path = new PropertyPath(nameof(this.transportControls.CurrentSong) + "." + nameof(this.transportControls.CurrentSong.Thumbnail)),
+                Mode = BindingMode.OneWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            };
+            BindingOperations.SetBinding(obj, property, myBinding);
+            return myBinding;
+        }
+
+        public Binding BindCurrentPosition(DependencyObject obj, DependencyProperty property)
+        {
+            return this.transportControls.BindCurrentPosition(obj, property);
+        }
+        public Binding BindCurrentDuration(DependencyObject obj, DependencyProperty property)
+        {
+            return this.transportControls.BindCurrentDuration(obj, property);
         }
 
         private void RefresCurrentIndex()

@@ -37,16 +37,25 @@ namespace MusicPlayer
 
         #region Fields
 
+        private static Color[,] splotlightColors = {
+            {Colors.LightSeaGreen, Colors.LightSteelBlue},
+            {Colors.Magenta, Colors.Yellow},
+            {Colors.Yellow, Colors.YellowGreen},
+        };
+
+        private Visual visual;
+        private Compositor compositor;
+
         private readonly TimeSpan animationDuration = TimeSpan.FromSeconds(10);
-        private readonly DispatcherTimer animationTimer = new DispatcherTimer();
+        //private readonly DispatcherTimer animationTimer = new DispatcherTimer();
         private readonly Random positionRandom = new Random();
         private readonly bool supportIntensety;
         private AmbientLight ambientLight;
         private SpriteVisual backgroundVisual;
         private ContainerVisual containerVisual;
-        private ImplicitAnimationCollection implicitOffsetAnimation;
         private PointLight pointLight1;
         private PointLight pointLight2;
+        private bool oldShowUiValue;
 
         #endregion
 
@@ -63,18 +72,22 @@ namespace MusicPlayer
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
             base.OnNavigatingFrom(e);
-            this.animationTimer.Stop();
+            App.Shell.ShowPlayUi = this.oldShowUiValue;
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            this.oldShowUiValue = App.Shell.ShowPlayUi;
+            App.Shell.ShowPlayUi = false;
         }
 
 
         private void NowPlaying_Loaded(object sender, RoutedEventArgs e)
         {
-            this.CreateOffsetAnimation();
-
-            var compositor = Window.Current.Compositor;
-
-
-            var backgroundBrush = compositor.CreateBackdropBrush();
+            var visual = ElementCompositionPreview.GetElementVisual(this.backgroundLarge);
+            this.compositor = visual.Compositor;
+            var backgroundBrush = this.compositor.CreateBackdropBrush();
 
             var saturationEffect = new SaturationEffect
             {
@@ -82,102 +95,154 @@ namespace MusicPlayer
                 Source = new CompositionEffectSourceParameter("mySource")
             };
 
-            var saturationEffectFactory = compositor.CreateEffectFactory(saturationEffect);
+            var saturationEffectFactory = this.compositor.CreateEffectFactory(saturationEffect);
 
             var bwEffect = saturationEffectFactory.CreateBrush();
             bwEffect.SetSourceParameter("mySource", backgroundBrush);
 
-            this.backgroundVisual = compositor.CreateSpriteVisual();
+            this.backgroundVisual = this.compositor.CreateSpriteVisual();
             this.backgroundVisual.Brush = bwEffect;
             this.backgroundVisual.Size = this.rootElement.RenderSize.ToVector2();
 
 
-            this.containerVisual = compositor.CreateContainerVisual();
+            this.containerVisual = this.compositor.CreateContainerVisual();
             this.containerVisual.Children.InsertAtBottom(this.backgroundVisual);
-            ElementCompositionPreview.SetElementChildVisual(this.rootElement, this.containerVisual);
+            ElementCompositionPreview.SetElementChildVisual(this.backgroundLarge, this.containerVisual);
 
 
             this.AddLighting();
 
-            this.StartLightingAnimationTimer();
+            this.AnimateColorChange();
+            this.AnimateLightMovement();
         }
 
         private void AddLighting()
         {
-            var compositor = Window.Current.Compositor;
 
-            this.ambientLight = compositor.CreateAmbientLight();
+            this.ambientLight = this.compositor.CreateAmbientLight();
             if (this.supportIntensety)
-                this.ambientLight.Intensity = 1.5f;
-            this.ambientLight.Color = Colors.Purple;
+                this.ambientLight.Intensity = 0.5f;
+            this.ambientLight.Color = Colors.Gray;
             this.ambientLight.Targets.Add(this.backgroundVisual);
 
-            this.pointLight1 = compositor.CreatePointLight();
-            this.pointLight1.Color = Colors.Yellow;
+            this.pointLight1 = this.compositor.CreatePointLight();
+            this.pointLight1.Color = splotlightColors[0, 0];
             if (this.supportIntensety)
-                this.pointLight1.Intensity = 1f;
+                this.pointLight1.Intensity = 0.5f;
             this.pointLight1.CoordinateSpace = this.containerVisual;
             this.pointLight1.Targets.Add(this.backgroundVisual);
             this.pointLight1.Offset = new Vector3((float)this.rootElement.ActualWidth, (float)this.rootElement.ActualHeight * 0.25f,
                 PointLightDistance);
 
-            this.pointLight2 = compositor.CreatePointLight();
-            this.pointLight2.Color = Colors.Green;
+            this.pointLight2 = this.compositor.CreatePointLight();
+            this.pointLight2.Color = splotlightColors[0, 1];
             if (this.supportIntensety)
-                this.pointLight2.Intensity = 2f;
+                this.pointLight2.Intensity = 0.5f;
             this.pointLight2.CoordinateSpace = this.containerVisual;
             this.pointLight2.Targets.Add(this.backgroundVisual);
             this.pointLight2.Offset = new Vector3(0, (float)this.rootElement.ActualHeight * 0.75f, PointLightDistance);
 
-            this.pointLight1.ImplicitAnimations = this.implicitOffsetAnimation;
-            this.pointLight2.ImplicitAnimations = this.implicitOffsetAnimation;
-
             this.pointLight1.Offset = new Vector3(0, (float)this.rootElement.ActualHeight * 0.25f, PointLightDistance);
             this.pointLight2.Offset = new Vector3((float)this.rootElement.ActualWidth, (float)this.rootElement.ActualHeight * 0.75f,
                 PointLightDistance);
+        }
+    
+        private Vector3 VectorFromRelativePosition(float width, float height)
+        {
+            const float margin = 24;
 
+            var actualWidth = (float)this.rootElement.ActualWidth;
+            var actualHeight = (float)this.rootElement.ActualHeight;
 
-
-
+            return new Vector3(
+                x: margin + (actualWidth - 2 * margin) * width,
+                y: margin + (actualHeight - 2 * margin) * height,
+                z: PointLightDistance
+                );
         }
 
-        private void CreateOffsetAnimation()
+        private void AnimateLightMovement()
         {
-            if (this.implicitOffsetAnimation != null)
+            var MovmentAnimatino = TimeSpan.FromSeconds(40);
+            var easing = Window.Current.Compositor.CreateLinearEasingFunction();
+
+
+
+            // Animation Left
+            this.pointLight1.StopAnimation(nameof(this.pointLight1.Offset));
+            var offsetAnimationLeft = Window.Current.Compositor.CreateVector3KeyFrameAnimation();
+            offsetAnimationLeft.Duration = MovmentAnimatino;
+            offsetAnimationLeft.IterationBehavior = AnimationIterationBehavior.Forever;
+            offsetAnimationLeft.Direction = Windows.UI.Composition.AnimationDirection.Alternate;
+
+            offsetAnimationLeft.InsertKeyFrame(0f, this.VectorFromRelativePosition(0f, 0f), easing);
+            offsetAnimationLeft.InsertKeyFrame(.25f, this.VectorFromRelativePosition(0f, .5f), easing);
+            offsetAnimationLeft.InsertKeyFrame(.6f, this.VectorFromRelativePosition(.5f, 0f), easing);
+            offsetAnimationLeft.InsertKeyFrame(1f, this.VectorFromRelativePosition(1f, 0f), easing);
+
+            this.pointLight1.StartAnimation(nameof(this.pointLight1.Offset), offsetAnimationLeft);
+
+
+            // Animation right
+            this.pointLight2.StopAnimation(nameof(this.pointLight2.Offset));
+            var offsetAnimationRight = Window.Current.Compositor.CreateVector3KeyFrameAnimation();
+            offsetAnimationRight.Duration = MovmentAnimatino;
+            offsetAnimationRight.IterationBehavior = AnimationIterationBehavior.Forever;
+            offsetAnimationRight.Direction = Windows.UI.Composition.AnimationDirection.Alternate;
+
+            offsetAnimationRight.InsertKeyFrame(0f, this.VectorFromRelativePosition(0.9f, 0f), easing);
+            offsetAnimationRight.InsertKeyFrame(.35f, this.VectorFromRelativePosition(0.9f, 0.8f), easing);
+            offsetAnimationRight.InsertKeyFrame(1f, this.VectorFromRelativePosition(.5f, 0.8f), easing);
+
+            this.pointLight2.StartAnimation(nameof(this.pointLight2.Offset), offsetAnimationRight);
+        }
+
+        private void AnimateColorChange()
+        {
+            var lights = new[] { this.pointLight1, this.pointLight2 };
+
+            var pairSize = splotlightColors.GetLength(1);
+            var lightLength = splotlightColors.GetLength(0);
+            for (int i = 0; i < pairSize; i++)
             {
-                return;
+
+                var animation = Window.Current.Compositor.CreateColorKeyFrameAnimation();
+
+                var colorTime = 15f;
+                var changeTime = 5f;
+                var totalFrame = colorTime + changeTime;
+                var totalAll = totalFrame * lightLength;
+
+                animation.Duration = TimeSpan.FromSeconds(totalAll);
+
+
+                var color = splotlightColors[0, i];
+                var currentAnimationPosition = 0f;
+                animation.InsertKeyFrame(currentAnimationPosition / totalAll, color);
+                currentAnimationPosition += colorTime / 2;
+                animation.InsertKeyFrame(currentAnimationPosition / totalAll, color);
+
+
+                for (int j = 1; j < lightLength; j++)
+                {
+                    color = splotlightColors[j, i];
+                    currentAnimationPosition += changeTime;
+                    animation.InsertKeyFrame(currentAnimationPosition / totalAll, color);
+                    currentAnimationPosition += colorTime;
+                    animation.InsertKeyFrame(currentAnimationPosition / totalAll, color);
+                }
+                color = splotlightColors[0, i];
+                currentAnimationPosition += changeTime;
+                animation.InsertKeyFrame(currentAnimationPosition / totalAll, color);
+                currentAnimationPosition += colorTime / 2;
+                animation.InsertKeyFrame(1f, color);
+
+                animation.InterpolationColorSpace = CompositionColorSpace.Rgb;
+                animation.IterationBehavior = AnimationIterationBehavior.Forever;
+                animation.Direction = Windows.UI.Composition.AnimationDirection.Normal;
+
+                lights[i].StartAnimation(nameof(this.pointLight1.Color), animation);
             }
-
-            var offsetAnimation = Window.Current.Compositor.CreateVector3KeyFrameAnimation();
-            offsetAnimation.Target = nameof(PointLight.Offset);
-            offsetAnimation.InsertExpressionKeyFrame(0f, "this.StartingValue");
-            offsetAnimation.InsertExpressionKeyFrame(1.0f, "this.FinalValue");
-            offsetAnimation.Duration = TimeSpan.FromMinutes(0.6);
-
-            this.implicitOffsetAnimation = Window.Current.Compositor.CreateImplicitAnimationCollection();
-            this.implicitOffsetAnimation[nameof(Visual.Offset)] = offsetAnimation;
-        }
-
-        private Vector3 GenerateRandomPointInBounds(int width, int height)
-        {
-            const int margin = 48;
-            return new Vector3(this.positionRandom.Next(margin, width - margin),
-                this.positionRandom.Next(margin, width - margin), PointLightDistance);
-        }
-
-        private void MoveLights()
-        {
-
-            Vector3KeyFrameAnimation CreateLightOffsetAnimation()
-            {
-                var offsetAnimation = Window.Current.Compositor.CreateVector3KeyFrameAnimation();
-                offsetAnimation.Duration = TimeSpan.FromSeconds(36);
-                offsetAnimation.InsertKeyFrame(1f, this.GenerateRandomPointInBounds((int)this.rootElement.ActualWidth, (int)this.rootElement.ActualHeight));
-
-                return offsetAnimation;
-            }
-            this.pointLight1.StartAnimation(nameof(Visual.Offset), CreateLightOffsetAnimation());
-            this.pointLight2.StartAnimation(nameof(Visual.Offset), CreateLightOffsetAnimation());
         }
 
         private void rootElementOnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
@@ -186,16 +251,10 @@ namespace MusicPlayer
             {
                 this.backgroundVisual.Size = new Vector2((float)this.rootElement.ActualWidth, (float)this.rootElement.ActualHeight);
 
-                this.MoveLights();
+                this.AnimateLightMovement();
             }
         }
 
-        private void StartLightingAnimationTimer()
-        {
-            this.animationTimer.Interval = this.animationDuration;
-            this.animationTimer.Tick += (s, a) => this.MoveLights();
-            this.animationTimer.Start();
-        }
 
 
         private Task InitAsync()

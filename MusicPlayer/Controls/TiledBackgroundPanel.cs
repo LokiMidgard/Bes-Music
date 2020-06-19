@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.Graphics.Canvas.Effects;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Microsoft.Graphics.Canvas.Effects;
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.Storage.FileProperties;
@@ -109,9 +109,12 @@ namespace MusicPlayer.Controls
                 {
                     var index = r.Next(this.currentLayout.Count - 1);
                     var current = this.currentLayout[index];
-                    var information = new ImageInformation(current.Size, current.X, current.Y, true);
-                    this.targetTiles.Add(information);
-                    SetTileInformation(information, this.targetLayout);
+                    if (current != null)
+                    {
+                        var information = new ImageInformation(current.Size, current.X, current.Y, true);
+                        this.targetTiles.Add(information);
+                        SetTileInformation(information, this.targetLayout);
+                    }
                 }
             }
         }

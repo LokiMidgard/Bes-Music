@@ -12,7 +12,26 @@
                 <ResourceDictionary Source="themeresources.xaml"/>
                 <ResourceDictionary Source="Controls/UWPToolkit/ProfileCard/ProfileCard.xaml"/>
                 <ResourceDictionary Source="Controls/UWPToolkit/AadLogin/AadLogin.xaml"/>
+                <ResourceDictionary Source="statics.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+
+            <Color x:Key="ColorDisabled">#342E33</Color>
+            <Color x:Key="ColorPressed">#B8B6B7</Color>
+            <Color x:Key="ColorNormal">#A09D9F</Color>
+            <Color x:Key="ColorHover">#FFFFFF</Color>
+
+            <SolidColorBrush x:Key="BrushDisabled" Color="{ThemeResource ColorDisabled}" />
+            <SolidColorBrush x:Key="BrushPressed" Color="{ThemeResource ColorPressed}" />
+            <SolidColorBrush x:Key="BrushNormal" Color="{ThemeResource ColorNormal}" />
+            <SolidColorBrush x:Key="BrushHover" Color="{ThemeResource ColorHover}" />
+
+            <SolidColorBrush x:Key="AccentBrushDisabled" Color="{ThemeResource SystemAccentColorDark3}" />
+            <SolidColorBrush x:Key="AccentBrushPressed" Color="{ThemeResource SystemAccentColorDark1}" />
+            <SolidColorBrush x:Key="AccentBrushNormal" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="AccentBrushHover" Color="{ThemeResource SystemAccentColorLight3}" />
+
+
 
             <SolidColorBrush x:Key="SystemControlTransparentBackgroundBrush" Color="#c0888888"></SolidColorBrush>
             <SolidColorBrush x:Key="SystemControlTransparentBorderBrush" Color="#c0989898" />
@@ -23,10 +42,93 @@
             <CornerRadius x:Key="IninitCornerRadius">
                 9999999
             </CornerRadius>
+
+
+            <Style x:Key="SmalButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Foreground" Value="{ThemeResource BrushNormal}" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="{StaticResource ButtonPadding}" />
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+                <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+                <Setter Property="UseSystemFocusVisuals" Value="{StaticResource UseSystemFocusVisuals}" />
+                <Setter Property="FocusVisualMargin" Value="-3" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid
+                            x:Name="RootGrid"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{StaticResource IninitCornerRadius}">
+                                <ContentPresenter
+                                x:Name="ContentPresenter"
+                                Padding="{TemplateBinding Padding}"
+                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                AutomationProperties.AccessibilityView="Raw"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                ContentTransitions="{TemplateBinding ContentTransitions}"
+                                CornerRadius="{StaticResource IninitCornerRadius}" />
+
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
+
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ColorHover}" />
+                                            </VisualState.Setters>
+
+                                            <Storyboard>
+                                                <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
+
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ColorPressed}" />
+                                            </VisualState.Setters>
+
+                                            <Storyboard>
+                                                <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            </Storyboard>
+                                        </VisualState>
+
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <!--<Setter Target="RootGrid.Background" Value="{ThemeResource ButtonBackgroundDisabled}" />-->
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ColorDisabled}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+
+                                    </VisualStateGroup>
+
+                                </VisualStateManager.VisualStateGroups>
+                            </Grid>
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+
+
             <Style x:Key="RoundButtonStyle" TargetType="Button">
-                <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
+                <Setter Property="Background" Value="Transparent" />
                 <Setter Property="Foreground" Value="{ThemeResource ButtonForeground}" />
-                <Setter Property="BorderBrush" Value="{ThemeResource ButtonBorderBrush}" />
+                <Setter Property="BorderBrush" Value="{ThemeResource ColorNormal}" />
                 <Setter Property="BorderThickness" Value="{ThemeResource ButtonBorderThemeThickness}" />
                 <Setter Property="Padding" Value="{StaticResource ButtonPadding}" />
                 <Setter Property="HorizontalAlignment" Value="Left" />
@@ -67,10 +169,7 @@
 
                                         <VisualState x:Name="PointerOver">
                                             <VisualState.Setters>
-                                                <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="PointerOver" />-->
-                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ButtonBackgroundPointerOver}" />
-                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushPointerOver}" />
-                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundPointerOver}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ColorHover}" />
                                             </VisualState.Setters>
 
                                             <Storyboard>
@@ -80,10 +179,7 @@
 
                                         <VisualState x:Name="Pressed">
                                             <VisualState.Setters>
-                                                <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="Pressed" />-->
-                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ButtonBackgroundPressed}" />
-                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushPressed}" />
-                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundPressed}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ColorPressed}" />
                                             </VisualState.Setters>
 
                                             <Storyboard>
@@ -93,9 +189,9 @@
 
                                         <VisualState x:Name="Disabled">
                                             <VisualState.Setters>
-                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ButtonBackgroundDisabled}" />
-                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ButtonBorderBrushDisabled}" />
-                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundDisabled}" />
+                                                <!--<Setter Target="RootGrid.Background" Value="{ThemeResource ButtonBackgroundDisabled}" />-->
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ColorDisabled}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ColorDisabled}" />
                                             </VisualState.Setters>
                                         </VisualState>
 
@@ -110,9 +206,10 @@
             </Style>
 
             <Style x:Key="RoundToggleButtonStyle" TargetType="ToggleButton">
-                <Setter Property="Background" Value="{ThemeResource ToggleButtonBackground}" />
+                <Setter Property="Background" Value="Transparent" />
                 <Setter Property="Foreground" Value="{ThemeResource ToggleButtonForeground}" />
-                <Setter Property="BorderBrush" Value="{ThemeResource ToggleButtonBorderBrush}" />
+                <Setter Property="Foreground" Value="{ThemeResource ColorNormal}" />
+                <Setter Property="BorderBrush" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="{ThemeResource ToggleButtonBorderThemeThickness}" />
                 <Setter Property="Padding" Value="{StaticResource ButtonPadding}" />
                 <Setter Property="HorizontalAlignment" Value="Left" />
@@ -134,7 +231,9 @@
                                 Padding="{TemplateBinding Padding}"
                                 HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                AutomationProperties.AccessibilityView="Raw"
+                                                Foreground="{TemplateBinding Foreground}" 
+
+                                    AutomationProperties.AccessibilityView="Raw"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 Content="{TemplateBinding Content}"
@@ -154,9 +253,9 @@
                                         <VisualState x:Name="PointerOver">
                                             <VisualState.Setters>
                                                 <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="PointerOver" />-->
-                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundPointerOver}" />
-                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushPointerOver}" />
-                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundPointerOver}" />
+
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ColorHover}" />
+
                                             </VisualState.Setters>
 
                                             <Storyboard>
@@ -167,9 +266,11 @@
                                         <VisualState x:Name="Pressed">
                                             <VisualState.Setters>
                                                 <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="Pressed" />-->
-                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundPressed}" />
+                                                <!--<Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundPressed}" />
                                                 <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushPressed}" />
-                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundPressed}" />
+                                                <Setter Target="" Value="{ThemeResource ToggleButtonForegroundPressed}" />-->
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ColorPressed}" />
+
                                             </VisualState.Setters>
 
                                             <Storyboard>
@@ -179,17 +280,18 @@
 
                                         <VisualState x:Name="Disabled">
                                             <VisualState.Setters>
-                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundDisabled}" />
-                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushDisabled}" />
-                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundDisabled}" />
+                                                <!--<Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundDisabled}" />-->
+                                                <!--<Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushDisabled}" />-->
+                                                <!--<Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundDisabled}" />-->
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ColorDisabled}" />
                                             </VisualState.Setters>
                                         </VisualState>
 
                                         <VisualState x:Name="Checked">
                                             <VisualState.Setters>
-                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundChecked}" />
-                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushChecked}" />
-                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundChecked}" />
+                                                <!--<Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundChecked}" />-->
+                                                <!--<Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushChecked}" />-->
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource AccentBrushNormal}" />
                                             </VisualState.Setters>
 
                                             <Storyboard>
@@ -199,9 +301,7 @@
                                         <VisualState x:Name="CheckedPointerOver">
                                             <VisualState.Setters>
                                                 <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="PointerOver" />-->
-                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundCheckedPointerOver}" />
-                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushCheckedPointerOver}" />
-                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundCheckedPointerOver}" />
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource AccentBrushHover}" />
                                             </VisualState.Setters>
 
                                             <Storyboard>
@@ -211,9 +311,9 @@
                                         <VisualState x:Name="CheckedPressed">
                                             <VisualState.Setters>
                                                 <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="Pressed" />-->
-                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundCheckedPressed}" />
-                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushCheckedPressed}" />
-                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundCheckedPressed}" />
+                                                <!--<Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundCheckedPressed}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushCheckedPressed}" />-->
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource AccentBrushPressed}" />
                                             </VisualState.Setters>
 
                                             <Storyboard>
@@ -222,15 +322,15 @@
                                         </VisualState>
                                         <VisualState x:Name="CheckedDisabled">
                                             <VisualState.Setters>
-                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundCheckedDisabled}" />
-                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushCheckedDisabled}" />
-                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundCheckedDisabled}" />
+                                                <!--<Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundCheckedDisabled}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushCheckedDisabled}" />-->
+                                                <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource AccentBrushDisabled}" />
                                             </VisualState.Setters>
                                         </VisualState>
                                         <VisualState x:Name="Indeterminate">
                                             <VisualState.Setters>
-                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundIndeterminate}" />
-                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushIndeterminate}" />
+                                                <!--<Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundIndeterminate}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushIndeterminate}" />-->
                                                 <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundIndeterminate}" />
                                             </VisualState.Setters>
 
@@ -241,8 +341,8 @@
                                         <VisualState x:Name="IndeterminatePointerOver">
                                             <VisualState.Setters>
                                                 <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="PointerOver" />-->
-                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundIndeterminatePointerOver}" />
-                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushIndeterminatePointerOver}" />
+                                                <!--<Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundIndeterminatePointerOver}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushIndeterminatePointerOver}" />-->
                                                 <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundIndeterminatePointerOver}" />
                                             </VisualState.Setters>
 
@@ -253,8 +353,8 @@
                                         <VisualState x:Name="IndeterminatePressed">
                                             <VisualState.Setters>
                                                 <!--<Setter Target="RootGrid.(RevealBrush.State)" Value="Pressed" />-->
-                                                <Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundIndeterminatePressed}" />
-                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushIndeterminatePressed}" />
+                                                <!--<Setter Target="RootGrid.Background" Value="{ThemeResource ToggleButtonBackgroundIndeterminatePressed}" />
+                                                <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ToggleButtonBorderBrushIndeterminatePressed}" />-->
                                                 <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ToggleButtonForegroundIndeterminatePressed}" />
                                             </VisualState.Setters>
 

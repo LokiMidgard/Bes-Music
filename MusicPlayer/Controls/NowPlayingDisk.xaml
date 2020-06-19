@@ -1,0 +1,84 @@
+﻿<UserControl
+    x:Class="MusicPlayer.Controls.NowPlayingDisk"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MusicPlayer.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
+    xmlns:converters="using:MusicPlayer.Converters"
+    mc:Ignorable="d"
+    x:Name="root"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+    <Grid >
+        <Grid.Resources>
+            <BitmapImage x:Key="FallbackCover" UriSource="/Assets/DiscPlaceholder.png" />
+            <converters:ThiknessConverter x:Key="thiknessConver" ></converters:ThiknessConverter>
+            <converters:ThiknessType x:Key="thiknessParameter">AllSides</converters:ThiknessType>
+        </Grid.Resources>
+        <Grid.DataContext>
+            <viewmodels:MediaPlayerAccessor />
+        </Grid.DataContext>
+        <Ellipse
+                            x:Name="CoverDisc"
+                            Margin="{Binding ElementName=root, Path=ProgressThikness,Converter={StaticResource thiknessConver}, ConverterParameter={StaticResource thiknessParameter }}"
+                            RenderTransformOrigin="0.5,0.5"
+            Stroke="{Binding ElementName=root, Path=BorderBrush}"
+            StrokeThickness="{Binding ElementName=root, Path=ProgressThikness}"
+                         >
+            <!--   Stroke="{TemplateBinding BorderBrush}"
+                            StrokeThickness="{TemplateBinding BorderThickness}"-->
+            <Ellipse.Resources>
+                <Storyboard x:Key="Storyboard">
+                    <DoubleAnimation
+                                        RepeatBehavior="Forever"
+                                        Storyboard.TargetName="transform"
+                                        Storyboard.TargetProperty="Angle"
+                                        To="360"
+                                        Duration="0:0:20" />
+                    <!--Duration="0:0:1.8" this is record spped-->
+                </Storyboard>
+            </Ellipse.Resources>
+            <Ellipse.RenderTransform>
+                <RotateTransform x:Name="transform" />
+            </Ellipse.RenderTransform>
+            <!--<Ellipse.Triggers>
+                                <EventTrigger RoutedEvent="Ellipse.Loaded">
+                                    <BeginStoryboard>
+
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Ellipse.Triggers>-->
+            <Ellipse.Fill>
+                <ImageBrush  Stretch="UniformToFill" ImageSource="{Binding Cover,ElementName=root, TargetNullValue={StaticResource FallbackCover}}" />
+                <!--<ImageBrush ImageSource="/Controls/UWPToolkit/Assets/genericfile.png" />-->
+            </Ellipse.Fill>
+        </Ellipse>
+
+
+        <Path Stroke="{ThemeResource SystemAccentColor}" StrokeThickness="{Binding ElementName=root, Path=ProgressThikness}">
+            <Path.Data>
+                <PathGeometry>
+                    <PathGeometry.Figures>
+                        <PathFigureCollection>
+                            <PathFigure StartPoint="{Binding StartPoint,ElementName=root}">
+                                <PathFigure.Segments>
+                                    <PathSegmentCollection>
+                                        <ArcSegment
+                                                            IsLargeArc="{Binding IsLargeArc,ElementName=root}"
+                                                            Point="{Binding EndPoint,ElementName=root}"
+                                                           Size="{Binding ArcSize,ElementName=root}"
+                                                            SweepDirection="Clockwise" />
+                                    </PathSegmentCollection>
+                                </PathFigure.Segments>
+                            </PathFigure>
+                        </PathFigureCollection>
+                    </PathGeometry.Figures>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+
+    </Grid>
+
+</UserControl>

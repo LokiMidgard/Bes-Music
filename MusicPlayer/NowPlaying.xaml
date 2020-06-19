@@ -10,6 +10,15 @@
     mc:Ignorable="d">
     <Grid x:Name="rootElement" SizeChanged="rootElementOnSizeChanged">
         <controls:TiledBackgroundPanel x:Name="backgroundLarge" Visibility="Collapsed" />
+        <controls:NowPlayingDisk
+            Width="160"
+            Height="160"
+            ProgressThikness="4"
+            Margin="100,000,0,100"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            BorderBrush="White"
+            BorderThickness="10" />
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState>

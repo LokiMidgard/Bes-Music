@@ -147,12 +147,14 @@
     </Compile>
     <Compile Include="Controls\DelegateCommand.cs" />
     <Compile Include="Controls\DisabledCommand.cs" />
+    <Compile Include="Controls\NowPlayingDisk.xaml.cs">
+      <DependentUpon>NowPlayingDisk.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\StateListener.cs" />
     <Compile Include="Controls\UWPToolkit\Extensions\ListViewBase\ListViewExtensions.cs" />
     <Compile Include="Controls\UWPToolkit\Extensions\ListViewBase\StretchDirection.cs" />
     <Compile Include="Converters\ExceptionHandlerConverter.cs" />
     <Compile Include="Controls\MediaBehaviorCommand.cs" />
-    <Compile Include="Controls\NowPlayingDisk.cs" />
     <Compile Include="Controls\PlayListControl.xaml.cs">
       <DependentUpon>PlayListControl.xaml</DependentUpon>
     </Compile>
@@ -329,6 +331,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\NowPlayingDisk.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\PlayListControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -364,6 +370,10 @@
     <Page Include="Pages\ShellPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="statics.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="themeresources.xaml">
       <Generator>MSBuild:Compile</Generator>

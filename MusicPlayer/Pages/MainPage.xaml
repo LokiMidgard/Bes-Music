@@ -31,7 +31,7 @@
 
     <Grid>
 
-        <Pivot LeftHeaderTemplate="{StaticResource PivotLeftHeaderTemplate1}">
+        <Pivot >
             <PivotItem Header="Now Playing" >
                 <PivotItem.DataContext>
                     <viewmodels:MediaPlayerAccessor/>
@@ -44,7 +44,92 @@
                         </Style>
                     </ListView.Style>
                     <ListView.Header>
-                        <Button Click="Button_Click">Show</Button>
+                        <Grid Margin="100,100,0,50">
+                            <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                        <Button Style="{StaticResource InvisibleButton}" VerticalAlignment="Stretch" Click="Button_Click" Background="{x:Null}" Padding="0"  >
+                                <controls:NowPlayingDisk BorderBrush="White" Width="300" Height="300"/>
+                        </Button>
+                            <StackPanel Grid.Row="1"
+                                                Margin="0,18,10,0"
+                                                HorizontalAlignment="Center"
+                                                Orientation="Horizontal">
+                                <ToggleButton
+                                                    x:Name="ShuffleButtonMain"
+                                                    Width="{StaticResource SmalButtonSize}"
+                                                    Height="{StaticResource SmalButtonSize}"
+                                                    Margin="{StaticResource SmalButtonMargin}"
+                                                    IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsShuffled, Mode=TwoWay}"
+                                                    IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ShuffleCommand.IsEnabled, Mode=TwoWay}"
+                                                    Style="{StaticResource RoundToggleButtonStyle}">
+                                    <Viewbox>
+                                        <SymbolIcon Symbol="Shuffle" />
+                                    </Viewbox>
+                                </ToggleButton>
+                                <ToggleButton
+                                                    x:Name="RepeatButtonMain"
+                                                    Width="{StaticResource SmalButtonSize}"
+                                                    Height="{StaticResource SmalButtonSize}"
+                                                    Margin="{StaticResource SmalButtonMargin}"
+                                                    IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsRepeate, Mode=TwoWay}"
+                                                    IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=RepeateCommand.IsEnabled, Mode=TwoWay}"
+                                                    Style="{StaticResource RoundToggleButtonStyle}">
+                                    <Viewbox>
+                                        <SymbolIcon Symbol="RepeatAll" />
+                                    </Viewbox>
+                                </ToggleButton>
+
+                                <Button
+                                                    Width="{StaticResource MediumButtonSize}"
+                                                    Height="{StaticResource MediumButtonSize}"
+                                                    Margin="{StaticResource MediumButtonMargin}"
+                                                    Style="{StaticResource RoundButtonStyle}">
+                                                    <!--Command="{TemplateBinding PreviousCommand}"-->
+                                    <Viewbox>
+                                        <SymbolIcon Symbol="Previous" />
+                                    </Viewbox>
+                                </Button>
+                                <Button
+                                                    x:Name="PausePlayButton"
+                                                    Width="{StaticResource BigButtonSize}"
+                                                    Height="{StaticResource BigButtonSize}"
+                                                    Margin="{StaticResource BigButtonMargin}"
+                                                    Style="{StaticResource RoundButtonStyle}">
+                                                    <!--Command="{TemplateBinding PlayCommand}"-->
+                                    <Viewbox>
+                                        <SymbolIcon x:Name="PlayPauseSymbol" Symbol="Play" />
+                                    </Viewbox>
+                                </Button>
+                                <Button
+                                                    Width="{StaticResource MediumButtonSize}"
+                                                    Height="{StaticResource MediumButtonSize}"
+                                                    Margin="{StaticResource MediumButtonMargin}"
+                                                    Style="{StaticResource RoundButtonStyle}">
+                                                    <!--Command="{TemplateBinding NextCommand}"-->
+                                    <Viewbox>
+                                        <SymbolIcon Symbol="Next" />
+                                    </Viewbox>
+                                </Button>
+
+                                <Button
+                                                    Width="{StaticResource SmalButtonSize}"
+                                                    Height="{StaticResource SmalButtonSize}"
+                                                    Margin="{StaticResource SmalButtonMargin}"
+                                                    Style="{StaticResource SmalButtonStyle}">
+                                                    <!--Command="{TemplateBinding NextCommand}"-->
+                                    <Viewbox>
+                                        <SymbolIcon Symbol="MusicInfo" />
+                                    </Viewbox>
+                                </Button>
+                            </StackPanel>
+
+                        </Grid>
                     </ListView.Header>
                     <ListView.Resources>
                         <Style TargetType="ScrollBar">

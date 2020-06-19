@@ -38,6 +38,24 @@ namespace MusicPlayer.Pages
 
         public new Frame Frame => this.shellFrame;
 
+        private bool showPlayUi = true;
+        public bool ShowPlayUi
+        {
+            get
+            {
+                return this.showPlayUi;
+            }
+            set
+            {
+                if (this.showPlayUi == value)
+                    return;
+                //var rootGrid = (Grid)this.FindName("RootGrid");
+                //mediaPlayer.AreTransportControlsEnabled = value;
+                VisualStateManager.GoToState(TransportControls, value ? "show" : "hide", true);
+                this.showPlayUi = value;
+            }
+        }
+
         public ShellPage()
         {
             this.InitializeComponent();
@@ -65,13 +83,14 @@ namespace MusicPlayer.Pages
 
         private async void ShellPage_Loaded(object sender, RoutedEventArgs e)
         {
+            this.ShowPlayUi = false;
             _ = OneDriveLibrary.Instance;
             _ = AlbumCollectionViewmodel.Instance;
             this.ProgreessIndecator.IsActive = true;
             await Core.MusicStore.Instance.Init();
             await MusicStore.Instance.SetUITask(this.RunOnDispatcher);
             this.ProgreessIndecator.IsActive = false;
-
+            this.ShowPlayUi = true;
         }
         private Task RunOnDispatcher(Func<Task> f)
         {

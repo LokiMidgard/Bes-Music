@@ -1,4 +1,5 @@
 ﻿using MusicPlayer.Helpers;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using System.Windows.Input;
+
 using Windows.Foundation;
 using Windows.Media.Playback;
 using Windows.Storage.Streams;
@@ -98,6 +100,16 @@ namespace MusicPlayer.Controls
         // Using a DependencyProperty as the backing store for GoToSettingsCommand.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty GoToSettingsCommandProperty =
             DependencyProperty.Register("GoToSettingsCommand", typeof(ICommand), typeof(TransportControls), new PropertyMetadata(DisabledCommand.Instance));
+
+        public ICommand GoToNowPlayingCommand
+        {
+            get { return (ICommand)this.GetValue(GoToNowPlayingCommandProperty); }
+            set { this.SetValue(GoToNowPlayingCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for GoToSettingsCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty GoToNowPlayingCommandProperty =
+            DependencyProperty.Register("GoToNowPlayingCommand", typeof(ICommand), typeof(TransportControls), new PropertyMetadata(DisabledCommand.Instance));
 
 
 
@@ -275,6 +287,7 @@ namespace MusicPlayer.Controls
         }
 
         private MediaPlayerElement mediaPlayerElement;
+        private Slider slider;
 
         public TransportControls()
         {
@@ -284,6 +297,42 @@ namespace MusicPlayer.Controls
 
 
         }
+
+        protected override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            this.slider = (Slider)this.GetTemplateChild("ProgressSlider");
+        }
+
+        public Binding BindCurrentPosition(DependencyObject obj, DependencyProperty property)
+        {
+            var myBinding = new Binding
+            {
+                Source = this.slider,
+                Path = new PropertyPath(nameof(this.slider.Value)),
+                Mode = BindingMode.OneWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            };
+            BindingOperations.SetBinding(obj, property, myBinding);
+            return myBinding;
+        }
+        public Binding BindCurrentDuration(DependencyObject obj, DependencyProperty property)
+        {
+            var myBinding = new Binding
+            {
+                Source = this.slider,
+                Path = new PropertyPath(nameof(this.slider.Maximum)),
+                Mode = BindingMode.OneWay,
+                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            };
+            BindingOperations.SetBinding(obj, property, myBinding);
+            return myBinding;
+        }
+
+
+
+
         //protected override Size MeasureOverride(Size availableSize)
         //{
         //    if (!ReferenceEquals(lastParent, Parent))
@@ -319,9 +368,13 @@ namespace MusicPlayer.Controls
                 //this.mediaPlayerElement.RegisterPropertyChangedCallback(MediaPlayerElement.SourceProperty, this.SourceChanged);
 
                 this.GoToSettingsCommand = new DelegateCommand(() =>
-                 {
-                     App.Shell.Frame.Navigate(typeof(Pages.SettingsPage));
-                 });
+                {
+                    App.Shell.Frame.Navigate(typeof(Pages.SettingsPage));
+                });
+                this.GoToNowPlayingCommand = new DelegateCommand(() =>
+                {
+                    App.Shell.Frame.Navigate(typeof(NowPlaying));
+                });
 
                 this.SwitchFullScreenCommand = new DelegateCommand(() => this.IsFullscreen = !this.IsFullscreen);
                 this.IsShuffled = this.PlayList.ShuffleEnabled;

@@ -1,39 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
+using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
+using Windows.UI.Xaml.Navigation;
 
-// The Templated Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234235
+// The User Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace MusicPlayer.Controls
 {
-    public sealed class NowPlayingDisk : Control
+    public sealed partial class NowPlayingDisk : UserControl
     {
         public NowPlayingDisk()
         {
-            this.DefaultStyleKey = typeof(NowPlayingDisk);
-            this.SizeChanged += (sender, e) => UpdateArc();
+            this.InitializeComponent();
+
+            this.Loaded += this.NowPlayingDisk_Loaded;
         }
 
-        protected override void OnApplyTemplate()
+        private void NowPlayingDisk_Loaded(object sender, RoutedEventArgs e)
         {
-            base.OnApplyTemplate();
-            coverDisc = GetTemplateChild("CoverDisc") as Windows.UI.Xaml.Shapes.Ellipse;
-
+            if (Windows.ApplicationModel.DesignMode.DesignModeEnabled)
+                return;
+            Viewmodels.MediaplayerViewmodel.Instance.BindIsPlaying(this, IsPlayingProperty);
+            Viewmodels.MediaplayerViewmodel.Instance.BindCurrentCover(this, CoverProperty);
+            Viewmodels.MediaplayerViewmodel.Instance.BindCurrentPosition(this, PositionProperty);
+            Viewmodels.MediaplayerViewmodel.Instance.BindCurrentDuration(this, DurationProperty);
         }
 
         public bool IsPlaying
         {
-            get { return (bool)GetValue(IsPlayingProperty); }
-            set { SetValue(IsPlayingProperty, value); }
+            get { return (bool)this.GetValue(IsPlayingProperty); }
+            set { this.SetValue(IsPlayingProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for  IsPlaying.  This enables animation, styling, binding, etc...
@@ -43,7 +49,9 @@ namespace MusicPlayer.Controls
         private static void IsPlayingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var me = d as NowPlayingDisk;
-            var elipse = me.coverDisc;
+            var elipse = me.CoverDisc;
+            if (elipse is null)
+                return;
             var storyboard = elipse.Resources["Storyboard"] as Windows.UI.Xaml.Media.Animation.Storyboard;
 
             if ((bool)e.NewValue)
@@ -59,8 +67,8 @@ namespace MusicPlayer.Controls
 
         public ImageSource Cover
         {
-            get { return (ImageSource)GetValue(CoverProperty); }
-            set { SetValue(CoverProperty, value); }
+            get { return (ImageSource)this.GetValue(CoverProperty); }
+            set { this.SetValue(CoverProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for Cover.  This enables animation, styling, binding, etc...
@@ -71,8 +79,8 @@ namespace MusicPlayer.Controls
 
         public double Duration
         {
-            get { return (double)GetValue(DurationProperty); }
-            set { SetValue(DurationProperty, value); }
+            get { return (double)this.GetValue(DurationProperty); }
+            set { this.SetValue(DurationProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for Duration.  This enables animation, styling, binding, etc...
@@ -83,8 +91,8 @@ namespace MusicPlayer.Controls
 
         public double Position
         {
-            get { return (double)GetValue(PositionProperty); }
-            set { SetValue(PositionProperty, value); }
+            get { return (double)this.GetValue(PositionProperty); }
+            set { this.SetValue(PositionProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for Position.  This enables animation, styling, binding, etc...
@@ -100,27 +108,10 @@ namespace MusicPlayer.Controls
 
 
 
-
-        //public double RotationDegrees
-        //{
-        //    get { return (double)GetValue(RotationDegreesProperty); }
-        //    private set { SetValue(RotationDegreesProperty, value); }
-        //}
-
-        //// Using a DependencyProperty as the backing store for RotationDegrees.  This enables animation, styling, binding, etc...
-        //public static readonly DependencyProperty RotationDegreesProperty =
-        //    DependencyProperty.Register("RotationDegrees", typeof(double), typeof(NowPlayingDisk), new PropertyMetadata(0.0, RotationDegreesChanged));
-
-        //private static void RotationDegreesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        //{
-        //    var me = d as NowPlayingDisk;
-        //    me.UpdateArc();
-        //}
-
         public Point StartPoint
         {
-            get { return (Point)GetValue(StartPointProperty); }
-            set { SetValue(StartPointProperty, value); }
+            get { return (Point)this.GetValue(StartPointProperty); }
+            set { this.SetValue(StartPointProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for StartPoint.  This enables animation, styling, binding, etc...
@@ -132,8 +123,8 @@ namespace MusicPlayer.Controls
 
         public Point EndPoint
         {
-            get { return (Point)GetValue(EndPointProperty); }
-            set { SetValue(EndPointProperty, value); }
+            get { return (Point)this.GetValue(EndPointProperty); }
+            set { this.SetValue(EndPointProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for EndPoint.  This enables animation, styling, binding, etc...
@@ -143,11 +134,23 @@ namespace MusicPlayer.Controls
 
 
 
+        public double ProgressThikness
+        {
+            get { return (double)this.GetValue(ProgressThiknessProperty); }
+            set { this.SetValue(ProgressThiknessProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for BoarderThikness.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ProgressThiknessProperty =
+            DependencyProperty.Register("ProgressThikness", typeof(double), typeof(NowPlayingDisk), new PropertyMetadata(3.0));
+
+
+
 
         public Size ArcSize
         {
-            get { return (Size)GetValue(ArcSizeProperty); }
-            set { SetValue(ArcSizeProperty, value); }
+            get { return (Size)this.GetValue(ArcSizeProperty); }
+            set { this.SetValue(ArcSizeProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for ArcSize.  This enables animation, styling, binding, etc...
@@ -158,22 +161,16 @@ namespace MusicPlayer.Controls
 
         public bool IsLargeArc
         {
-            get { return (bool)GetValue(IsLargeArcProperty); }
-            set { SetValue(IsLargeArcProperty, value); }
+            get { return (bool)this.GetValue(IsLargeArcProperty); }
+            set { this.SetValue(IsLargeArcProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for IsLargeArc.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsLargeArcProperty =
             DependencyProperty.Register("IsLargeArc", typeof(bool), typeof(NowPlayingDisk), new PropertyMetadata(false));
-        private Ellipse coverDisc;
 
         private void UpdateArc()
         {
-            //arc_path = new Path();
-            //arc_path.Stroke = Brushes.Black;
-            //arc_path.StrokeThickness = 2;
-            //Canvas.SetLeft(arc_path, 0);
-            //Canvas.SetTop(arc_path, 0);
             var start_angle = 0.0 * (Math.PI / 180);
             var rotationInDegrees = this.Position / this.Duration * 360.0;
             var end_angle = start_angle + (Math.PI / 180) * rotationInDegrees;
@@ -189,13 +186,16 @@ namespace MusicPlayer.Controls
 
             var radius = this.ActualHeight / 2;
             var center = new Point(radius, radius);
-            this.IsLargeArc = angle_diff >= Math.PI;
 
-            radius -= 3;
+            radius -= this.ProgressThikness * 1.5;
+
+            if (radius < 0)
+                return;
 
             start_angle += Math.PI + Math.PI / 2;
             end_angle += Math.PI + Math.PI / 2;
 
+            this.IsLargeArc = angle_diff >= Math.PI;
             //Set start of arc
             this.StartPoint = new Point(center.X + radius * Math.Cos(start_angle), center.Y + radius * Math.Sin(start_angle));
             //set end point of arc.
@@ -208,7 +208,6 @@ namespace MusicPlayer.Controls
             //arc_path.Data = pathGeometry;
             //canvas.Children.Add(arc_path);
         }
-
 
     }
 }
