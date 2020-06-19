@@ -17,9 +17,9 @@ Currently supported
  ToDo
  ----
  
- - Get Release build to work. The UWP Native compiler has some issues. But this would be nessesaary to get it in the store. (And could result in better performance)
+ - ~~Get Release build to work. The UWP Native compiler has some issues. But this would be nessesaary to get it in the store. (And could result in better performance)~~
  - Sync only selected music from onedrive (currently it is all or nothing)
- - More Playlist edit options. Currently you can only add songs to an playlist and create new playlists. You can't delete Playlists or remove songs. (The UI is missing for this)
+ - More Playlist edit options. Currently you can only add songs to an playlist and create new playlists. You can't ~~delete Playlists or~~ remove songs. (The UI is missing for this)
  - Save the current playing list between starts (propably using project rome to sync accross devices and put it in the windows timeline)
  - Performance improvements (esspecially for Phone)
  - Live Tile
