@@ -147,9 +147,11 @@
     </Compile>
     <Compile Include="Controls\DelegateCommand.cs" />
     <Compile Include="Controls\DisabledCommand.cs" />
+    <Compile Include="Controls\FullScreenViewmodel.cs" />
     <Compile Include="Controls\NowPlayingDisk.xaml.cs">
       <DependentUpon>NowPlayingDisk.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\SlidingInformationControl.cs" />
     <Compile Include="Controls\StateListener.cs" />
     <Compile Include="Controls\UWPToolkit\Extensions\ListViewBase\ListViewExtensions.cs" />
     <Compile Include="Controls\UWPToolkit\Extensions\ListViewBase\StretchDirection.cs" />

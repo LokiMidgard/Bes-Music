@@ -16,10 +16,15 @@
             </ResourceDictionary.MergedDictionaries>
 
 
-            <Color x:Key="ColorDisabled">#342E33</Color>
+            <StaticResource x:Key="ColorDisabled" ResourceKey="ForgroundColor5" />
+            <StaticResource x:Key="ColorPressed" ResourceKey="ForgroundColor2" />
+            <StaticResource x:Key="ColorNormal" ResourceKey="ForgroundColor3" />
+            <StaticResource x:Key="ColorHover" ResourceKey="ForgroundColor1" />
+
+            <!--<Color x:Key="ColorDisabled">#342E33</Color>
             <Color x:Key="ColorPressed">#B8B6B7</Color>
             <Color x:Key="ColorNormal">#A09D9F</Color>
-            <Color x:Key="ColorHover">#FFFFFF</Color>
+            <Color x:Key="ColorHover">#FFFFFF</Color>-->
 
             <SolidColorBrush x:Key="BrushDisabled" Color="{ThemeResource ColorDisabled}" />
             <SolidColorBrush x:Key="BrushPressed" Color="{ThemeResource ColorPressed}" />
@@ -31,7 +36,58 @@
             <SolidColorBrush x:Key="AccentBrushNormal" Color="{ThemeResource SystemAccentColor}" />
             <SolidColorBrush x:Key="AccentBrushHover" Color="{ThemeResource SystemAccentColorLight3}" />
 
+            <SolidColorBrush x:Key="AccentBrush" Color="{ThemeResource SystemAccentColor}" />
+            <SolidColorBrush x:Key="AccentBrushDark1" Color="{ThemeResource SystemAccentColorDark1}" />
+            <SolidColorBrush x:Key="AccentBrushDark2" Color="{ThemeResource SystemAccentColorDark2}" />
+            <SolidColorBrush x:Key="AccentBrushDark3" Color="{ThemeResource SystemAccentColorDark3}" />
+            <SolidColorBrush x:Key="AccentBrushLight1" Color="{ThemeResource SystemAccentColorLight1}" />
+            <SolidColorBrush x:Key="AccentBrushLight2" Color="{ThemeResource SystemAccentColorLight2}" />
+            <SolidColorBrush x:Key="AccentBrushLight3" Color="{ThemeResource SystemAccentColorLight3}" />
 
+
+            <ThemeResource x:Key="AccentColor"       ResourceKey="SystemAccentColor" />
+            <ThemeResource x:Key="AccentColorDark1"  ResourceKey="SystemAccentColorDark1" />
+            <ThemeResource x:Key="AccentColorDark2"  ResourceKey="SystemAccentColorDark2" />
+            <ThemeResource x:Key="AccentColorDark3"  ResourceKey="SystemAccentColorDark3" />
+            <ThemeResource x:Key="AccentColorLight1" ResourceKey="SystemAccentColorLight1" />
+            <ThemeResource x:Key="AccentColorLight2" ResourceKey="SystemAccentColorLight2" />
+            <ThemeResource x:Key="AccentColorLight3" ResourceKey="SystemAccentColorLight3" />
+
+
+            <Color x:Key="ForgroundColor1">#FFFFFF</Color>
+            <Color x:Key="ForgroundColor2">#EEEEEE</Color>
+            <Color x:Key="ForgroundColor3">#999999</Color>
+            <Color x:Key="ForgroundColor4">#555555</Color>
+            <Color x:Key="ForgroundColor5">#333333</Color>
+            <Color x:Key="ForgroundColor6">#222222</Color>
+            <Color x:Key="ForgroundColor7">#1D1D1D</Color>
+            <Color x:Key="ForgroundColor8">#000000</Color>
+
+            <Color x:Key="BackgroundColor8">#FFFFFF</Color>
+            <Color x:Key="BackgroundColor7">#EEEEEE</Color>
+            <Color x:Key="BackgroundColor6">#999999</Color>
+            <Color x:Key="BackgroundColor5">#555555</Color>
+            <Color x:Key="BackgroundColor4">#333333</Color>
+            <Color x:Key="BackgroundColor3">#222222</Color>
+            <Color x:Key="BackgroundColor2">#1D1D1D</Color>
+            <Color x:Key="BackgroundColor1">#000000</Color>
+
+            <SolidColorBrush x:Key="ForgroundBrush1" Color="{StaticResource ForgroundColor1}" />
+            <SolidColorBrush x:Key="ForgroundBrush2" Color="{StaticResource ForgroundColor2}" />
+            <SolidColorBrush x:Key="ForgroundBrush3" Color="{StaticResource ForgroundColor3}" />
+            <SolidColorBrush x:Key="ForgroundBrush4" Color="{StaticResource ForgroundColor4}" />
+            <SolidColorBrush x:Key="ForgroundBrush5" Color="{StaticResource ForgroundColor5}" />
+            <SolidColorBrush x:Key="ForgroundBrush6" Color="{StaticResource ForgroundColor6}" />
+            <SolidColorBrush x:Key="ForgroundBrush7" Color="{StaticResource ForgroundColor7}" />
+            <SolidColorBrush x:Key="ForgroundBrush8" Color="{StaticResource ForgroundColor8}" />
+            <SolidColorBrush x:Key="BackgroundBrush8" Color="{StaticResource BackgroundColor8}" />
+            <SolidColorBrush x:Key="BackgroundBrush7" Color="{StaticResource BackgroundColor7}" />
+            <SolidColorBrush x:Key="BackgroundBrush6" Color="{StaticResource BackgroundColor6}" />
+            <SolidColorBrush x:Key="BackgroundBrush5" Color="{StaticResource BackgroundColor5}" />
+            <SolidColorBrush x:Key="BackgroundBrush4" Color="{StaticResource BackgroundColor4}" />
+            <SolidColorBrush x:Key="BackgroundBrush3" Color="{StaticResource BackgroundColor3}" />
+            <SolidColorBrush x:Key="BackgroundBrush2" Color="{StaticResource BackgroundColor2}" />
+            <SolidColorBrush x:Key="BackgroundBrush1" Color="{StaticResource BackgroundColor1}" />
 
             <SolidColorBrush x:Key="SystemControlTransparentBackgroundBrush" Color="#c0888888"></SolidColorBrush>
             <SolidColorBrush x:Key="SystemControlTransparentBorderBrush" Color="#c0989898" />

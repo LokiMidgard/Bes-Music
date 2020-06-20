@@ -40,7 +40,7 @@
                 ItemsSource="{Binding Model.Songs}"
                 SelectionMode="None">
                 <ListView.Header>
-                    <Border x:Name="headerBackground" Background="{StaticResource SystemControlBackgroundBaseLowBrush}">
+                    <Border x:Name="headerBackground" Background="{StaticResource BackgroundBrush1}">
 
 
 
@@ -57,6 +57,9 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
+                            <Border x:Name="coverContainer" Background="White" BorderBrush="Black" UseLayoutRounding="True" BorderThickness="1,1,3,3" Padding="3">
+                    
+                                
                             <Image
                                 x:Name="cover"
                                 Width="200"
@@ -64,6 +67,7 @@
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 ImageOpened="Cover_Loaded" />
+                            </Border>
                             <StackPanel
                                 x:Name="CaptionBox"
                                 Grid.Column="1"
@@ -79,6 +83,7 @@
                                 <TextBlock
                                     MaxLines="1"
                                     Style="{StaticResource SubheaderTextBlockStyle}"
+                                    Foreground="{StaticResource AccentBrush}"
                                     Text="{Binding Model.Interpreters, Converter={StaticResource listConverter}}"
                                     TextTrimming="CharacterEllipsis" />
                             </StackPanel>
@@ -330,6 +335,7 @@
                                 <TextBlock
                                     x:Name="interprets"
                                     Grid.Column="2"
+                                    Foreground="{StaticResource AccentBrush}"
                                     VerticalAlignment="Center"
                                     Text="{x:Bind Interpreters, Converter={StaticResource listConverter}}" />
                                 <TextBlock
@@ -338,7 +344,7 @@
                                     Grid.Column="0"
                                     Margin="0,0,0,4"
                                     VerticalAlignment="Center"
-                                    Foreground="{StaticResource SystemColorGrayTextBrush}"
+                                    Foreground="{StaticResource AccentBrush}"
                                     Text="{x:Bind Interpreters, Converter={StaticResource listConverter}}"
                                     Visibility="Collapsed" />
 
@@ -373,9 +379,9 @@
                     <VisualState x:Name="MediumWindow">
                         <VisualState.Setters>
                             <Setter Target="CaptionBox.(Grid.Row)" Value="1" />
-                            <Setter Target="cover.(Grid.Column)" Value="1" />
-                            <Setter Target="cover.(Grid.Column)" Value="1" />
-                            <Setter Target="cover.HorizontalAlignment" Value="Center" />
+                            <Setter Target="coverContainer.(Grid.Column)" Value="1" />
+                            <Setter Target="coverContainer.(Grid.Column)" Value="1" />
+                            <Setter Target="coverContainer.HorizontalAlignment" Value="Center" />
                             <Setter Target="HeaderGrid.HorizontalAlignment" Value="Center" />
                             <Setter Target="HeaderGrid.Margin" Value="24,100,24,24" />
                             <!--<Setter Target="HeaderGrid.HeaderColumn.Width" Value="0"/>-->
@@ -392,9 +398,9 @@
                     <VisualState x:Name="SmallWindow">
                         <VisualState.Setters>
                             <Setter Target="CaptionBox.(Grid.Row)" Value="1" />
-                            <Setter Target="cover.(Grid.Column)" Value="1" />
-                            <Setter Target="cover.(Grid.Column)" Value="1" />
-                            <Setter Target="cover.HorizontalAlignment" Value="Center" />
+                            <Setter Target="coverContainer.(Grid.Column)" Value="1" />
+                            <Setter Target="coverContainer.(Grid.Column)" Value="1" />
+                            <Setter Target="coverContainer.HorizontalAlignment" Value="Center" />
                             <Setter Target="HeaderGrid.HorizontalAlignment" Value="Center" />
                             <Setter Target="HeaderGrid.Margin" Value="0,100,0,24" />
 

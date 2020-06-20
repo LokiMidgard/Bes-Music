@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:playback="using:Windows.Media.Playback"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    MinWidth="270"
     mc:Ignorable="d">
 
 

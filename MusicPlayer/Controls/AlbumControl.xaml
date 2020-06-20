@@ -100,7 +100,7 @@
                 x:Name="Artist"
                 Grid.Row="2"
                 Grid.ColumnSpan="3"
-                Foreground="{StaticResource InkToolbarAccentColorThemeBrush}"
+                Foreground="{StaticResource AccentBrush}"
                 Text="{Binding Model.Interpreters, Converter={StaticResource listConverter}}"
                 TextTrimming="CharacterEllipsis"
                 TextWrapping="NoWrap" />

@@ -189,42 +189,6 @@ namespace MusicPlayer.Controls
 
 
 
-        public ICommand SwitchFullScreenCommand
-        {
-            get { return (ICommand)this.GetValue(SwitchFullScreenCommandProperty); }
-            set { this.SetValue(SwitchFullScreenCommandProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for SwitchFullScreenCommand.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty SwitchFullScreenCommandProperty =
-            DependencyProperty.Register("SwitchFullScreenCommand", typeof(ICommand), typeof(TransportControls), new PropertyMetadata(DisabledCommand.Instance));
-
-
-
-        public bool IsFullscreen
-        {
-            get { return (bool)this.GetValue(IsFullscreenProperty); }
-            set { this.SetValue(IsFullscreenProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for IsFullscreen.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IsFullscreenProperty =
-            DependencyProperty.Register("IsFullscreen", typeof(bool), typeof(TransportControls), new PropertyMetadata(false, IsFullscreenChanged));
-
-        private static void IsFullscreenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var me = d as TransportControls;
-            var isFullscreen = (bool)e.NewValue;
-
-            if (isFullscreen)
-                Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
-            else
-                Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().ExitFullScreenMode();
-
-
-            VisualStateManager.GoToState(me, isFullscreen ? "FullScreen" : "Windowed", true);
-
-        }
 
         public bool IsShuffled
         {
@@ -376,7 +340,6 @@ namespace MusicPlayer.Controls
                     App.Shell.Frame.Navigate(typeof(NowPlaying));
                 });
 
-                this.SwitchFullScreenCommand = new DelegateCommand(() => this.IsFullscreen = !this.IsFullscreen);
                 this.IsShuffled = this.PlayList.ShuffleEnabled;
                 this.IsRepeate = this.PlayList.AutoRepeatEnabled;
                 this.mediaPlayerElement.MediaPlayer.CurrentStateChanged += this.MediaPlayer_CurrentStateChanged;

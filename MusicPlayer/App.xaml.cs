@@ -114,8 +114,8 @@ namespace MusicPlayer
             // Set the application minimum window size
             Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetPreferredMinSize(
                 new Size(
-                    width: 200,
-                    height: 250
+                    width: 270,
+                    height: 400
                     ));
         }
 

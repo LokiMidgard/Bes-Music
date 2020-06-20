@@ -11,7 +11,7 @@ using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Windows.Input;
 using Windows.Media.Core;
 using Windows.Media.Playback;
 using Windows.Storage.FileProperties;
@@ -124,7 +124,237 @@ namespace MusicPlayer.Viewmodels
             });
 
             transportControls.RegisterPropertyChangedCallback(TransportControls.CurrentMediaPlaybackItemProperty, (sender, e) => this.RefresCurrentIndex());
+
+            BindToTransportControl(SongProperty, nameof(this.transportControls.CurrentSong));
+            BindToTransportControl(GoToSettingsCommandProperty, nameof(this.transportControls.GoToSettingsCommand));
+            BindToTransportControl(GoToNowPlayingCommandProperty, nameof(this.transportControls.GoToNowPlayingCommand));
+            BindToTransportControl(NextCommandProperty, nameof(this.transportControls.NextCommand));
+            BindToTransportControl(PreviousCommandProperty, nameof(this.transportControls.PreviousCommand));
+            BindToTransportControl(PlayCommandProperty, nameof(this.transportControls.PlayCommand));
+            BindToTransportControl(PauseCommandProperty, nameof(this.transportControls.PauseCommand));
+            BindToTransportControl(ShuffleCommandProperty, nameof(this.transportControls.ShuffleCommand));
+            BindToTransportControl(RepeateCommandProperty, nameof(this.transportControls.RepeateCommand));
+
+            BindToTransportControl(IsShuffledProperty, nameof(this.transportControls.IsRepeate));
+            BindToTransportControl(IsRepeateProperty, nameof(this.transportControls.IsShuffled));
+            BindToTransportControl(IsPlayingProperty, nameof(this.transportControls.IsPlaying));
+            //return myBinding;
+
+
+
+            void BindToTransportControl(DependencyProperty songProperty, string Path)
+            {
+                var myBinding = new Binding
+                {
+                    Source = this.transportControls,
+                    Path = new PropertyPath(Path),
+                    Mode = BindingMode.OneWay,
+                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                };
+                BindingOperations.SetBinding(this, songProperty, myBinding);
+            }
         }
+
+
+
+
+
+
+        public ICommand GoToSettingsCommand
+        {
+            get { return (ICommand)this.GetValue(GoToSettingsCommandProperty); }
+           private set { this.SetValue(GoToSettingsCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for GoToSettingsCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty GoToSettingsCommandProperty =
+            DependencyProperty.Register("GoToSettingsCommand", typeof(ICommand), typeof(MediaplayerViewmodel), new PropertyMetadata(DisabledCommand.Instance));
+
+        public ICommand GoToNowPlayingCommand
+        {
+            get { return (ICommand)this.GetValue(GoToNowPlayingCommandProperty); }
+            private set { this.SetValue(GoToNowPlayingCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for GoToSettingsCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty GoToNowPlayingCommandProperty =
+            DependencyProperty.Register("GoToNowPlayingCommand", typeof(ICommand), typeof(MediaplayerViewmodel), new PropertyMetadata(DisabledCommand.Instance));
+
+
+
+        public ICommand NextCommand
+        {
+            get { return (ICommand)this.GetValue(NextCommandProperty); }
+            private set { this.SetValue(NextCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for NextCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty NextCommandProperty =
+            DependencyProperty.Register("NextCommand", typeof(ICommand), typeof(MediaplayerViewmodel), new PropertyMetadata(DisabledCommand.Instance));
+
+
+
+        public ICommand PreviousCommand
+        {
+            get { return (ICommand)this.GetValue(PreviousCommandProperty); }
+            private set { this.SetValue(PreviousCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for PreviousCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty PreviousCommandProperty =
+            DependencyProperty.Register("PreviousCommand", typeof(ICommand), typeof(MediaplayerViewmodel), new PropertyMetadata(DisabledCommand.Instance));
+
+
+
+
+        public ICommand PlayCommand
+        {
+            get { return (ICommand)this.GetValue(PlayCommandProperty); }
+            private set { this.SetValue(PlayCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for PlayCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty PlayCommandProperty =
+            DependencyProperty.Register("PlayCommand", typeof(ICommand), typeof(MediaplayerViewmodel), new PropertyMetadata(DisabledCommand.Instance));
+
+
+
+
+        public ICommand PauseCommand
+        {
+            get { return (ICommand)this.GetValue(PauseCommandProperty); }
+            private set { this.SetValue(PauseCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for PauseCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty PauseCommandProperty =
+            DependencyProperty.Register("PauseCommand", typeof(ICommand), typeof(MediaplayerViewmodel), new PropertyMetadata(DisabledCommand.Instance));
+
+
+
+        public IToggleStateCommand ShuffleCommand
+        {
+            get { return (IToggleStateCommand)this.GetValue(ShuffleCommandProperty); }
+            private set { this.SetValue(ShuffleCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ShuffleCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ShuffleCommandProperty =
+            DependencyProperty.Register("ShuffleCommand", typeof(IToggleStateCommand), typeof(MediaplayerViewmodel), new PropertyMetadata(DisabledCommand.Instance));
+
+
+
+
+        public IToggleStateCommand RepeateCommand
+        {
+            get { return (IToggleStateCommand)this.GetValue(RepeateCommandProperty); }
+            private set { this.SetValue(RepeateCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for RepeateCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty RepeateCommandProperty =
+            DependencyProperty.Register("RepeateCommand", typeof(IToggleStateCommand), typeof(MediaplayerViewmodel), new PropertyMetadata(DisabledCommand.Instance));
+
+
+
+
+        public ICommand SwitchFullScreenCommand
+        {
+            get { return (ICommand)this.GetValue(SwitchFullScreenCommandProperty); }
+            private set { this.SetValue(SwitchFullScreenCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for SwitchFullScreenCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SwitchFullScreenCommandProperty =
+            DependencyProperty.Register("SwitchFullScreenCommand", typeof(ICommand), typeof(MediaplayerViewmodel), new PropertyMetadata(DisabledCommand.Instance));
+
+
+
+        public bool IsFullscreen
+        {
+            get { return (bool)this.GetValue(IsFullscreenProperty); }
+            private set { this.SetValue(IsFullscreenProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsFullscreen.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsFullscreenProperty =
+            DependencyProperty.Register("IsFullscreen", typeof(bool), typeof(MediaplayerViewmodel), new PropertyMetadata(false));
+
+        public bool IsShuffled
+        {
+            get { return (bool)this.GetValue(IsShuffledProperty); }
+            private set { this.SetValue(IsShuffledProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsShuffled.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsShuffledProperty =
+            DependencyProperty.Register("IsShuffled", typeof(bool), typeof(MediaplayerViewmodel), new PropertyMetadata(false));
+
+
+        public bool IsRepeate
+        {
+            get { return (bool)this.GetValue(IsRepeateProperty); }
+            private set { this.SetValue(IsRepeateProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsRepeate.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsRepeateProperty =
+            DependencyProperty.Register("IsRepeate", typeof(bool), typeof(MediaplayerViewmodel), new PropertyMetadata(false));
+
+        public bool IsPlaying
+        {
+            get { return (bool)this.GetValue(IsPlayingProperty); }
+            private set { this.SetValue(IsPlayingProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsPlaying.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsPlayingProperty =
+            DependencyProperty.Register("IsPlaying", typeof(bool), typeof(MediaplayerViewmodel), new PropertyMetadata(false));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public TransportControls.SongInformation Song
+        {
+            get { return (TransportControls.SongInformation)this.GetValue(SongProperty); }
+            private set { this.SetValue(SongProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Song.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SongProperty =
+            DependencyProperty.Register("Song", typeof(TransportControls.SongInformation), typeof(MediaplayerViewmodel), new PropertyMetadata(null));
+
+
+
 
         public Binding BindIsPlaying(DependencyObject obj, DependencyProperty property)
         {

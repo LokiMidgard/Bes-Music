@@ -44,90 +44,32 @@
                         </Style>
                     </ListView.Style>
                     <ListView.Header>
-                        <Grid Margin="100,100,0,50">
+                        <Grid Margin="0,16,0,30">
                             <Grid.RowDefinitions>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
                                 <RowDefinition></RowDefinition>
                                 <RowDefinition></RowDefinition>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*" MaxWidth="100"/>
+                                <ColumnDefinition Width="*" MinWidth="160" MaxWidth="300" />
+                                <ColumnDefinition Width="*" MaxWidth="100" x:Name="LastColumn"/>
                             </Grid.ColumnDefinitions>
-                        <Button Style="{StaticResource InvisibleButton}" VerticalAlignment="Stretch" Click="Button_Click" Background="{x:Null}" Padding="0"  >
-                                <controls:NowPlayingDisk BorderBrush="White" Width="300" Height="300"/>
-                        </Button>
-                            <StackPanel Grid.Row="1"
-                                                Margin="0,18,10,0"
-                                                HorizontalAlignment="Center"
-                                                Orientation="Horizontal">
-                                <ToggleButton
-                                                    x:Name="ShuffleButtonMain"
-                                                    Width="{StaticResource SmalButtonSize}"
-                                                    Height="{StaticResource SmalButtonSize}"
-                                                    Margin="{StaticResource SmalButtonMargin}"
-                                                    IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsShuffled, Mode=TwoWay}"
-                                                    IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ShuffleCommand.IsEnabled, Mode=TwoWay}"
-                                                    Style="{StaticResource RoundToggleButtonStyle}">
-                                    <Viewbox>
-                                        <SymbolIcon Symbol="Shuffle" />
-                                    </Viewbox>
-                                </ToggleButton>
-                                <ToggleButton
-                                                    x:Name="RepeatButtonMain"
-                                                    Width="{StaticResource SmalButtonSize}"
-                                                    Height="{StaticResource SmalButtonSize}"
-                                                    Margin="{StaticResource SmalButtonMargin}"
-                                                    IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsRepeate, Mode=TwoWay}"
-                                                    IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=RepeateCommand.IsEnabled, Mode=TwoWay}"
-                                                    Style="{StaticResource RoundToggleButtonStyle}">
-                                    <Viewbox>
-                                        <SymbolIcon Symbol="RepeatAll" />
-                                    </Viewbox>
-                                </ToggleButton>
+                            <Viewbox HorizontalAlignment="Left"  Grid.Column="1"  MaxWidth="300">
 
-                                <Button
-                                                    Width="{StaticResource MediumButtonSize}"
-                                                    Height="{StaticResource MediumButtonSize}"
-                                                    Margin="{StaticResource MediumButtonMargin}"
-                                                    Style="{StaticResource RoundButtonStyle}">
-                                                    <!--Command="{TemplateBinding PreviousCommand}"-->
-                                    <Viewbox>
-                                        <SymbolIcon Symbol="Previous" />
-                                    </Viewbox>
+                                <Button Style="{StaticResource InvisibleButton}"  Click="Button_Click" Background="{x:Null}" Padding="0"  >
+                                    <controls:NowPlayingDisk BorderBrush="White" Width="300" Height="300"/>
                                 </Button>
-                                <Button
-                                                    x:Name="PausePlayButton"
-                                                    Width="{StaticResource BigButtonSize}"
-                                                    Height="{StaticResource BigButtonSize}"
-                                                    Margin="{StaticResource BigButtonMargin}"
-                                                    Style="{StaticResource RoundButtonStyle}">
-                                                    <!--Command="{TemplateBinding PlayCommand}"-->
-                                    <Viewbox>
-                                        <SymbolIcon x:Name="PlayPauseSymbol" Symbol="Play" />
-                                    </Viewbox>
-                                </Button>
-                                <Button
-                                                    Width="{StaticResource MediumButtonSize}"
-                                                    Height="{StaticResource MediumButtonSize}"
-                                                    Margin="{StaticResource MediumButtonMargin}"
-                                                    Style="{StaticResource RoundButtonStyle}">
-                                                    <!--Command="{TemplateBinding NextCommand}"-->
-                                    <Viewbox>
-                                        <SymbolIcon Symbol="Next" />
-                                    </Viewbox>
-                                </Button>
-
-                                <Button
-                                                    Width="{StaticResource SmalButtonSize}"
-                                                    Height="{StaticResource SmalButtonSize}"
-                                                    Margin="{StaticResource SmalButtonMargin}"
-                                                    Style="{StaticResource SmalButtonStyle}">
-                                                    <!--Command="{TemplateBinding NextCommand}"-->
-                                    <Viewbox>
-                                        <SymbolIcon Symbol="MusicInfo" />
-                                    </Viewbox>
-                                </Button>
+                            </Viewbox>
+                            <StackPanel x:Name="SongDataContainer" VerticalAlignment="Center" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="1" >
+                               
+                            <TextBlock Foreground="{StaticResource ForgroundBrush3}" Margin="0,12,0,0" Text="{Binding Instance.Song.AlbumTitle}"  Style="{StaticResource CaptionTextBlockStyle}"/>
+                            <TextBlock Grid.ColumnSpan="2" Margin="0,-4,0,0" Grid.Column="1"   Grid.Row="2" Text="{Binding Instance.Song.Title}" Style="{StaticResource TitleTextBlockStyle}"/>
+                            <TextBlock  Foreground="{StaticResource AccentBrush}" Grid.ColumnSpan="2" Margin="0,-4,0,0" Grid.Column="1" Grid.Row="3" Text="{Binding Instance.Song.Artist}" Style="{StaticResource SubtitleTextBlockStyle}"/>
                             </StackPanel>
+                            <!--<SymbolIcon  Symbol="Up" Grid.ColumnSpan="3" HorizontalAlignment="Left" Grid.Row="3" ></SymbolIcon>-->
 
                         </Grid>
                     </ListView.Header>
@@ -136,11 +78,11 @@
                             <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />
                         </Style>
                     </ListView.Resources>
-                    <ListView.ItemContainerStyle>
+                    <!--<ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         </Style>
-                    </ListView.ItemContainerStyle>
+                    </ListView.ItemContainerStyle>-->
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <UserControl>
@@ -213,11 +155,20 @@
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" x:Name="songTitle" Margin="8,0" Text="{Binding Song.Title}" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Song.Title}" />
                                     <TextBlock Grid.Column="1" x:Name="albumTitle" Margin="8,0" Text="{Binding Song.AlbumName}" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Song.AlbumName}" />
-                                    <TextBlock Grid.Column="2"  x:Name="interprets" Margin="8,0" Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" />
+                                    <TextBlock Grid.Column="2"  x:Name="interprets" Margin="8,0" Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" Foreground="{StaticResource AccentBrush}" />
                                     <TextBlock Grid.Column="3" HorizontalAlignment="Right" Margin="8,0" Text="{Binding Song.Duration, Converter={StaticResource stringFormat}, ConverterParameter='{}{0:mm\\:ss}'}"/>
 
 
-                                    <TextBlock x:Name="interpretSubs" Visibility="Collapsed" Foreground="{StaticResource SystemColorGrayTextBrush}"  TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource  BodyTextBlockStyle}"  Grid.ColumnSpan="4" Grid.Row="1" Margin="8,0" HorizontalAlignment="Stretch">
+                                    <TextBlock 
+                                        x:Name="interpretSubs"
+                                        Visibility="Collapsed"
+                                        Foreground="{StaticResource AccentBrush}" 
+                                        TextWrapping="NoWrap"
+                                        TextTrimming="CharacterEllipsis"
+                                        Style="{StaticResource  BodyTextBlockStyle}"
+                                        Grid.ColumnSpan="2"
+                                        Grid.Column="1"
+                                        Grid.Row="1" Margin="8,0" HorizontalAlignment="Left">
                                         <Run Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" />
                                     </TextBlock>
 
@@ -225,7 +176,7 @@
                                     <TextBlock x:Name="albumTitleSub" Visibility="Collapsed" Foreground="{StaticResource SystemColorGrayTextBrush}"  TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource  BodyTextBlockStyle}"  Grid.ColumnSpan="4" Grid.Row="1" Margin="8,0" HorizontalAlignment="Stretch">
                                         <Run Text="{Binding Song.AlbumName}" />
                                         <Run Text="&#x2022;" />
-                                        <Run Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" />
+                                        <Run Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" Foreground="{StaticResource AccentBrushDark3}" />
                                     </TextBlock>
 
                                     <Grid.ContextFlyout>
@@ -269,5 +220,48 @@
 
             </HubSection>
         </Hub>-->
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+
+
+                <!-- Large window VisualState -->
+                <VisualState x:Name="LargeWindow">
+
+                    
+                    <!-- Large window trigger -->
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="900"/>
+                    </VisualState.StateTriggers>
+
+                    <VisualState.Setters>
+                        <Setter Target="SongDataContainer.(Grid.Column)" Value="2"></Setter>
+                        <Setter Target="SongDataContainer.(Grid.Row)" Value="0"></Setter>
+                        <Setter Target="SongDataContainer.VerticalAlignment" Value="Center"></Setter>
+                        <Setter Target="SongDataContainer.Margin" Value="24"></Setter>
+                        <Setter Target="LastColumn.MaxWidth" Value="999999"></Setter>
+                    </VisualState.Setters>
+                    
+                    
+                </VisualState>
+
+                <!-- Medium window VisualState -->
+                <VisualState x:Name="MediumWindow">
+                    <VisualState.Setters>
+                        <!--<Setter Target="interprets.Visibility" Value="Collapsed"/>
+                        <Setter Target="interpretsColumn.Width" Value="0"/>
+                        <Setter Target="interpretSubs.Visibility" Value="Visible"/>-->
+                    </VisualState.Setters>
+                    <!-- Medium window trigger -->
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0"/>
+                    </VisualState.StateTriggers>
+
+                </VisualState>
+
+
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
     </Grid>
 </Page>

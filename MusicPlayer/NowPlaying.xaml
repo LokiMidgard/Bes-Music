@@ -5,29 +5,119 @@
     xmlns:controls="using:MusicPlayer.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:MusicPlayer"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
+    <Page.Resources>
+        <Style x:Key="OpacetyButton" TargetType="Button">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}"/>
+            <Setter Property="UseSystemFocusVisuals" Value="True"/>
+            <Setter Property="FocusVisualMargin" Value="-3"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="RootGrid" Background="{x:Null}">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <Storyboard>
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                            <DoubleAnimation Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Opacity" To="0.2"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                            <DoubleAnimation Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Opacity" To="1"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <PointerDownThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <ContentPresenter x:Name="ContentPresenter" AutomationProperties.AccessibilityView="Raw" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentTransitions="{TemplateBinding ContentTransitions}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
     <Grid x:Name="rootElement" SizeChanged="rootElementOnSizeChanged">
-        <controls:TiledBackgroundPanel x:Name="backgroundLarge" Visibility="Collapsed" />
-        <controls:NowPlayingDisk
+        <Grid.DataContext>
+            <viewmodels:MediaPlayerAccessor/>
+        </Grid.DataContext>
+        <Grid.RowDefinitions>
+            <RowDefinition  Height="*" />
+            <RowDefinition  Height="Auto" />
+            <RowDefinition MaxHeight="100" Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MaxWidth="100"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <controls:TiledBackgroundPanel x:Name="backgroundLarge" Visibility="Collapsed" Grid.ColumnSpan="3" Grid.RowSpan="3" />
+        <Grid
+            Grid.Row="1"
+            Grid.Column="1"            >
+
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel x:Name="SongDataContainer" VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Margin="24" >
+
+                <TextBlock IsTextSelectionEnabled="True" Foreground="{StaticResource ForgroundBrush3}" Margin="0,12,0,0" Text="{Binding Instance.Song.AlbumTitle}"  Style="{StaticResource SubheaderTextBlockStyle}"/>
+                <TextBlock IsTextSelectionEnabled="True" Grid.ColumnSpan="2" Margin="0,-4,0,0" Grid.Column="1"   Grid.Row="2" Text="{Binding Instance.Song.Title}" Style="{StaticResource HeaderTextBlockStyle}"/>
+                <TextBlock IsTextSelectionEnabled="True" Foreground="{StaticResource AccentBrush}" Grid.ColumnSpan="2" Margin="0,0,0,0" Grid.Column="1" Grid.Row="3" Text="{Binding Instance.Song.Artist}" Style="{StaticResource SubheaderTextBlockStyle}"/>
+            </StackPanel>
+            <controls:NowPlayingDisk
+                VerticalAlignment="Center"
             Width="160"
+                Margin="12,0,0,0"
             Height="160"
             ProgressThikness="4"
-            Margin="100,000,0,100"
             HorizontalAlignment="Left"
-            VerticalAlignment="Bottom"
             BorderBrush="White"
             BorderThickness="10" />
+
+        </Grid>
+        <Button Grid.ColumnSpan="3" Grid.RowSpan="3" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource OpacetyButton}"
+                Padding="12" Command="{Binding SwitchFullScreenCommand}">
+            <Button.DataContext>
+                <controls:FullScreenViewmodel />
+            </Button.DataContext>
+            <SymbolIcon  x:Name="fullScreenIcon"  Symbol="{Binding Symbol}"></SymbolIcon>
+        </Button>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <!--
-                            VisualState to be triggered when the
-                            window width is >=720 effective pixels.
-                        -->
-                        <AdaptiveTrigger MinWindowWidth="100" />
+                        <AdaptiveTrigger MinWindowWidth="800" />
+                    </VisualState.StateTriggers>
+
+                    <VisualState.Setters>
+                        <Setter Target="backgroundLarge.Visibility" Value="Visible" />
+                        <Setter Target="SongDataContainer.(Grid.Column)" Value="1"/>
+                        <Setter Target="SongDataContainer.(Grid.Row)" Value="0"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="10" />
                     </VisualState.StateTriggers>
 
                     <VisualState.Setters>
