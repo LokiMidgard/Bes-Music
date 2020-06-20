@@ -57,13 +57,33 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <Border x:Name="coverContainer" Background="White" BorderBrush="Black" UseLayoutRounding="True" BorderThickness="1,1,3,3" Padding="3">
-                    
+                            <Border x:Name="coverContainer" 
+                                    UseLayoutRounding="True" 
+                                    BorderThickness="1,1,3,3" 
+                                    Padding="3">
+                                <Border.Background>
+                                    <SolidColorBrush x:Name="coverBackgroundColor" Color="White"></SolidColorBrush>
+                                </Border.Background>
+                                <Border.BorderBrush>
+                                    <SolidColorBrush x:Name="coverBorderColor" Color="Black"></SolidColorBrush>
+                                </Border.BorderBrush>
+                                <Border.Triggers>
+                                    <EventTrigger>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation Storyboard.TargetName="coverBackgroundColor" Storyboard.TargetProperty="Color" Duration="0:0:5" From="Transparent"  To="White" ></ColorAnimation>
+                                                <ColorAnimation Storyboard.TargetName="coverBorderColor" Storyboard.TargetProperty="Color" Duration="0:0:5" From="Transparent"  To="Black" ></ColorAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Border.Triggers>
                                 
                             <Image
                                 x:Name="cover"
                                 Width="200"
                                 Height="200"
+
+                                Stretch="UniformToFill"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 ImageOpened="Cover_Loaded" />

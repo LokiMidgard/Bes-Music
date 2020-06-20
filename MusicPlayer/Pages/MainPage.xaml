@@ -60,7 +60,7 @@
                             <Viewbox HorizontalAlignment="Left"  Grid.Column="1"  MaxWidth="300">
 
                                 <Button Style="{StaticResource InvisibleButton}"  Click="Button_Click" Background="{x:Null}" Padding="0"  >
-                                    <controls:NowPlayingDisk BorderBrush="White" Width="300" Height="300"/>
+                                    <controls:NowPlayingDisk BorderBrush="{ThemeResource ForgroundBrush1}" Width="300" Height="300"/>
                                 </Button>
                             </Viewbox>
                             <StackPanel x:Name="SongDataContainer" VerticalAlignment="Center" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="1" >

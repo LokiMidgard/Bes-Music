@@ -334,9 +334,10 @@
 
                         </Grid.Background>-->
                         <Grid.Resources>
+                            <converter:VisibleCollapsedOnNull x:Key="CollapseOnNull" OnNullValue="Collapsed"/>
                             <Style x:Key="MediaTextBlockStyle" TargetType="TextBlock">
                                 <Setter Property="VerticalAlignment" Value="Center" />
-                                <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+                                <Setter Property="Foreground" Value="{ThemeResource ForgroundBrush1}" />
                                 <Setter Property="FontSize" Value="{ThemeResource MTCMediaFontSize}" />
                                 <Setter Property="FontFamily" Value="{ThemeResource MTCMediaFontFamily}" />
                                 <Setter Property="Style" Value="{ThemeResource CaptionTextBlockStyle}" />
@@ -348,7 +349,7 @@
                                 <Setter Property="Padding" Value="0" />
                             </Style>
                         </Grid.Resources>
-                        <Border Grid.Row="1" Background="{ThemeResource SystemColorBackgroundColor}" />
+                        <Border Grid.Row="1" Background="{ThemeResource BackgroundBrush1}" />
                         <Border
                             Grid.Row="0"
                             Margin="0,-35,0,0"
@@ -357,10 +358,10 @@
                                 <converter:ToTransparent x:Key="toTransparent" />
                             </Border.Resources>
                             <Border.Background>
-                                <LinearGradientBrush ColorInterpolationMode="SRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1">
+                                <LinearGradientBrush ColorInterpolationMode="ScRgbLinearInterpolation" StartPoint="0,0" EndPoint="0,1">
                                     <LinearGradientBrush.GradientStops>
-                                        <GradientStop Offset="0" Color="{Binding Source={ThemeResource SystemColorBackgroundColor}, Converter={StaticResource toTransparent}}" />
-                                        <GradientStop Offset="1" Color="{ThemeResource SystemColorBackgroundColor}" />
+                                        <GradientStop Offset="0" Color="{Binding Source={ThemeResource BackgroundColor1}, Converter={StaticResource toTransparent}}" />
+                                        <GradientStop Offset="1" Color="{ThemeResource BackgroundColor1}" />
                                     </LinearGradientBrush.GradientStops>
                                 </LinearGradientBrush>
                             </Border.Background>
@@ -376,7 +377,7 @@
                             x:Name="ControlPanel_ControlPanelVisibilityStates_Border"
                             Grid.RowSpan="2"
                             VerticalAlignment="Bottom"
-                            Background="{ThemeResource SystemColorBackgroundBrush}">
+                            Background="{ThemeResource BackgroundBrush1}">
                             <Grid
                                 x:Name="ControlPanelGrid"
                                 VerticalAlignment="Bottom"
@@ -414,71 +415,14 @@
                                                 Style="{StaticResource MediaControlSlider}"></Slider>
 
 
-                                <!--<Grid
-                                    Grid.Row="1"
-                                    Grid.RowSpan="2"
-                                    Grid.Column="0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-
-                                    <local2:NowPlayingDisk
-                                        x:Name="SpinningCover"
-                                        Grid.RowSpan="2"
-                                        Grid.Column="0"
-                                        ProgressThikness="3"
-                                        Width="{StaticResource NormalCoverControlHeight}"
-                                        Height="{StaticResource NormalCoverControlHeight}"
-                                        Margin="4" />
-
-                                -->
-                                <!--<Image
-                                        Grid.RowSpan="2"
-                                        Grid.Column="0"
-                                        Height="{StaticResource NormalMediaControlHeight}"
-                                        Source="{Binding CurrentSong.Thumbnail, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                        Stretch="UniformToFill" />-->
-                                <!--  Source="{TemplateBinding CurrentSong.Thumbnail}"  -->
-                                <!--
-                                    <TextBlock
-                                        x:Name="TitleLable"
-                                        Grid.Row="0"
-                                        Grid.Column="1"
-                                        Margin="8,0,0,0"
-                                        VerticalAlignment="Bottom"
-                                        MaxLines="1"
-                                        Style="{StaticResource TitleTextBlockStyle}"
-                                        Text="{Binding CurrentSong.Title, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                        TextTrimming="CharacterEllipsis"
-                                        TextWrapping="NoWrap" />
-                                -->
-                                <!--  Text="{TemplateBinding CurrentSong.Title}"  -->
-                                <!--
-                                    <TextBlock
-                                        x:Name="ArtistLable"
-                                        Grid.Row="1"
-                                        Grid.Column="1"
-                                        Margin="8,0,0,0"
-                                        VerticalAlignment="Top"
-                                        MaxLines="1"
-                                        Style="{StaticResource SubtitleTextBlockStyle}"
-                                        Text="{Binding CurrentSong.Artist, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                        TextTrimming="CharacterEllipsis"
-                                        TextWrapping="NoWrap" />
-
-                                </Grid>-->
+                    
                                 <Border
                                     x:Name="ErrorBorder"
                                     Grid.ColumnSpan="3"
                                     Width="320"
                                     Height="96"
                                     HorizontalAlignment="Center"
-                                    Background="{ThemeResource MediaTransportControlsPanelBackground}"
+                                    Background="{ThemeResource BackgroundBrush1}"
                                     Visibility="Collapsed">
                                     <TextBlock
                                         x:Name="ErrorTextBlock"
@@ -506,21 +450,7 @@
                                         </Viewbox>
                                     </Button>
                                 </StackPanel>
-                                <!--<Border
-                                    x:Name="LeftSidePlayBorder"
-                                    Grid.Row="1"
-                                    Grid.Column="0"
-                                    Visibility="Collapsed">
-                                    <AppBarButton
-                                        x:Name="PlayPauseButtonOnLeft"
-                                        Margin="0"
-                                        VerticalAlignment="Center"
-                                        Style="{StaticResource AppBarButtonStyle}">
-                                        <AppBarButton.Icon>
-                                            <SymbolIcon x:Name="PlayPauseSymbolLeft" Symbol="Play" />
-                                        </AppBarButton.Icon>
-                                    </AppBarButton>
-                                </Border>-->
+                         
                                 <UserControl
                                     x:Name="WrappingControl"
                                     Grid.Row="2"
@@ -534,12 +464,7 @@
                                                 <RowDefinition Height="*"/>
                                                 <RowDefinition Height="Auto"/>
                                             </Grid.RowDefinitions>
-                                            <!--<Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>-->
-
+                                         
                                             <local2:SlidingInformationControl
                                                 Title="{Binding CurrentSong.Title, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                                 Grid.Row="0"
@@ -670,15 +595,7 @@
                                                                 Text="Shuffle"
                                                                 Visibility="Collapsed" />
 
-                                                            <!--<ToggleButton
-                                                Width="{StaticResource SmalButtonSize}"
-                                                Height="{StaticResource SmalButtonSize}"
-                                                Margin="{StaticResource SmalButtonMargin}"
-                                                Style="{StaticResource RoundToggleButtonStyle}">
-                                                    <Viewbox>
-                                                        <SymbolIcon Symbol="RepeatAll" />
-                                                    </Viewbox>
-                                                </ToggleButton>-->
+                                                       
                                                         </MenuFlyout>
                                                     </Button.Flyout>
                                                 </Button>
@@ -723,65 +640,47 @@
                                                 IsThumbToolTipEnabled="False"
                                                 Style="{StaticResource MediaControlSlider}">
 
-                                                <!--<Slider.Template>
-                                                <ControlTemplate />
-                                            </Slider.Template>-->
+                                    
                                             </Slider>
 
-                                            <TextBlock
-                                                x:Name="TimeElapsedElement"
-                                                Grid.Row="3"
-                                                Margin="0"
+                                            <Border
                                                 HorizontalAlignment="Left"
                                                 VerticalAlignment="Top"
+                                                Grid.Row="3"
+                                                Margin="0"
+                                                Visibility="{Binding CurrentSong, Converter={StaticResource CollapseOnNull}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+                                                
+                                            <TextBlock
+                                                x:Name="TimeElapsedElement"
+                                                Margin="0"
                                                 Style="{StaticResource MediaTextBlockStyle}"
                                                 Text="00:00" />
+                                            </Border>
 
                                             <TextBlock
                                                 x:Name="TimeRemainingElement"
                                                 Grid.Row="3"
+                                                Visibility="{Binding CurrentSong, Converter={StaticResource CollapseOnNull}, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Top"
                                                 Style="{StaticResource MediaTextBlockStyle}"
                                                 Text="00:00" />
 
-                                            <ProgressBar
-                                                x:Name="BufferingProgressBar"
-                                                Height="4"
-                                                Margin="0,2,0,0"
+                                            <Border
+                                                Margin="0,0,0,0"
                                                 VerticalAlignment="Top"
                                                 IsHitTestVisible="False"
+                                                Grid.Row="2"
+                                                Visibility="{Binding CurrentSong, Converter={StaticResource CollapseOnNull}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+                                                
+                                            <ProgressBar
+                                                x:Name="BufferingProgressBar"
+                                                Margin="0,0,0,0"
+                                                Height="2"
                                                 IsIndeterminate="True"
                                                 Visibility="Collapsed" />
-                                            <!--<StackPanel
-                                            x:Name="TimeTextGrid"
-                                            Grid.Row="1"
-                                            Height="15"
-                                            Margin="12,0"
-                                            HorizontalAlignment="Center"
-                                            Orientation="Horizontal">
-                                            -->
-                                            <!--<TextBlock
-                                                x:Name="TimeElapsedElement"
-                                                Margin="0"
-                                                HorizontalAlignment="Left"
-                                                VerticalAlignment="Bottom"
-                                                Style="{StaticResource MediaTextBlockStyle}"
-                                                Text="00:00" />
-                                            <TextBlock
-                                                Margin="0"
-                                                HorizontalAlignment="Center"
-                                                VerticalAlignment="Bottom"
-                                                Style="{StaticResource MediaTextBlockStyle}"
-                                                Text="/" />
-                                            <TextBlock
-                                                x:Name="TimeRemainingElement"
-                                                HorizontalAlignment="Right"
-                                                VerticalAlignment="Bottom"
-                                                Style="{StaticResource MediaTextBlockStyle}"
-                                                Text="00:00" />-->
-                                            <!--
-                                        </StackPanel>-->
+                                            </Border>
+                                        
                                         </Grid>
 
 
@@ -794,18 +693,21 @@
                                             Command="{TemplateBinding GoToNowPlayingCommand}"
                                             Style="{StaticResource InvisibleButton}">
 
-                                            <Border
+                                            <Border Width="64" Height="64">
+                                                <Border
+                                                Visibility="{Binding CurrentSong, Converter={StaticResource CollapseOnNull}, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                                 Padding="3"
                                                 Background="White"
                                                 BorderBrush="Black"
                                                 BorderThickness="1">
-
-                                                <Image
-                                                    Width="60"
-                                                    Height="60"
-                                                    Source="{Binding CurrentSong.Thumbnail, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                    Stretch="UniformToFill" />
+                                                <Border >
+                                                    <Border.Background>
+                                                        <ImageBrush ImageSource="{Binding CurrentSong.Thumbnail, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                                    Stretch="UniformToFill"/>
+                                                    </Border.Background>
+                                                </Border>
                                             </Border>
+                                </Border>
                                         </Button>
 
                                     </Grid>
@@ -988,12 +890,14 @@
                                 <VisualState x:Name="Buffering">
                                     <VisualState.Setters>
                                         <Setter Target="BufferingProgressBar.Visibility" Value="Visible" />
+                                        <Setter Target="ProgressSlider.Visibility" Value="Collapsed"/>
                                     </VisualState.Setters>
                                 </VisualState>
                                 <VisualState x:Name="Loading">
                                     <VisualState.Setters>
                                         <Setter Target="BufferingProgressBar.Visibility" Value="Visible" />
                                         <Setter Target="WrappingControl.IsEnabled" Value="false" />
+                                        <Setter Target="ProgressSlider.Visibility" Value="Collapsed"/>
                                     </VisualState.Setters>
                                     <Storyboard>
                                         <DoubleAnimation

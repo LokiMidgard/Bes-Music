@@ -188,6 +188,7 @@
     <Compile Include="Controls\UWPToolkit\ProfileCard\ProfileDisplayModeTemplateSelector.cs" />
     <Compile Include="Controls\UWPToolkit\ProfileCard\ViewType.cs" />
     <Compile Include="Converters\BottomThiknessConverter.cs" />
+    <Compile Include="Converters\ToTransparent.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Converters\VisibleCollapsedOnEmpty.cs" />
     <Compile Include="Converters\FileSizeConverter.cs" />

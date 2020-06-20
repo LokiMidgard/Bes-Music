@@ -13,7 +13,7 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:ListConverter x:Key="listConverter" />
-
+        <converters:ToTransparent x:Key="toTransparent"/>
     </UserControl.Resources>
 
     <Border
@@ -41,18 +41,25 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top">
 
-                <Image
-                    x:Name="cover"
+                <Border x:Name="coverBorder"
                     Width="150"
                     Height="150"
-                    VerticalAlignment="Bottom" />
+                    VerticalAlignment="Bottom">
+                    <Border.Background>
+                        <ImageBrush  x:Name="cover"
+                        Stretch="UniformToFill"/> 
+                    </Border.Background>    
+                </Border>
+                
                 <Grid
                     x:Name="ButtonPanel"
                     Width="150"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Bottom"
-                    Background="#B5131313"
                     Opacity="0">
+                    <Grid.Background>
+                        <SolidColorBrush Color="{Binding Source={ThemeResource BackgroundColor1}, Converter={StaticResource toTransparent}, ConverterParameter=0.8}"/>
+                    </Grid.Background>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />

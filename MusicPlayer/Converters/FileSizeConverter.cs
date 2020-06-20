@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.UI;
 using Windows.UI.Xaml.Data;
 
 namespace MusicPlayer.Converters
@@ -33,25 +32,6 @@ namespace MusicPlayer.Converters
             }
 
             return string.Format("{0:N" + this.Precision + "}{1}", size, magnitude[index]);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class ToTransparent : IValueConverter
-    {
-
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            if (value is Color color)
-            {
-                color.A = 0;
-                return color;
-            }
-            return null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

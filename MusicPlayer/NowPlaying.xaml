@@ -7,6 +7,7 @@
     xmlns:local="using:MusicPlayer"
     xmlns:viewmodels="using:MusicPlayer.Viewmodels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    RequestedTheme="Dark"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
     <Page.Resources>
@@ -95,13 +96,17 @@
             BorderThickness="10" />
 
         </Grid>
-        <Button Grid.ColumnSpan="3" Grid.RowSpan="3" HorizontalAlignment="Right" VerticalAlignment="Bottom" Style="{StaticResource OpacetyButton}"
+        <Viewbox Grid.ColumnSpan="3" Grid.RowSpan="3" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                 Width="80">
+            
+        <Button  Style="{StaticResource OpacetyButton}"
                 Padding="12" Command="{Binding SwitchFullScreenCommand}">
             <Button.DataContext>
                 <controls:FullScreenViewmodel />
             </Button.DataContext>
             <SymbolIcon  x:Name="fullScreenIcon"  Symbol="{Binding Symbol}"></SymbolIcon>
         </Button>
+        </Viewbox>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState>

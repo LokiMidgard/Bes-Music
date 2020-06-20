@@ -76,7 +76,7 @@ namespace MusicPlayer.Controls
         private async void ToRender_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
             var root = args.ItemContainer.ContentTemplateRoot as FrameworkElement;
-            var image = root.FindName("cover") as Image;
+            var image = root.FindName("cover") as ImageBrush;
             var vm = args.Item as AlbumViewmodel;
             if (args.Phase == 0)
             {
@@ -97,7 +97,7 @@ namespace MusicPlayer.Controls
                 var imageSource = await vm.LoadCoverAsync(cancel.Token);
                 if (!cancel.IsCancellationRequested)
                 {
-                    image.Source = imageSource;
+                    image.ImageSource = imageSource;
                     image.Opacity = 1;
                 }
 
@@ -114,7 +114,7 @@ namespace MusicPlayer.Controls
 
 
             var root = container.ContentTemplateRoot as FrameworkElement;
-            var cover = root.FindName("cover") as UIElement;
+            var cover = root.FindName("coverBorder") as UIElement;
             var name = root.FindName("name") as UIElement;
 
             ConnectedAnimationService.GetForCurrentView()

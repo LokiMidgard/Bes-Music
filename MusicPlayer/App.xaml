@@ -16,6 +16,67 @@
             </ResourceDictionary.MergedDictionaries>
 
 
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <Color x:Key="ForgroundColor1">#FFFFFF</Color>
+                    <Color x:Key="ForgroundColor2">#EEEEEE</Color>
+                    <Color x:Key="ForgroundColor3">#999999</Color>
+                    <Color x:Key="ForgroundColor4">#555555</Color>
+                    <Color x:Key="ForgroundColor5">#333333</Color>
+                    <Color x:Key="ForgroundColor6">#222222</Color>
+                    <Color x:Key="ForgroundColor7">#1D1D1D</Color>
+                    <Color x:Key="ForgroundColor8">#000000</Color>
+
+                    <Color x:Key="BackgroundColor8">#FFFFFF</Color>
+                    <Color x:Key="BackgroundColor7">#EEEEEE</Color>
+                    <Color x:Key="BackgroundColor6">#999999</Color>
+                    <Color x:Key="BackgroundColor5">#555555</Color>
+                    <Color x:Key="BackgroundColor4">#333333</Color>
+                    <Color x:Key="BackgroundColor3">#222222</Color>
+                    <Color x:Key="BackgroundColor2">#1D1D1D</Color>
+                    <Color x:Key="BackgroundColor1">#000000</Color>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="HighContrast">
+                    <Color x:Key="ForgroundColor1">#FFFFFF</Color>
+                    <Color x:Key="ForgroundColor2">#EEEEEE</Color>
+                    <Color x:Key="ForgroundColor3">#999999</Color>
+                    <Color x:Key="ForgroundColor4">#555555</Color>
+                    <Color x:Key="ForgroundColor5">#333333</Color>
+                    <Color x:Key="ForgroundColor6">#222222</Color>
+                    <Color x:Key="ForgroundColor7">#1D1D1D</Color>
+                    <Color x:Key="ForgroundColor8">#000000</Color>
+
+                    <Color x:Key="BackgroundColor8">#FFFFFF</Color>
+                    <Color x:Key="BackgroundColor7">#EEEEEE</Color>
+                    <Color x:Key="BackgroundColor6">#999999</Color>
+                    <Color x:Key="BackgroundColor5">#555555</Color>
+                    <Color x:Key="BackgroundColor4">#333333</Color>
+                    <Color x:Key="BackgroundColor3">#222222</Color>
+                    <Color x:Key="BackgroundColor2">#1D1D1D</Color>
+                    <Color x:Key="BackgroundColor1">#000000</Color>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <Color x:Key="BackgroundColor8">#000000</Color>
+                    <Color x:Key="BackgroundColor7">#1D1D1D</Color>
+                    <Color x:Key="BackgroundColor6">#222222</Color>
+                    <Color x:Key="BackgroundColor5">#333333</Color>
+                    <Color x:Key="BackgroundColor4">#555555</Color>
+                    <Color x:Key="BackgroundColor3">#999999</Color>
+                    <Color x:Key="BackgroundColor2">#EEEEEE</Color>
+                    <Color x:Key="BackgroundColor1">#FFFFFF</Color>
+
+                    <Color x:Key="ForgroundColor8">#FFFFFF</Color>
+                    <Color x:Key="ForgroundColor7">#FFFFFF</Color>
+                    <Color x:Key="ForgroundColor6">#EEEEEE</Color>
+                    <Color x:Key="ForgroundColor5">#999999</Color>
+                    <Color x:Key="ForgroundColor4">#333333</Color>
+                    <Color x:Key="ForgroundColor3">#555555</Color>
+                    <Color x:Key="ForgroundColor2">#222222</Color>
+                    <Color x:Key="ForgroundColor1">#000000</Color>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+
+
             <StaticResource x:Key="ColorDisabled" ResourceKey="ForgroundColor5" />
             <StaticResource x:Key="ColorPressed" ResourceKey="ForgroundColor2" />
             <StaticResource x:Key="ColorNormal" ResourceKey="ForgroundColor3" />
@@ -54,23 +115,7 @@
             <ThemeResource x:Key="AccentColorLight3" ResourceKey="SystemAccentColorLight3" />
 
 
-            <Color x:Key="ForgroundColor1">#FFFFFF</Color>
-            <Color x:Key="ForgroundColor2">#EEEEEE</Color>
-            <Color x:Key="ForgroundColor3">#999999</Color>
-            <Color x:Key="ForgroundColor4">#555555</Color>
-            <Color x:Key="ForgroundColor5">#333333</Color>
-            <Color x:Key="ForgroundColor6">#222222</Color>
-            <Color x:Key="ForgroundColor7">#1D1D1D</Color>
-            <Color x:Key="ForgroundColor8">#000000</Color>
-
-            <Color x:Key="BackgroundColor8">#FFFFFF</Color>
-            <Color x:Key="BackgroundColor7">#EEEEEE</Color>
-            <Color x:Key="BackgroundColor6">#999999</Color>
-            <Color x:Key="BackgroundColor5">#555555</Color>
-            <Color x:Key="BackgroundColor4">#333333</Color>
-            <Color x:Key="BackgroundColor3">#222222</Color>
-            <Color x:Key="BackgroundColor2">#1D1D1D</Color>
-            <Color x:Key="BackgroundColor1">#000000</Color>
+   
 
             <SolidColorBrush x:Key="ForgroundBrush1" Color="{StaticResource ForgroundColor1}" />
             <SolidColorBrush x:Key="ForgroundBrush2" Color="{StaticResource ForgroundColor2}" />
@@ -183,7 +228,7 @@
 
             <Style x:Key="RoundButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Foreground" Value="{ThemeResource ButtonForeground}" />
+                <Setter Property="Foreground" Value="{ThemeResource ForgroundBrush1}" />
                 <Setter Property="BorderBrush" Value="{ThemeResource ColorNormal}" />
                 <Setter Property="BorderThickness" Value="{ThemeResource ButtonBorderThemeThickness}" />
                 <Setter Property="Padding" Value="{StaticResource ButtonPadding}" />

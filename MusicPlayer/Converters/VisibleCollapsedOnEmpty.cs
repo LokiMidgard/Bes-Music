@@ -35,4 +35,22 @@ namespace MusicPlayer.Converters
             throw new NotImplementedException();
         }
     }
+
+    public class VisibleCollapsedOnNull : IValueConverter
+    {
+
+        public Visibility OnNullValue { get; set; }
+        private Visibility OnNotNullValue => this.OnNullValue == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return value is null ? this.OnNullValue : this.OnNotNullValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
 }
