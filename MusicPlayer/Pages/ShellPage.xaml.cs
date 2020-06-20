@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 // Die Elementvorlage "Leere Seite" wird unter https://go.microsoft.com/fwlink/?LinkId=234238 dokumentiert.
@@ -51,7 +52,7 @@ namespace MusicPlayer.Pages
                     return;
                 //var rootGrid = (Grid)this.FindName("RootGrid");
                 //mediaPlayer.AreTransportControlsEnabled = value;
-                VisualStateManager.GoToState(TransportControls, value ? "show" : "hide", true);
+                VisualStateManager.GoToState(this.TransportControls, value ? "show" : "hide", true);
                 this.showPlayUi = value;
             }
         }
@@ -86,11 +87,17 @@ namespace MusicPlayer.Pages
             this.ShowPlayUi = false;
             _ = OneDriveLibrary.Instance;
             _ = AlbumCollectionViewmodel.Instance;
-            this.ProgreessIndecator.IsActive = true;
+
+            var hideLoding = this.LoadingGrid.Resources["HideAnimation"] as Storyboard;
+            hideLoding.Completed += (sender2, e2) =>
+              {
+                  this.LoadingGrid.Visibility = Visibility.Collapsed;
+                  this.ProgreessIndecator.IsActive = false;
+              };
             await Core.MusicStore.Instance.Init();
             await MusicStore.Instance.SetUITask(this.RunOnDispatcher);
-            this.ProgreessIndecator.IsActive = false;
             this.ShowPlayUi = true;
+            hideLoding.Begin();
         }
         private Task RunOnDispatcher(Func<Task> f)
         {

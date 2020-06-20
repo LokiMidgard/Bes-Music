@@ -38,11 +38,7 @@
         <controls:TransportControls Grid.Row="1" />-->
 
         <Frame x:Name="shellFrame" Grid.RowSpan="2" />
-        <ProgressRing
-            x:Name="ProgreessIndecator"
-            Grid.RowSpan="2"
-            Width="200"
-            Height="200" />
+        
 
         <MediaPlayerElement
             x:Name="mediaPlayer"
@@ -59,5 +55,24 @@
                     IsPreviousTrackButtonVisible="True" />
             </MediaPlayerElement.TransportControls>
         </MediaPlayerElement>
+
+
+        <Grid x:Name="LoadingGrid" Grid.RowSpan="2" Background="{ThemeResource AccentBrush}"  >
+            <Grid.Resources>
+                <Storyboard x:Name="HideAnimation">
+                    <DoubleAnimation To="0" Duration="0:0:0.5" Storyboard.TargetName="LoadingGrid" Storyboard.TargetProperty="Opacity" />
+                </Storyboard>
+            </Grid.Resources>
+        <Image 
+            Source="/Assets/SplashScreen.png" Width="620" Height="300" Stretch="None" />
+        <ProgressRing
+            x:Name="ProgreessIndecator"
+            Margin="0,180,0,0"
+            Width="40"
+            IsActive="True"
+            Foreground="White"
+            Height="40" />
+        </Grid>
+        
     </Grid>
 </Page>

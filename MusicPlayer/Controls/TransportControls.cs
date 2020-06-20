@@ -307,7 +307,8 @@ namespace MusicPlayer.Controls
 
         private void TransportControls_Loaded(object sender, RoutedEventArgs e)
         {
-            this.SetCommands();
+            if (!Windows.ApplicationModel.DesignMode.DesignModeEnabled)
+                this.SetCommands();
         }
 
         private void SetCommands()
