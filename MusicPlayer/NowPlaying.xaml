@@ -53,6 +53,8 @@
         </Style>
     </Page.Resources>
     <Grid x:Name="rootElement" SizeChanged="rootElementOnSizeChanged">
+        <Grid>
+            
         <Grid.DataContext>
             <viewmodels:MediaPlayerAccessor/>
         </Grid.DataContext>
@@ -96,16 +98,18 @@
             BorderThickness="10" />
 
         </Grid>
+            
+       
+        </Grid>
         <Viewbox Grid.ColumnSpan="3" Grid.RowSpan="3" HorizontalAlignment="Right" VerticalAlignment="Bottom"
                  Width="80">
-            
-        <Button  Style="{StaticResource OpacetyButton}"
+            <Button  Style="{StaticResource OpacetyButton}"
                 Padding="12" Command="{Binding SwitchFullScreenCommand}">
-            <Button.DataContext>
-                <controls:FullScreenViewmodel />
-            </Button.DataContext>
-            <SymbolIcon  x:Name="fullScreenIcon"  Symbol="{Binding Symbol}"></SymbolIcon>
-        </Button>
+                <Button.DataContext>
+                    <controls:FullScreenViewmodel />
+                </Button.DataContext>
+                <SymbolIcon  x:Name="fullScreenIcon"  Symbol="{Binding Symbol}"></SymbolIcon>
+            </Button>
         </Viewbox>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>

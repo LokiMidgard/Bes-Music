@@ -63,8 +63,12 @@
                     <DoubleAnimation To="0" Duration="0:0:0.5" Storyboard.TargetName="LoadingGrid" Storyboard.TargetProperty="Opacity" />
                 </Storyboard>
             </Grid.Resources>
-        <Image 
-            Source="/Assets/SplashScreen.png" Width="620" Height="300" Stretch="None" />
+            <Border   >
+                <Border.Background>
+                    <ImageBrush ImageSource="/Assets/SplashScreen.png" Stretch="None"/>
+                </Border.Background>
+            </Border>
+        
         <ProgressRing
             x:Name="ProgreessIndecator"
             Margin="0,180,0,0"
