@@ -122,7 +122,7 @@ namespace MusicPlayer
 
             this.ambientLight = this.compositor.CreateAmbientLight();
             if (this.supportIntensety)
-                this.ambientLight.Intensity = 0.5f;
+                this.ambientLight.Intensity = 0.2f;
             this.ambientLight.Color = Colors.Gray;
             this.ambientLight.Targets.Add(this.backgroundVisual);
 

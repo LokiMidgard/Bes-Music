@@ -512,6 +512,7 @@
                                                 </ToggleButton>
 
                                                 <Button
+                                                    x:Name="PreviousButton"
                                                     Width="{StaticResource MediumButtonSize}"
                                                     Height="{StaticResource MediumButtonSize}"
                                                     Margin="{StaticResource MediumButtonMargin}"
@@ -533,6 +534,7 @@
                                                     </Viewbox>
                                                 </Button>
                                                 <Button
+                                                    x:Name="NextButton"
                                                     Width="{StaticResource MediumButtonSize}"
                                                     Height="{StaticResource MediumButtonSize}"
                                                     Margin="{StaticResource MediumButtonMargin}"
@@ -896,7 +898,15 @@
                                 <VisualState x:Name="Loading">
                                     <VisualState.Setters>
                                         <Setter Target="BufferingProgressBar.Visibility" Value="Visible" />
-                                        <Setter Target="WrappingControl.IsEnabled" Value="false" />
+                                        <Setter Target="ShuffleButtonMain.IsEnabled" Value="false" />
+                                        <Setter Target="RepeatButtonMain.IsEnabled" Value="false" />
+                                        <Setter Target="PreviousButton.IsEnabled" Value="false" />
+                                        <Setter Target="PausePlayButton.IsEnabled" Value="false" />
+                                        <Setter Target="NextButton.IsEnabled" Value="false" />
+                                        <Setter Target="NowPlayingButtonMain.IsEnabled" Value="false" />
+                                        <Setter Target="NowPlayingButtonOverflow.IsEnabled" Value="false" />
+                                        <Setter Target="RepeatButtonOvervlow.IsEnabled" Value="false" />
+                                        <Setter Target="ShuffleButtonOverflow.IsEnabled" Value="false" />
                                         <Setter Target="ProgressSlider.Visibility" Value="Collapsed"/>
                                     </VisualState.Setters>
                                     <Storyboard>

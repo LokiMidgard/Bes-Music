@@ -176,7 +176,7 @@
                                     <TextBlock x:Name="albumTitleSub" Visibility="Collapsed" Foreground="{StaticResource SystemColorGrayTextBrush}"  TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource  BodyTextBlockStyle}"  Grid.ColumnSpan="4" Grid.Row="1" Margin="8,0" HorizontalAlignment="Stretch">
                                         <Run Text="{Binding Song.AlbumName}" />
                                         <Run Text="&#x2022;" />
-                                        <Run Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" Foreground="{StaticResource AccentBrushDark3}" />
+                                        <Run Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" Foreground="{StaticResource AccentBrush}" />
                                     </TextBlock>
 
                                     <Grid.ContextFlyout>
