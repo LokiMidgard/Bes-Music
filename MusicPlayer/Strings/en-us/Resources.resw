@@ -128,7 +128,7 @@ Goto Settings to start the initial Sync. (OneDrive Account required)</value>
     <comment>First use prompt message title</comment>
   </data>
   <data name="FirstRunDialog.PrimaryButtonText" xml:space="preserve">
-    <value>Ok</value>
+    <value>Bring me to settings</value>
     <comment>First use prompt message primary button text</comment>
   </data>
   <data name="WhatsNew_Body.Text" xml:space="preserve">
@@ -149,5 +149,8 @@ Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Ma
   <data name="WhatsNewDialog.PrimaryButtonText" xml:space="preserve">
     <value>Ok</value>
     <comment>What's new prompt message primary button text</comment>
+  </data>
+  <data name="FirstRunDialog.CloseButtonText" xml:space="preserve">
+    <value>Ok</value>
   </data>
 </root>

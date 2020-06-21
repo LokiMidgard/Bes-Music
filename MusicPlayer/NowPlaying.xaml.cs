@@ -104,6 +104,7 @@ namespace MusicPlayer
             this.backgroundVisual.Brush = bwEffect;
             this.backgroundVisual.Size = this.rootElement.RenderSize.ToVector2();
 
+            
 
             this.containerVisual = this.compositor.CreateContainerVisual();
             this.containerVisual.Children.InsertAtBottom(this.backgroundVisual);

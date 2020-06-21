@@ -3,49 +3,65 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:MusicPlayer.Controls"
+    xmlns:controls1="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:MusicPlayer"
-    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkit="controls"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
+    Background="{ThemeResource BackgroundBrush1}"
     RequestedTheme="Dark"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
     <Page.Resources>
         <Style x:Key="OpacetyButton" TargetType="Button">
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
-            <Setter Property="FontWeight" Value="Normal"/>
-            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}"/>
-            <Setter Property="UseSystemFocusVisuals" Value="True"/>
-            <Setter Property="FocusVisualMargin" Value="-3"/>
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+            <Setter Property="UseSystemFocusVisuals" Value="True" />
+            <Setter Property="FocusVisualMargin" Value="-3" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid x:Name="RootGrid" Background="{x:Null}">
+                            <ContentPresenter
+                                x:Name="ContentPresenter"
+                                Padding="{TemplateBinding Padding}"
+                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                AutomationProperties.AccessibilityView="Raw"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                ContentTransitions="{TemplateBinding ContentTransitions}" />
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
                                     <VisualState x:Name="Normal">
                                         <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
-                                            <DoubleAnimation Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Opacity" To="0.2"/>
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="0.2" />
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="PointerOver">
                                         <Storyboard>
-                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
-                                            <DoubleAnimation Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Opacity" To="1"/>
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1" />
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="Pressed">
                                         <Storyboard>
-                                            <PointerDownThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                            <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
                                         </Storyboard>
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-                            <ContentPresenter x:Name="ContentPresenter" AutomationProperties.AccessibilityView="Raw" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentTransitions="{TemplateBinding ContentTransitions}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -53,62 +69,149 @@
         </Style>
     </Page.Resources>
     <Grid x:Name="rootElement" SizeChanged="rootElementOnSizeChanged">
-        <Grid>
-            
-        <Grid.DataContext>
-            <viewmodels:MediaPlayerAccessor/>
-        </Grid.DataContext>
-        <Grid.RowDefinitions>
-            <RowDefinition  Height="*" />
-            <RowDefinition  Height="Auto" />
-            <RowDefinition MaxHeight="100" Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" MaxWidth="100"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <controls:TiledBackgroundPanel x:Name="backgroundLarge" Visibility="Collapsed" Grid.ColumnSpan="3" Grid.RowSpan="3" />
-        <Grid
-            Grid.Row="1"
-            Grid.Column="1"            >
 
+
+        <Grid>
+            <Grid.Resources>
+                <Style TargetType="controls1:DropShadowPanel">
+                    <Setter Property="BlurRadius" Value="40"/>
+                    <Setter Property="Color" Value="Black"/>
+                    <Setter Property="OffsetX" Value="0"/>
+                    <Setter Property="OffsetY" Value="00"/>
+                    <Setter Property="OffsetZ" Value="0"/>
+                </Style>
+            </Grid.Resources>
+            <Grid.DataContext>
+                <viewmodels:MediaPlayerAccessor />
+            </Grid.DataContext>
             <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" MaxHeight="80" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="*" MaxWidth="80" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <StackPanel x:Name="SongDataContainer" VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Margin="24" >
+            <controls:TiledBackgroundPanel x:Name="backgroundLarge" Visibility="Collapsed" Grid.ColumnSpan="3" Grid.RowSpan="3" />
+            <Grid Grid.Row="1" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
 
-                <TextBlock IsTextSelectionEnabled="True" Foreground="{StaticResource ForgroundBrush3}" Margin="0,12,0,0" Text="{Binding Instance.Song.AlbumTitle}"  Style="{StaticResource SubheaderTextBlockStyle}"/>
-                <TextBlock IsTextSelectionEnabled="True" Grid.ColumnSpan="2" Margin="0,-4,0,0" Grid.Column="1"   Grid.Row="2" Text="{Binding Instance.Song.Title}" Style="{StaticResource HeaderTextBlockStyle}"/>
-                <TextBlock IsTextSelectionEnabled="True" Foreground="{StaticResource AccentBrush}" Grid.ColumnSpan="2" Margin="0,0,0,0" Grid.Column="1" Grid.Row="3" Text="{Binding Instance.Song.Artist}" Style="{StaticResource SubheaderTextBlockStyle}"/>
-            </StackPanel>
-            <controls:NowPlayingDisk
-                VerticalAlignment="Center"
-            Width="160"
-                Margin="12,0,0,0"
-            Height="160"
-            ProgressThikness="4"
-            HorizontalAlignment="Left"
-            BorderBrush="White"
-            BorderThickness="10" />
+                <Border Margin="-60,0,0,0"  >
+                    <controls1:DropShadowPanel   >
+                        <Ellipse Width="290" Height="240" Fill="#7F000000">
+                            <Ellipse.RenderTransform>
+                                <!--Hide this but let it still get renderd so we get our shadow-->
+                                <TranslateTransform Y="99999999"></TranslateTransform> 
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+
+                    </controls1:DropShadowPanel>
+                </Border>
+
+                <StackPanel
+                        x:Name="SongDataContainer"
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="24,0,0,0"
+                        
+                        VerticalAlignment="Center">
+                    <StackPanel.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="Padding" Value="0,0,20,0"></Setter>
+                        </Style>
+                    </StackPanel.Resources>
+
+                    <controls1:DropShadowPanel 
+                        Color="Black">
+                        <Border >
+                            <TextBlock
+                            Margin="0,0,0,0"
+                                Padding="0,20,20,0"
+                            Foreground="{StaticResource ForgroundBrush3}"
+                            IsTextSelectionEnabled="True"
+                            Style="{StaticResource SubheaderTextBlockStyle}"
+                            Text="{Binding Instance.Song.AlbumTitle}" />
+                        </Border>
+                    </controls1:DropShadowPanel>
+                    <controls1:DropShadowPanel 
+                        Color="Black">
+                        <Border >
+                            <TextBlock 
+                            x:Name="TitleTextBlock"
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="2"
+                            Margin="0,-4,0,0"
+                            IsTextSelectionEnabled="True"
+                            Style="{StaticResource HeaderTextBlockStyle}"
+                            Text="{Binding Instance.Song.Title}" >
+                            </TextBlock>
+                        </Border>
+                    </controls1:DropShadowPanel>
+                    <controls1:DropShadowPanel 
+                        Color="Black">
+                        <Border Padding="0,0,20,20" >
+
+                            <TextBlock
+                            x:Name="AlbumTextBlock"
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="2"
+                            Margin="0,0,0,0"
+                            Foreground="{StaticResource AccentBrush}"
+                            IsTextSelectionEnabled="True"
+                            Style="{StaticResource SubheaderTextBlockStyle}"
+                            Text="{Binding Instance.Song.Artist}" />
+                        </Border>
+                    </controls1:DropShadowPanel>
+                </StackPanel>
+
+                    <controls:NowPlayingDisk
+                    Width="160"
+                        Margin="24,0,0,0"
+                    Height="160"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    BorderBrush="White"
+                    BorderThickness="10"
+                    ProgressThikness="4" />
+                <!--<Border Background="White">
+                    
+                <controls1:DropShadowPanel OffsetZ="1" >
+                    <Ellipse Width="160" Height="160" Fill="#7F762626"></Ellipse>
+                </controls1:DropShadowPanel>
+                </Border>-->
+
+             
+
+            </Grid>
+
 
         </Grid>
-            
-       
-        </Grid>
-        <Viewbox Grid.ColumnSpan="3" Grid.RowSpan="3" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                 Width="80">
-            <Button  Style="{StaticResource OpacetyButton}"
-                Padding="12" Command="{Binding SwitchFullScreenCommand}">
+
+        <Viewbox
+            Grid.RowSpan="3"
+            Grid.ColumnSpan="3"
+            Width="80"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom">
+            <Button
+                Padding="12"
+                Command="{Binding SwitchFullScreenCommand}"
+                Style="{StaticResource OpacetyButton}">
                 <Button.DataContext>
                     <controls:FullScreenViewmodel />
                 </Button.DataContext>
-                <SymbolIcon  x:Name="fullScreenIcon"  Symbol="{Binding Symbol}"></SymbolIcon>
+                <SymbolIcon x:Name="fullScreenIcon" Symbol="{Binding Symbol}" />
             </Button>
         </Viewbox>
         <VisualStateManager.VisualStateGroups>
@@ -120,8 +223,9 @@
 
                     <VisualState.Setters>
                         <Setter Target="backgroundLarge.Visibility" Value="Visible" />
-                        <Setter Target="SongDataContainer.(Grid.Column)" Value="1"/>
-                        <Setter Target="SongDataContainer.(Grid.Row)" Value="0"/>
+                        <Setter Target="SongDataContainer.(Grid.Column)" Value="1" />
+                        <Setter Target="SongDataContainer.(Grid.Row)" Value="0" />
+                        <Setter Target="SongDataContainer.Margin" Value="-25,24,24,24" />
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState>
