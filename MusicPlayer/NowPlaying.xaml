@@ -8,12 +8,17 @@
     xmlns:local="using:MusicPlayer"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="controls"
+    xmlns:converters="using:MusicPlayer.Converters"
     xmlns:viewmodels="using:MusicPlayer.Viewmodels"
     Background="{ThemeResource BackgroundBrush1}"
     RequestedTheme="Dark"
     mc:Ignorable="d">
     <Page.Resources>
-        <Style x:Key="OpacetyButton" TargetType="Button">
+        <x:Double x:Key="hiddenOpacety">0.45</x:Double>
+        <converters:VisibilityConverter OnTrue="Visible" x:Key="visibleConverter"></converters:VisibilityConverter>
+        <converters:VisibilityConverter OnTrue="Collapsed" x:Key="collapsedConverter"></converters:VisibilityConverter>
+        
+        <Style x:Key="OpacetyButton" TargetType="Button" BasedOn="{StaticResource RoundButtonStyle}">
             <Setter Property="Padding" Value="0" />
             <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -43,12 +48,15 @@
                                             <DoubleAnimation
                                                 Storyboard.TargetName="RootGrid"
                                                 Storyboard.TargetProperty="Opacity"
-                                                To="0.2" />
+                                                To="{StaticResource hiddenOpacety}" />
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="PointerOver">
                                         <Storyboard>
                                             <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ColorHover}"/>
+                                            </ObjectAnimationUsingKeyFrames>
                                             <DoubleAnimation
                                                 Storyboard.TargetName="RootGrid"
                                                 Storyboard.TargetProperty="Opacity"
@@ -57,11 +65,287 @@
                                     </VisualState>
                                     <VisualState x:Name="Pressed">
                                         <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ColorPressed}"/>
+                                        </ObjectAnimationUsingKeyFrames>
                                             <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ColorDisabled}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="{StaticResource hiddenOpacety}" />
                                         </Storyboard>
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <FontFamily x:Key="ContentControlThemeFontFamily">XamlAutoFontFamily</FontFamily>
+        <x:Double x:Key="ControlContentThemeFontSize">15</x:Double>
+        <Thickness x:Key="ToggleButtonBorderThemeThickness">2</Thickness>
+        <StaticResource x:Key="ToggleButtonBackground" ResourceKey="SystemControlBackgroundBaseLowBrush"/>
+        <StaticResource x:Key="ToggleButtonBackgroundPointerOver" ResourceKey="SystemControlBackgroundBaseLowBrush"/>
+        <StaticResource x:Key="ToggleButtonBackgroundPressed" ResourceKey="SystemControlBackgroundBaseMediumLowBrush"/>
+        <StaticResource x:Key="ToggleButtonBackgroundDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush"/>
+        <StaticResource x:Key="ToggleButtonBackgroundChecked" ResourceKey="SystemControlHighlightAccentBrush"/>
+        <StaticResource x:Key="ToggleButtonBackgroundCheckedPointerOver" ResourceKey="SystemControlHighlightAccentBrush"/>
+        <StaticResource x:Key="ToggleButtonBackgroundCheckedPressed" ResourceKey="SystemControlHighlightBaseMediumLowBrush"/>
+        <StaticResource x:Key="ToggleButtonBackgroundCheckedDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush"/>
+        <StaticResource x:Key="ToggleButtonBackgroundIndeterminate" ResourceKey="SystemControlBackgroundBaseLowBrush"/>
+        <StaticResource x:Key="ToggleButtonBackgroundIndeterminatePointerOver" ResourceKey="SystemControlBackgroundBaseLowBrush"/>
+        <StaticResource x:Key="ToggleButtonBackgroundIndeterminatePressed" ResourceKey="SystemControlBackgroundBaseMediumLowBrush"/>
+        <StaticResource x:Key="ToggleButtonBackgroundIndeterminateDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush"/>
+        <StaticResource x:Key="ToggleButtonForeground" ResourceKey="SystemControlForegroundBaseHighBrush"/>
+        <StaticResource x:Key="ToggleButtonForegroundPointerOver" ResourceKey="SystemControlHighlightBaseHighBrush"/>
+        <StaticResource x:Key="ToggleButtonForegroundPressed" ResourceKey="SystemControlHighlightBaseHighBrush"/>
+        <StaticResource x:Key="ToggleButtonForegroundDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush"/>
+        <StaticResource x:Key="ToggleButtonForegroundChecked" ResourceKey="SystemControlHighlightAltChromeWhiteBrush"/>
+        <StaticResource x:Key="ToggleButtonForegroundCheckedPointerOver" ResourceKey="SystemControlHighlightAltChromeWhiteBrush"/>
+        <StaticResource x:Key="ToggleButtonForegroundCheckedPressed" ResourceKey="SystemControlHighlightAltChromeWhiteBrush"/>
+        <StaticResource x:Key="ToggleButtonForegroundCheckedDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush"/>
+        <StaticResource x:Key="ToggleButtonForegroundIndeterminate" ResourceKey="SystemControlForegroundBaseHighBrush"/>
+        <StaticResource x:Key="ToggleButtonForegroundIndeterminatePointerOver" ResourceKey="SystemControlHighlightBaseHighBrush"/>
+        <StaticResource x:Key="ToggleButtonForegroundIndeterminatePressed" ResourceKey="SystemControlHighlightBaseHighBrush"/>
+        <StaticResource x:Key="ToggleButtonForegroundIndeterminateDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush"/>
+        <StaticResource x:Key="ToggleButtonBorderBrush" ResourceKey="SystemControlForegroundTransparentBrush"/>
+        <StaticResource x:Key="ToggleButtonBorderBrushPointerOver" ResourceKey="SystemControlHighlightBaseMediumLowBrush"/>
+        <StaticResource x:Key="ToggleButtonBorderBrushPressed" ResourceKey="SystemControlHighlightTransparentBrush"/>
+        <StaticResource x:Key="ToggleButtonBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush"/>
+        <StaticResource x:Key="ToggleButtonBorderBrushChecked" ResourceKey="SystemControlHighlightAltTransparentBrush"/>
+        <StaticResource x:Key="ToggleButtonBorderBrushCheckedPointerOver" ResourceKey="SystemControlHighlightBaseMediumLowBrush"/>
+        <StaticResource x:Key="ToggleButtonBorderBrushCheckedPressed" ResourceKey="SystemControlTransparentBrush"/>
+        <StaticResource x:Key="ToggleButtonBorderBrushCheckedDisabled" ResourceKey="SystemControlDisabledTransparentBrush"/>
+        <StaticResource x:Key="ToggleButtonBorderBrushIndeterminate" ResourceKey="SystemControlForegroundTransparentBrush"/>
+        <StaticResource x:Key="ToggleButtonBorderBrushIndeterminatePointerOver" ResourceKey="SystemControlHighlightBaseMediumLowBrush"/>
+        <StaticResource x:Key="ToggleButtonBorderBrushIndeterminatePressed" ResourceKey="SystemControlHighlightTransparentBrush"/>
+        <StaticResource x:Key="ToggleButtonBorderBrushIndeterminateDisabled" ResourceKey="SystemControlDisabledTransparentBrush"/>
+        <Style x:Key="ToggleButtonStyle1" TargetType="ToggleButton">
+            <Setter Property="Foreground" Value="{ThemeResource ColorNormal}"/>
+            <Setter Property="Padding" Value="8,4,8,4"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}"/>
+            <Setter Property="UseSystemFocusVisuals" Value="True"/>
+            <Setter Property="FocusVisualMargin" Value="-3"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid x:Name="RootGrid" Background="Transparent">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <Storyboard>
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="{StaticResource hiddenOpacety}" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBackgroundPointerOver}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBorderBrushPointerOver}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ColorHover}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1" />
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBackgroundPressed}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBorderBrushPressed}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ColorPressed}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <PointerDownThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBackgroundDisabled}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ColorDisabled}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBorderBrushDisabled}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="{StaticResource hiddenOpacety}" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Checked">
+                                        <Storyboard>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBackgroundChecked}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentBrushNormal}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBorderBrushChecked}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="{StaticResource hiddenOpacety}" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="CheckedPointerOver">
+                                        <Storyboard>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBackgroundCheckedPointerOver}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBorderBrushCheckedPointerOver}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentBrushHover}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="CheckedPressed">
+                                        <Storyboard>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBackgroundCheckedPressed}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentBrushPressed}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBorderBrushCheckedPressed}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <PointerDownThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="CheckedDisabled">
+                                        <Storyboard>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBackgroundCheckedDisabled}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource AccentBrushDisabled}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBorderBrushCheckedDisabled}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="{StaticResource hiddenOpacety}" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Indeterminate">
+                                        <Storyboard>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBackgroundIndeterminate}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonForegroundIndeterminate}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBorderBrushIndeterminate}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="{StaticResource hiddenOpacety}" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="IndeterminatePointerOver">
+                                        <Storyboard>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBackgroundIndeterminatePointerOver}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBorderBrushIndeterminatePointerOver}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonForegroundIndeterminatePointerOver}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="IndeterminatePressed">
+                                        <Storyboard>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBackgroundIndeterminatePressed}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBorderBrushIndeterminatePressed}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonForegroundIndeterminatePressed}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <PointerDownThemeAnimation Storyboard.TargetName="RootGrid"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="IndeterminateDisabled">
+                                        <Storyboard>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBackgroundIndeterminateDisabled}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonForegroundIndeterminateDisabled}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ToggleButtonBorderBrushIndeterminateDisabled}"/>
+                                            </ObjectAnimationUsingKeyFrames>-->
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="{StaticResource hiddenOpacety}" />
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <ContentPresenter x:Name="ContentPresenter"
+                                              AutomationProperties.AccessibilityView="Raw" 
+                                              ContentTemplate="{TemplateBinding ContentTemplate}" 
+                                              Content="{TemplateBinding Content}" 
+                                              ContentTransitions="{TemplateBinding ContentTransitions}" 
+                                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                              Padding="{TemplateBinding Padding}" 
+                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -74,7 +358,7 @@
         <Grid>
             <Grid.Resources>
                 <Style TargetType="controls1:DropShadowPanel">
-                    <Setter Property="BlurRadius" Value="40"/>
+                    <Setter Property="BlurRadius" Value="60"/>
                     <Setter Property="Color" Value="Black"/>
                     <Setter Property="OffsetX" Value="0"/>
                     <Setter Property="OffsetY" Value="00"/>
@@ -110,7 +394,7 @@
                         <Ellipse Width="290" Height="240" Fill="#7F000000">
                             <Ellipse.RenderTransform>
                                 <!--Hide this but let it still get renderd so we get our shadow-->
-                                <TranslateTransform Y="99999999"></TranslateTransform> 
+                                <TranslateTransform Y="99999999"></TranslateTransform>
                             </Ellipse.RenderTransform>
                         </Ellipse>
 
@@ -175,7 +459,7 @@
                     </controls1:DropShadowPanel>
                 </StackPanel>
 
-                    <controls:NowPlayingDisk
+                <controls:NowPlayingDisk
                     Width="160"
                         Margin="24,0,0,0"
                     Height="160"
@@ -191,29 +475,134 @@
                 </controls1:DropShadowPanel>
                 </Border>-->
 
-             
+
 
             </Grid>
 
 
         </Grid>
-
-        <Viewbox
-            Grid.RowSpan="3"
+        <StackPanel
+            
+            x:Name="ControlPanel"
+            
+                        Grid.RowSpan="3"
             Grid.ColumnSpan="3"
-            Width="80"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom">
+            Orientation="Horizontal"
+             Background="Transparent"
+            PointerMoved="StackPanel_PointerMoved"
+             FlowDirection="RightToLeft"
+            Margin="0,0,24,24"
+            >
+            <StackPanel.DataContext>
+                <viewmodels:MediaPlayerAccessor></viewmodels:MediaPlayerAccessor>
+            </StackPanel.DataContext>
+
+
             <Button
-                Padding="12"
+                Height="{StaticResource MediumButtonSize}"
+                                                    Width="{StaticResource MediumButtonSize}"
+                            VerticalAlignment="Bottom"              
+                    Margin="{StaticResource MediumButtonMargin}"
                 Command="{Binding SwitchFullScreenCommand}"
                 Style="{StaticResource OpacetyButton}">
                 <Button.DataContext>
                     <controls:FullScreenViewmodel />
                 </Button.DataContext>
-                <SymbolIcon x:Name="fullScreenIcon" Symbol="{Binding Symbol}" />
+                <Viewbox>
+                    <SymbolIcon x:Name="fullScreenIcon" Symbol="{Binding Symbol}" />
+                </Viewbox>
             </Button>
-        </Viewbox>
+
+
+
+            <Button
+                                                    x:Name="NextButton"
+                                                    Width="{StaticResource MediumButtonSize}"
+                                     VerticalAlignment="Bottom"        
+                Height="{StaticResource MediumButtonSize}"
+                                                    Margin="{StaticResource MediumButtonMargin}"
+                                                    Command="{Binding Instance.NextCommand}"
+                                                    Style="{StaticResource OpacetyButton}">
+                <Viewbox>
+                    <SymbolIcon Symbol="Next" />
+                </Viewbox>
+            </Button>
+            <Button
+                Visibility="{Binding Path=Instance.IsPlaying, Converter={StaticResource collapsedConverter}}"
+                                                    x:Name="PausePlayButton"
+                                                    Width="{StaticResource MediumButtonSize}"
+                                   VerticalAlignment="Bottom"                 Height="{StaticResource MediumButtonSize}"
+                                                    Margin="{StaticResource MediumButtonMargin}"
+                                                    Command="{Binding Instance.PlayCommand}"
+                                                    Style="{StaticResource OpacetyButton}">
+                <Viewbox>
+                    <SymbolIcon x:Name="PlayPauseSymbol" Symbol="Play" />
+                </Viewbox>
+            </Button>
+
+            <Button
+                Visibility="{Binding Path=Instance.IsPlaying, Converter={StaticResource visibleConverter}}"
+                
+                                                    Width="{StaticResource MediumButtonSize}"
+                                   VerticalAlignment="Bottom"                 Height="{StaticResource MediumButtonSize}"
+                                                    Margin="{StaticResource MediumButtonMargin}"
+                                                    Command="{Binding Instance.PauseCommand}"
+                                                    Style="{StaticResource OpacetyButton}">
+                <Viewbox>
+                    <SymbolIcon Symbol="Pause" />
+                </Viewbox>
+            </Button>
+
+
+            <Button
+                                                    x:Name="PreviousButton"
+                            VerticalAlignment="Bottom"                        Width="{StaticResource MediumButtonSize}"
+                                                    Height="{StaticResource MediumButtonSize}"
+                                                    Margin="{StaticResource MediumButtonMargin}"
+                                                    Command="{Binding Instance.PreviousCommand}"
+                                                    Style="{StaticResource OpacetyButton}">
+                <Viewbox>
+                    <SymbolIcon Symbol="Previous" />
+                </Viewbox>
+            </Button>
+
+
+            <ToggleButton
+                             
+                Style="{StaticResource ToggleButtonStyle1}"
+                x:Name="RepeatButtonMain"
+                VerticalAlignment="Bottom"                                    Width="{StaticResource MediumButtonSize}"
+                                                    Height="{StaticResource MediumButtonSize}"
+                                                    Margin="{StaticResource MediumButtonMargin}"
+                                                    IsChecked="{Binding Path=Instance.IsRepeate, Mode=TwoWay}"
+                                                    IsEnabled="{Binding Path=Instance.RepeateCommand.IsEnabled}"
+                                                    >
+                <Viewbox>
+                    <SymbolIcon Symbol="RepeatAll" />
+                </Viewbox>
+            </ToggleButton>
+
+
+            <ToggleButton Style="{StaticResource ToggleButtonStyle1}"
+                VerticalAlignment="Bottom"
+                                                    x:Name="ShuffleButtonMain"
+                                                    Width="{StaticResource MediumButtonSize}"
+                                                    Height="{StaticResource MediumButtonSize}"
+                                                    Margin="{StaticResource MediumButtonMargin}"
+                                                    IsChecked="{Binding Path=Instance.IsShuffled, Mode=TwoWay}"
+                                                    IsEnabled="{Binding Path=Instance.ShuffleCommand.IsEnabled}"
+                                                    >
+                <Viewbox Width="20">
+                    <SymbolIcon Symbol="Shuffle" />
+                </Viewbox>
+            </ToggleButton>
+
+        </StackPanel>
+        <!--<Button Width="120" Style="{StaticResource RoundButtonStyle}" BorderThickness="4" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-20" Padding="30">
+            <Viewbox >
+                <SymbolIcon Symbol="Back" />
+            </Viewbox>
+        </Button>-->
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState>
@@ -238,6 +627,32 @@
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
+
+            <VisualStateGroup x:Name="MoveState">
+                <VisualState x:Name="NotMoving">
+                    <Storyboard>
+                        <DoubleAnimation
+                                                Storyboard.TargetName="ControlPanel"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="0" />
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Moving">
+                    <Storyboard>
+                        <DoubleAnimation
+                                                Storyboard.TargetName="ControlPanel"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1" />
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+           
         </VisualStateManager.VisualStateGroups>
+
+
+
+
+        
+
     </Grid>
 </Page>

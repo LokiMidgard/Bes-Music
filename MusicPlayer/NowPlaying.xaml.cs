@@ -38,10 +38,15 @@ namespace MusicPlayer
         #region Fields
 
         private static Color[,] splotlightColors = {
-            {Colors.LightSeaGreen, Colors.LightSteelBlue},
-            {Colors.Magenta, Colors.Yellow},
-            {Colors.Yellow, Colors.YellowGreen},
+            {Darker(Colors.LightSeaGreen,0.5), Darker(Colors.LightSteelBlue,0.5)},
+            {Darker( Colors.Magenta,0.45),Darker(Colors.Yellow,0.5)},
+            {Darker(Colors.Yellow,0.5), Darker(Colors.YellowGreen,0.5)},
         };
+
+        private static Color Darker(Color c, double multiplier)
+        {
+            return Color.FromArgb(c.A, (byte)(c.R * multiplier), (byte)(c.G * multiplier), (byte)(c.B * multiplier));
+        }
 
         private Visual visual;
         private Compositor compositor;
@@ -104,7 +109,7 @@ namespace MusicPlayer
             this.backgroundVisual.Brush = bwEffect;
             this.backgroundVisual.Size = this.rootElement.RenderSize.ToVector2();
 
-            
+
 
             this.containerVisual = this.compositor.CreateContainerVisual();
             this.containerVisual.Children.InsertAtBottom(this.backgroundVisual);
@@ -121,15 +126,17 @@ namespace MusicPlayer
         {
 
             this.ambientLight = this.compositor.CreateAmbientLight();
-            if (this.supportIntensety)
-                this.ambientLight.Intensity = 0.2f;
-            this.ambientLight.Color = Colors.Gray;
+            //if (this.supportIntensety)
+            //    this.ambientLight.Intensity = 0.2f;
+            //this.ambientLight.Color = Colors.Black;//Colors.Gray;
+            const int ambientLightIntensety = 25;
+            this.ambientLight.Color = Color.FromArgb(255, ambientLightIntensety, ambientLightIntensety, ambientLightIntensety);//Colors.Gray;
             this.ambientLight.Targets.Add(this.backgroundVisual);
 
             this.pointLight1 = this.compositor.CreatePointLight();
             this.pointLight1.Color = splotlightColors[0, 0];
-            if (this.supportIntensety)
-                this.pointLight1.Intensity = 0.5f;
+            //if (this.supportIntensety)
+            //    this.pointLight1.Intensity = 0.5f;
             this.pointLight1.CoordinateSpace = this.containerVisual;
             this.pointLight1.Targets.Add(this.backgroundVisual);
             this.pointLight1.Offset = new Vector3((float)this.rootElement.ActualWidth, (float)this.rootElement.ActualHeight * 0.25f,
@@ -137,8 +144,8 @@ namespace MusicPlayer
 
             this.pointLight2 = this.compositor.CreatePointLight();
             this.pointLight2.Color = splotlightColors[0, 1];
-            if (this.supportIntensety)
-                this.pointLight2.Intensity = 0.5f;
+            //if (this.supportIntensety)
+            //    this.pointLight2.Intensity = 0.5f;
             this.pointLight2.CoordinateSpace = this.containerVisual;
             this.pointLight2.Targets.Add(this.backgroundVisual);
             this.pointLight2.Offset = new Vector3(0, (float)this.rootElement.ActualHeight * 0.75f, PointLightDistance);
@@ -147,7 +154,7 @@ namespace MusicPlayer
             this.pointLight2.Offset = new Vector3((float)this.rootElement.ActualWidth, (float)this.rootElement.ActualHeight * 0.75f,
                 PointLightDistance);
         }
-    
+
         private Vector3 VectorFromRelativePosition(float width, float height)
         {
             const float margin = 24;
@@ -201,6 +208,7 @@ namespace MusicPlayer
         private void AnimateColorChange()
         {
             var lights = new[] { this.pointLight1, this.pointLight2 };
+
 
             var pairSize = splotlightColors.GetLength(1);
             var lightLength = splotlightColors.GetLength(0);
@@ -263,6 +271,29 @@ namespace MusicPlayer
             var covers = Core.MusicStore.Instance.LibraryImages.Distinct().Select(x => new CoverData() { Id = x.imageId, Provider = x.providerId });
             this.backgroundLarge.Covers = covers;
             return Task.CompletedTask;
+        }
+
+        private DispatcherTimer d;
+        private void StackPanel_PointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            Windows.UI.Xaml.Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
+            VisualStateManager.GoToState(this, "Moving", true);
+            if (this.d is null)
+            {
+                this.d = new DispatcherTimer();
+                this.d.Interval = TimeSpan.FromSeconds(3);
+                this.d.Tick += (sender2, e2) =>
+                {
+
+                    this.d.Stop();
+                    VisualStateManager.GoToState(this, "NotMoving", true);
+                    Windows.UI.Xaml.Window.Current.CoreWindow.PointerCursor = null;
+                };
+            }
+            else
+                this.d.Stop();
+
+            this.d.Start();
         }
     }
 }
