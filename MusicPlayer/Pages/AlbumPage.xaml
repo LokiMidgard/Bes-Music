@@ -79,6 +79,22 @@
                                 </Button>
 
                                 <Button
+                        x:Name="AddButton"
+                        Grid.Column="1"
+                                    Width="{StaticResource MediumButtonSize}"
+                                    Height="{StaticResource MediumButtonSize}"
+                                    Margin="{StaticResource MediumButtonMargin}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Style="{StaticResource RoundButtonStyle}">
+                                    <Button.Flyout>
+                                        <MenuFlyout controls:AddToPlayList.IsPlaylistMenue="{Binding Model}" />
+                                    </Button.Flyout>
+                                    <SymbolIcon Symbol="Add" />
+
+                                </Button>
+
+                                <Button
                                     Width="{StaticResource MediumButtonSize}"
                                     Height="{StaticResource MediumButtonSize}"
                                     Margin="{StaticResource MediumButtonMargin}"

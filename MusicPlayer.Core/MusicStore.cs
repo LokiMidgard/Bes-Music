@@ -90,6 +90,9 @@ namespace MusicPlayer.Core
         {
             this.albums = new ObservableCollection<Album>();
             this.playLists = new ObservableCollection<PlayList>();
+            this.Albums = new ReadOnlyObservableCollection<Album>(this.albums);
+            this.PlayLists = new ReadOnlyObservableCollection<PlayList>(this.playLists);
+
         }
 
 
@@ -147,8 +150,6 @@ namespace MusicPlayer.Core
                                 playList.songs.Add(this.songLoockup[(playListEntry.LibraryProvider, playListEntry.MediaId)]);
                         }
                     }
-                    this.Albums = new ReadOnlyObservableCollection<Album>(this.albums);
-                    this.PlayLists = new ReadOnlyObservableCollection<PlayList>(this.playLists);
                     this.InitilizeProperties();
                     this.databaseLoad.Set();
 

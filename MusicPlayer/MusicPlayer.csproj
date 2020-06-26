@@ -30,7 +30,7 @@
     <Use64BitCompiler>true</Use64BitCompiler>
     <PackageCertificateThumbprint>
     </PackageCertificateThumbprint>
-    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
     <!-- <ShortcutGenericAnalysis>true</ShortcutGenericAnalysis> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
@@ -307,7 +307,9 @@
     <Content Include="Controls\UWPToolkit\Assets\genericfile.png" />
     <Content Include="Controls\UWPToolkit\Assets\person.png" />
     <Content Include="Controls\UWPToolkit\Assets\photo.png" />
-    <None Include="Package.StoreAssociation.xml" />
+    <None Include="Package.StoreAssociation.xml">
+      <SubType>Designer</SubType>
+    </None>
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
