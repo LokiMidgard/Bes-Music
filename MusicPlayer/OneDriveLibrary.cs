@@ -214,6 +214,8 @@ namespace MusicPlayer
         private const string ONE_DRIVE_MUSIC_DELTA_TOKEN = "OneDriveDeltaToken";
         private const string ONE_DRIVE_PLAYLIST_DELTA_TOKEN = "OneDrivePlayListDeltaToken";
         private const string LOCAL_SETTINGS_LASTPLAYLIST_STATE = "LOCAL_SETTINGS_LASTPLAYLISTSTATE";
+        private const string PLAYLIST_ETNRY_EXTENSION = ".entry";
+        private const string PLAYLIST_LIST_EXTENSION = ".list";
 
         // Using a DependencyProperty as the backing store for StorageLocation.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty StorageLocationProperty =
@@ -458,7 +460,7 @@ namespace MusicPlayer
                     }
                     else
                     {
-                        deltaRequest = MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Items[playlistFolder.Id].Delta().Request().Select("name,deleted,audio");
+                        deltaRequest = MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Items[playlistFolder.Id].Delta().Request().Select("name,deleted,description");
                         //deltaRequest = new DriveItemDeltaRequestBuilder("https://graph.microsoft.com/v1.0/me/drive/items/634529B99B5BB82C!17006/delta", MicrosoftGraphService.Instance.GraphProvider).Request().Select("name,audio,id,deleted,cTag,size");
                     }
                     IDriveItemDeltaCollectionPage lastResponse = null;
@@ -579,6 +581,16 @@ namespace MusicPlayer
                         }
                     }
 
+                    var currentStateString = currentState.Persist();
+                    var newPlaylistFile = await localFolder.CreateFileAsync(LOCAL_SETTINGS_LASTPLAYLIST_STATE, CreationCollisionOption.GenerateUniqueName);
+
+                    await FileIO.WriteTextAsync(newPlaylistFile, currentStateString);
+                    if (newPlaylistFile.Name != LOCAL_SETTINGS_LASTPLAYLIST_STATE)
+                    {
+                        await newPlaylistFile.MoveAndReplaceAsync(playlistFile);
+                    }
+
+
 
 
                 } while (downloadProposes.Any());
@@ -586,102 +598,100 @@ namespace MusicPlayer
 
                 int EntryType(DriveItem arg)
                 {
-                    switch (arg.Audio.Title)
-                    {
-                        case "song":
-                            return 2;
-                        case "playlist":
-                            return 1;
-                        default:
-                            return 0;
-                    }
+                    var index = 0;
+                    if (Path.GetExtension(arg.Name) == PLAYLIST_LIST_EXTENSION)
+                        index = 1;
+                    else if (Path.GetExtension(arg.Name) == PLAYLIST_ETNRY_EXTENSION)
+                        index = 2;
+                    if (arg.Deleted != null)
+                        index *= -1;// reverse the order if it is deleted
+                    return index;
                 }
 
                 async Task PerformRemoteChanges(IEnumerable<DriveItem> changes)
                 {
                     foreach (var item in changes.OrderBy(EntryType))
                     {
-                        switch (item.Audio.Title)
+                        if (Path.GetExtension(item.Name) == PLAYLIST_ETNRY_EXTENSION)
                         {
-                            case "song":
-                                try
+                            try
+                            {
+                                var array = Path.GetFileNameWithoutExtension(item.Name).Split('~');
+
+                                if (array.Length != 3)
+                                    throw new FormatException("Filename not as expeted");
+
+                                var playListId = Guid.Parse(array[0]);
+                                var providerId = array[1];
+                                var mediaId = array[2];
+
+
+                                var playlist = MusicStore.Instance.PlayLists.FirstOrDefault(x => x.Id == playListId);
+
+                                if (playlist is null)
                                 {
-                                    var array = Path.GetFileNameWithoutExtension(item.Name).Split('~');
-
-                                    if (array.Length != 3)
-                                        throw new FormatException("Filename not as expeted");
-
-                                    var playListId = Guid.Parse(array[0]);
-                                    var providerId = array[1];
-                                    var mediaId = array[2];
-
-
-                                    var playlist = MusicStore.Instance.PlayLists.FirstOrDefault(x => x.Id == playListId);
-
-                                    if (playlist is null)
-                                    {
-                                        System.Diagnostics.Debug.Assert(item.Deleted is null, "When the playlist does not exist, we may not get this item.");
-                                        continue;
-                                    }
-
-
-
-                                    if (item.Deleted != null)
-                                    {
-
-                                        var songToDelete = playlist.Songs.FirstOrDefault(x => x.MediaId == mediaId && x.LibraryProvider == providerId);
-                                        if (songToDelete != null)
-                                            await MusicStore.Instance.RemovePlaylistSong(playlist, songToDelete);
-                                    }
-                                    else
-                                    {
-                                        var toChange = playlist.Songs.FirstOrDefault(x => x.MediaId == mediaId && x.LibraryProvider == providerId);
-
-
-                                        if (toChange is null) // we need to AddIt
-                                        {
-                                            var song = MusicStore.Instance.GetSongByMediaId(providerId, mediaId);
-                                            if (song is null) // not jet synced?
-                                                continue; // TODO: well we need to remember this....
-                                            await MusicStore.Instance.AddPlaylistSong(playlist, song);
-                                        }
-                                        else // otherwise we changed the index, but the player does not store index of songs yet....
-                                        { }
-                                    }
-                                }
-                                catch (FormatException)
-                                {
-
-                                }
-                                break;
-                            case "playlist":
-                                try
-                                {
-                                    var id = Guid.Parse(Path.GetFileNameWithoutExtension(item.Name));
-                                    if (item.Deleted != null)
-                                    {
-                                        var toDeleted = MusicStore.Instance.PlayLists.FirstOrDefault(x => x.Id == id);
-                                        if (toDeleted != null)
-                                            await MusicStore.Instance.RemovePlaylist(toDeleted);
-                                    }
-                                    else
-                                    {
-                                        var toChange = MusicStore.Instance.PlayLists.FirstOrDefault(x => x.Id == id);
-                                        if (toChange is null) // we need to create it
-                                            await MusicStore.Instance.CreatePlaylist(item.Audio.Album, id);
-                                        else // otherwise rename it
-                                            toChange.Name = item.Audio.Album;
-                                    }
-                                }
-                                catch (FormatException)
-                                {
-
+                                    System.Diagnostics.Debug.Assert(item.Deleted is null, "When the playlist does not exist, we may not get this item.");
+                                    continue;
                                 }
 
-                                break;
-                            default:
-                                break;
+
+
+                                if (item.Deleted != null)
+                                {
+
+                                    var songToDelete = playlist.Songs.FirstOrDefault(x => x.MediaId == mediaId && x.LibraryProvider == providerId);
+                                    if (songToDelete != null)
+                                        await MusicStore.Instance.RemovePlaylistSong(playlist, songToDelete);
+                                }
+                                else
+                                {
+                                    var toChange = playlist.Songs.FirstOrDefault(x => x.MediaId == mediaId && x.LibraryProvider == providerId);
+
+
+                                    if (toChange is null) // we need to AddIt
+                                    {
+                                        var song = MusicStore.Instance.GetSongByMediaId(providerId, mediaId);
+                                        if (song is null) // not jet synced?
+                                            continue; // TODO: well we need to remember this....
+                                        await MusicStore.Instance.AddPlaylistSong(playlist, song);
+                                    }
+                                    else // otherwise we changed the index, but the player does not store index of songs yet....
+                                    { }
+                                }
+                            }
+                            catch (FormatException)
+                            {
+
+                            }
+
                         }
+                        else
+                        {
+                            try
+                            {
+                                var id = Guid.Parse(Path.GetFileNameWithoutExtension(item.Name));
+                                if (item.Deleted != null)
+                                {
+                                    var toDeleted = MusicStore.Instance.PlayLists.FirstOrDefault(x => x.Id == id);
+                                    if (toDeleted != null)
+                                        await MusicStore.Instance.RemovePlaylist(toDeleted);
+                                }
+                                else
+                                {
+                                    var toChange = MusicStore.Instance.PlayLists.FirstOrDefault(x => x.Id == id);
+                                    if (toChange is null) // we need to create it
+                                        await MusicStore.Instance.CreatePlaylist(item.Description, id);
+                                    else // otherwise rename it
+                                        toChange.Name = item.Description;
+                                }
+                            }
+                            catch (FormatException)
+                            {
+
+                            }
+
+                        }
+
                     }
                 }
 
@@ -718,53 +728,23 @@ namespace MusicPlayer
 
         private static async Task UploadPlaylistEntry(DriveItem playlistFolder, Guid playlistId, SongState song, int index, CancellationToken cancellationToken)
         {
-            using (var source = new MemoryStream(MP3Const.header.ToArray()))
-            using (var stream = new MemoryStream())
-            {
-                await source.CopyToAsync(stream);
-                stream.Seek(0, SeekOrigin.Begin);
-
-                var abstracStream = new TagLib.StreamFileAbstraction("x.mp3", stream, stream);
-                using (var tagFile = TagLib.File.Create(abstracStream))
-                {
-                    var tag = tagFile.Tag;
-                    tag.Track = (uint)index;
-                    tag.Title = "song";
-                    await Task.Run(() => tagFile.Save());
-                }
-                using (var uploadStream = new MemoryStream(stream.ToArray()))
-                    await UploadFile(playlistFolder, $"{playlistId}~{song.LibraryProvider}~{song.MediaId}.mp3", uploadStream, cancellationToken);
-            }
+            using (var uploadStream = new MemoryStream(Array.Empty<byte>()))
+                await UploadFile(playlistFolder, $"{playlistId}~{song.LibraryProvider}~{song.MediaId}{PLAYLIST_ETNRY_EXTENSION}", uploadStream, cancellationToken);
         }
         private static async Task DeletePlaylistEntry(DriveItem playlistFolder, Guid playlistId, SongState song, CancellationToken cancellationToken)
         {
-            await DeleteFile(playlistFolder, $"{playlistId}~{song.LibraryProvider}~{song.MediaId}.mp3", cancellationToken);
+            await DeleteFile(playlistFolder, $"{playlistId}~{song.LibraryProvider}~{song.MediaId}{PLAYLIST_ETNRY_EXTENSION}", cancellationToken);
         }
 
         private static async Task DeletePlaylist(DriveItem playlistFolder, Guid playlistId, CancellationToken cancellationToken)
         {
-            await DeleteFile(playlistFolder, $"{playlistId}.mp3", cancellationToken);
+            await DeleteFile(playlistFolder, $"{playlistId}.list", cancellationToken);
         }
 
         private static async Task UploadPlaylist(DriveItem playlistFolder, Guid playlistId, string name, CancellationToken cancellationToken)
         {
-            using (var source = new MemoryStream(MP3Const.header.ToArray()))
-            using (var stream = new MemoryStream())
-            {
-                await source.CopyToAsync(stream);
-                stream.Seek(0, SeekOrigin.Begin);
-
-                var abstracStream = new TagLib.StreamFileAbstraction("x.mp3", stream, stream);
-                using (var tagFile = TagLib.File.Create(abstracStream))
-                {
-                    var tag = tagFile.Tag;
-                    tag.Album = name;
-                    tag.Title = "playlist";
-                    await Task.Run(() => tagFile.Save());
-                }
-                using (var uploadStream = new MemoryStream(stream.ToArray()))
-                    await UploadFile(playlistFolder, $"{playlistId}.mp3", uploadStream, cancellationToken);
-            }
+            using (var uploadStream = new MemoryStream(Array.Empty<byte>()))
+                await UploadFile(playlistFolder, $"{playlistId}{PLAYLIST_LIST_EXTENSION}", uploadStream, cancellationToken, name);
         }
 
         private async Task<DriveItem> EnsureFolderExists(IDriveItemRequestBuilder appRoot, string name, CancellationToken cancellationToken)
@@ -798,36 +778,12 @@ namespace MusicPlayer
                 }
             }
         }
-        private static async Task UploadFile(DriveItem folder, string name, Stream stream, CancellationToken cancellationToken)
+        private static async Task UploadFile(DriveItem folder, string name, Stream stream, CancellationToken cancellationToken, string description = null)
         {
-            var upoadSession = await MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Items[folder.Id].ItemWithPath(name).CreateUploadSession().Request().PostAsync(cancellationToken);
-
-            var maxChunkSize = 5 * 1024 * 1024; // 5MB is the default. But we wan't to make shure for the buffer below
-            var provider = new ChunkedUploadProvider(upoadSession, MicrosoftGraphService.Instance.GraphProvider, stream, maxChunkSize);
-
-            // Setup the chunk request necessities
-            var chunkRequests = provider.GetUploadChunkRequests();
-            var readBuffer = new byte[maxChunkSize];
-            var trackedExceptions = new List<Exception>();
-            DriveItem itemResult = null;
-
-            //upload the chunks
-            foreach (var request in chunkRequests)
+            var upoadSession = await MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Items[folder.Id].ItemWithPath(name).Content.Request().PutAsync<DriveItem>(stream, cancellationToken);
+            if (description != null)
             {
-                // Do your updates here: update progress bar, etc.
-                // ...
-                // Send chunk request
-                var chunkResult = await provider.GetChunkRequestResponseAsync(request, readBuffer, trackedExceptions);
-
-                if (chunkResult.UploadSucceeded)
-                    itemResult = chunkResult.ItemResponse;
-            }
-
-            // Check that upload succeeded
-            if (itemResult == null)
-            {
-                // Retry the upload
-                // ...
+                await MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Items[folder.Id].ItemWithPath(name).Request().UpdateAsync(new DriveItem() { Description = description });
             }
         }
         private static async Task DeleteFile(DriveItem folder, string name, CancellationToken cancellationToken)
