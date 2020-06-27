@@ -1,7 +1,7 @@
 # Bes Music
 
 Since  OneDrive no longer Supports streaming, and Groove killed downloading of music and syncing playlistst the same time,
-this is an alternative for Windows Mobile and Win 10. It downloads your Music from OneDrive and Syncing your Playlists.
+I needed an alternative for Windows 10 Mobile and Win 10. And so Bes Music was created. It downloads your Music from OneDrive Syncing your Playlists and mimic the old Zune player a little bit.
 
 I prefere having my Music always with me so it currently does not support streaming, but will download your music from OneDrive in advance.
 
