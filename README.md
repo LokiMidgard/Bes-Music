@@ -47,3 +47,6 @@ It will need the latest Windows 10 Mobile Version. It ist Testet on an Lumia 950
  - [ ] It would also be nice to support different provider besides OneDrive. Storage of information is already prepared for this. But it is not high on the TODO list.
  - [ ] Creating variants for Xamarin (and maybe Blazor)
  
+ ## How to build
+ 
+ [See Wiki](https://github.com/LokiMidgard/WP10-Music-Player/wiki/How-to-build-this-repository)
