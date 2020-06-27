@@ -1,4 +1,4 @@
-# WP10-Music-Player
+# Bes Music
 
 Since  OneDrive no longer Supports streaming, and Groove killed downloading of music and syncing playlistst the same time,
 this is an alternative for Windows Mobile and Win 10. It downloads your Music from OneDrive and Syncing your Playlists.
