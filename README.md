@@ -18,8 +18,8 @@ It will need the latest Windows 10 Mobile Version. It ist Testet on an Lumia 950
   - [ ] Sync Music
     - [x] Basic download of Music to local device
     - [x] Show what will be downloaded and how much space/bandwith it takes
-    - [ ] Syncronize Music library without downloading songs (those will not be playable)
-    - [ ] Download specific songs (e.g. Songs from a specific playlist)
+    - [ ] Syncronize Music library without downloading songs (those will not be playable) **Partial, Settings dialog needs still to get optimized for that usecase but peek will store metadata**
+    - [x] Download specific songs (e.g. Songs from a specific playlist) 
     - [x] Redownload corrupt music files (manually) 
  - [ ] Playlist
     - [x] Create Playlists

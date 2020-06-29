@@ -5,7 +5,12 @@ VisualStudioVersion = 16.0.28711.60
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicPlayer", "MusicPlayer\MusicPlayer.csproj", "{31E1475B-5E06-4DA5-B766-F5EE5B830AF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicPlayer.Core", "MusicPlayer.Core\MusicPlayer.Core.csproj", "{8CC86F27-DC3C-4A7D-9D22-225AF13295B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicPlayer.Core", "MusicPlayer.Core\MusicPlayer.Core.csproj", "{8CC86F27-DC3C-4A7D-9D22-225AF13295B6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7B0B644E-2998-47B8-9BC2-76D0A27E3959}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -69,8 +69,8 @@
                                 <TextBlock Grid.ColumnSpan="2" Margin="0,-4,0,0" Grid.Column="1"   Grid.Row="2" Text="{Binding Instance.Song.Title}" Style="{StaticResource TitleTextBlockStyle}"/>
                                 <TextBlock  Foreground="{StaticResource AccentBrush}" Grid.ColumnSpan="2" Margin="0,-4,0,0" Grid.Column="1" Grid.Row="3" Text="{Binding Instance.Song.Artist}" Style="{StaticResource SubtitleTextBlockStyle}"/>
                             </StackPanel>
-                            <StackPanel Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="2">
-                                <Button
+                            <StackPanel Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="2" Margin="0,24,0,0">
+                                <Button Style="{StaticResource ButtonStyleRectangle}"
                         >
                                     <Button.Flyout>
                                         <MenuFlyout controls:AddToPlayList.SupressCurrentPlayList="True" controls:AddToPlayList.IsPlaylistMenue="{Binding Instance.CurrentPlaylist}" />

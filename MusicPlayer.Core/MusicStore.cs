@@ -320,6 +320,34 @@ namespace MusicPlayer.Core
             });
         }
 
+        private MusicStoreDatabase isInTransaction;
+
+        public Task<IDisposable> BeginnTransaction(CancellationToken cancelToken)
+        {
+            return this.RunOnUIThread(async () =>
+            {
+                this.isInTransaction = await MusicStoreDatabase.CreateContextAsync(cancelToken);
+
+                return new DelegateDisposable(async () =>
+                {
+                    if (this.isInTransaction != null)
+                    {
+                        var currentTransaction = this.isInTransaction;
+                        this.isInTransaction = null;
+                        await currentTransaction.SaveChangesAsync();
+                        currentTransaction.Dispose();
+                    }
+                }) as IDisposable;
+            });
+        }
+        //public Task EndTransaction()
+        //{
+        //    return this.RunOnUIThread(async () =>
+        //    {
+
+        //    });
+        //}
+
         public Task<Song> AddSong(string provider, string mediaId,
             string albumInterpret = default,
             string albumName = default,
@@ -332,13 +360,15 @@ namespace MusicPlayer.Core
             string title = default,
             int track = default,
             uint year = default,
+            bool downloaded = false,
             CancellationToken cancelToken = default)
         {
             return this.RunOnUIThread(async () =>
             {
                 await this.databaseLoad.WaitAsync();
                 Song song;
-                using (var context = await MusicStoreDatabase.CreateContextAsync(cancelToken))
+                var context = this.isInTransaction ?? await MusicStoreDatabase.CreateContextAsync(cancelToken);
+                try
                 {
                     bool newSong;
 
@@ -378,11 +408,27 @@ namespace MusicPlayer.Core
                     if (year != default)
                         song.Year = year;
 
+                    if (downloaded)
+                        song.Availability = Availability.InSync;
+                    else if (newSong)
+                        song.Availability = Availability.NotAvailable;
+                    else if (song.Availability == Availability.NotAvailable)
+                        song.Availability = Availability.NotAvailable;
+                    else
+                        song.Availability = Availability.UpdateAvailable;
+
                     if (newSong)
                         context.Add(song);
 
-                    await context.SaveChangesAsync();
                     this.AddSong(song);
+                }
+                finally
+                {
+                    if (this.isInTransaction == null)
+                    {
+                        await context.SaveChangesAsync();
+                        context.Dispose();
+                    }
                 }
                 return song;
             });
@@ -720,7 +766,7 @@ namespace MusicPlayer.Core
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Song PreferedSong => songs.FirstOrDefault();
+        public Song PreferedSong => this.songs.FirstOrDefault();
 
         internal SongGroup(Album album, string title, int track, int discNumber)
         {
@@ -742,20 +788,35 @@ namespace MusicPlayer.Core
                 throw new ArgumentException("Song must match the Properties of this SongGroup", nameof(song));
 
 
-            var insertionIndex = this.songs.BinarySearch(song, s => s.LibraryProvider, (x, y) =>
+            var insertionIndex = this.songs.BinarySearch(song, s => (s.LibraryProvider, s.MediaId), (x, y) =>
             {
-                var result = x.CompareTo(y);
+                var result = x.LibraryProvider.CompareTo(y.LibraryProvider);
+                if (result == 0)
+                    return x.MediaId.CompareTo(y.MediaId);
                 return result;
             });
 
             if (insertionIndex < 0)
+            {
+
                 insertionIndex = ~insertionIndex;
 
-            this.songs.Insert(insertionIndex, song);
+                this.songs.Insert(insertionIndex, song);
+                song.PropertyChanged += this.Song_PropertyChanged;
+                this.UpdateProperties();
+            }
+            else
+            {
+                var oldSong = this.songs[insertionIndex];
+                if (!object.ReferenceEquals(oldSong, song))
+                {
+                    oldSong.PropertyChanged -= this.Song_PropertyChanged;
+                    song.PropertyChanged += this.Song_PropertyChanged;
+                    this.songs[insertionIndex] = song;
+                    this.UpdateProperties();
+                }
+            }
 
-            song.PropertyChanged += this.Song_PropertyChanged;
-
-            this.UpdateProperties();
         }
 
         private void Song_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -766,6 +827,7 @@ namespace MusicPlayer.Core
                 case nameof(Song.Interpreters):
                 case nameof(Song.Composers):
                 case nameof(Song.LibraryImageId):
+                case nameof(Song.Availability):
                     this.UpdateProperties();
                     break;
                 case nameof(Song.AlbumInterpret):
@@ -797,11 +859,13 @@ namespace MusicPlayer.Core
             var oldInterpreters = this.Interpreters;
             var oldComposers = this.Composers;
             var oldLibraryImages = this.LibraryImages;
+            var oldAvailability = this.Availability;
 
             this.Genres = this.Songs.SelectMany(x => x.Genres).Distinct().OrderBy(x => x).ToArray();
             this.Interpreters = this.Songs.SelectMany(x => x.Interpreters).Distinct().OrderBy(x => x).ToArray();
             this.Composers = this.Songs.SelectMany(x => x.Composers).Distinct().OrderBy(x => x).ToArray();
             this.LibraryImages = this.Songs.Select(x => (x.LibraryProvider, x.LibraryImageId)).Distinct().OrderBy(x => x.LibraryProvider).ThenBy(x => x.LibraryImageId).ToArray();
+            this.Availability = this.Songs.Select(x => x.Availability).OrderBy(y => y switch { Availability.InSync => 1, Availability.UpdateAvailable => 2, Availability.NotAvailable => 3, _ => 4 }).FirstOrDefault();
 
             if (!(oldGenres?.SequenceEqual(this.Genres) ?? false))
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Genres)));
@@ -815,6 +879,9 @@ namespace MusicPlayer.Core
             if (!(oldLibraryImages?.SequenceEqual(this.LibraryImages) ?? false))
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.LibraryImages)));
 
+            if (!(oldAvailability.Equals(this.Availability)))
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Availability)));
+
         }
 
         internal void InitilizeProperties()
@@ -823,7 +890,9 @@ namespace MusicPlayer.Core
             this.Interpreters = this.Songs.SelectMany(x => x.Interpreters).Distinct().OrderBy(x => x).ToArray();
             this.Composers = this.Songs.SelectMany(x => x.Composers).Distinct().OrderBy(x => x).ToArray();
             this.LibraryImages = this.Songs.Select(x => (x.LibraryProvider, x.LibraryImageId)).Distinct().OrderBy(x => x.LibraryProvider).ThenBy(x => x.LibraryImageId).ToArray();
+            this.Availability = this.Songs.Select(x => x.Availability).OrderBy(y => y switch { Availability.InSync => 1, Availability.UpdateAvailable => 2, Availability.NotAvailable => 3, _ => 4 }).FirstOrDefault();
 
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Availability)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Genres)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Interpreters)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Composers)));
@@ -832,6 +901,9 @@ namespace MusicPlayer.Core
 
         public IEnumerable<string> Genres { get; private set; }
         public IEnumerable<string> Interpreters { get; private set; }
+
+        public Availability Availability { get; private set; }
+
         public IEnumerable<string> Composers { get; private set; }
         public IEnumerable<(string providerId, string imageId)> LibraryImages { get; private set; }
 
@@ -932,6 +1004,13 @@ namespace MusicPlayer.Core
         }
     }
 
+    public enum Availability
+    {
+        NotAvailable,
+        InSync,
+        UpdateAvailable
+    }
+
     public class Song : INotifyPropertyChanged, IEquatable<Song>
     {
         [NotMapped]
@@ -956,6 +1035,8 @@ namespace MusicPlayer.Core
         private int _track;
         [NotMapped]
         private int _discNumber;
+        [NotMapped]
+        private Availability _availability;
 
 
         internal string InterpreterSong { get; set; }
@@ -1009,6 +1090,20 @@ namespace MusicPlayer.Core
                 }
             }
         }
+
+        //[NotMapped]
+        public Availability Availability
+        {
+            get => this._availability; internal set
+            {
+                if (this._availability != value)
+                {
+                    this._availability = value;
+                    this.FireNotifyChanged();
+                }
+            }
+        }
+
         public string AlbumInterpret
         {
             get => this._albumInterpret; internal set
@@ -1217,6 +1312,38 @@ namespace MusicPlayer.Core
             }
 
             await this.Database.EnsureCreatedAsync(cancellationToken);
+
+            bool isAvailabilityMissing = true;
+
+            using (var connection = this.Database.GetDbConnection())
+            {
+                await connection.OpenAsync();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "PRAGMA table_info(SONGS);";
+                    //command.CommandText = "SELECT * FROM SONGS;";
+                    var result3 = await command.ExecuteReaderAsync();
+                    var firstEntry = result3.Cast<System.Data.Common.DbDataRecord>().Select(x => x.GetString(1)).ToArray();
+                    if (firstEntry != null)
+                    {
+                        for (int i = 0; i < firstEntry.Length && isAvailabilityMissing; i++)
+                        {
+                            var name = firstEntry[i];
+                            if (name.Equals(nameof(Song.Availability), StringComparison.OrdinalIgnoreCase))
+                                isAvailabilityMissing = false;
+                        }
+                    }
+
+
+                }
+                if (isAvailabilityMissing)
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = $"ALTER TABLE SONGS ADD COLUMN {nameof(Song.Availability)} INTEGER NOT NULL DEFAULT {(int)Availability.InSync};";
+                        var result3 = await command.ExecuteNonQueryAsync();
+                    }
+                connection.Close();
+            }
         }
 
         public MusicStoreDatabase(DbContextOptions options) : base(options)
@@ -1230,6 +1357,7 @@ namespace MusicPlayer.Core
 
             base.OnConfiguring(optionsBuilder);
             optionsBuilder.UseSqlite("Data Source=music.db");
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -1248,6 +1376,8 @@ namespace MusicPlayer.Core
             modelBuilder.Entity<Song>().Property(x => x.GenreSong);
             modelBuilder.Entity<Song>().Property(x => x.InterpreterSong);
             modelBuilder.Entity<Song>().Property(x => x.ComposerSong);
+
+
         }
 
 

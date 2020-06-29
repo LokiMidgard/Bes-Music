@@ -14,6 +14,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
     <Page.Resources>
+        <converters:VisibilityOnEqualsConverter x:Key="EqualsConverter" OnEquals="Visible" />
         <converters:StringFormatConverter x:Key="stringFormat" />
         <converters:ListConverter x:Key="listConverter" />
         <converters:ThiknessConverter x:Key="bottomThiknessConverter" />
@@ -22,6 +23,8 @@
         <x:Double x:Key="MinWindowSnapPoint">0</x:Double>
         <x:Double x:Key="MediumWindowSnapPoint">641</x:Double>
         <x:Double x:Key="LargeWindowSnapPoint">1008</x:Double>
+        <viewmodels:OneDriveAccessor x:Name="oneDrive" />
+
     </Page.Resources>
     <controls:StateListener>
 
@@ -63,9 +66,6 @@
                                 Grid.Row="2"
                                 Grid.ColumnSpan="2"
                                 Orientation="Horizontal">
-                                <StackPanel.Resources>
-                                    <viewmodels:OneDriveAccessor x:Name="oneDrive" />
-                                </StackPanel.Resources>
 
                                 <Button
                                     Width="{StaticResource MediumButtonSize}"
@@ -90,7 +90,9 @@
                                     <Button.Flyout>
                                         <MenuFlyout controls:AddToPlayList.IsPlaylistMenue="{Binding Model}" />
                                     </Button.Flyout>
-                                    <SymbolIcon Symbol="Add" />
+                                    <Viewbox>
+                                        <SymbolIcon Symbol="Add" />
+                                    </Viewbox>
 
                                 </Button>
 
@@ -102,7 +104,7 @@
                                     CommandParameter="{Binding}"
                                     Style="{StaticResource RoundButtonStyle}">
                                     <Viewbox>
-                                        <SymbolIcon Symbol="Repair" />
+                                        <SymbolIcon Symbol="Download" />
                                     </Viewbox>
                                 </Button>
 
@@ -227,7 +229,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="5*" />
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition x:Name="interpretsColumn" Width="4*" />
+                                    <ColumnDefinition x:Name="interpretsColumn" Width="250" />
                                     <ColumnDefinition Width="60" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
@@ -241,31 +243,72 @@
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Stretch"
                                     Orientation="Horizontal">
+                                    <StackPanel.Resources>
+                                        <core:Availability x:Key="NotAvailable" >NotAvailable</core:Availability>
+                                        <core:Availability x:Key="UpdateAvailable" >UpdateAvailable</core:Availability>
+                                    </StackPanel.Resources>
+                                    <Button
+                                        x:Name="UpdateButton"
+                                        Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource NotAvailable}}"
+                                                                            Width="{StaticResource MediumButtonSize}"
+                                    Height="{StaticResource MediumButtonSize}"
+                                    Margin="{StaticResource MediumButtonMargin}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource RoundButtonStyle}"
+                                    Command="{Binding Source={StaticResource oneDrive}, Path=Instance.RepairAlbumCommand}"
+              >
+                                        <Viewbox>
+                                            <SymbolIcon Symbol="Download" />
+                                        </Viewbox>
+                                    </Button>
+
+                                    <Button
+                                        x:Name="RefreshButton"
+                                        Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource UpdateAvailable}}"
+                                                                            Width="{StaticResource MediumButtonSize}"
+                                    Height="{StaticResource MediumButtonSize}"
+                                    Margin="{StaticResource MediumButtonMargin}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource RoundButtonStyle}"
+                                    Command="{Binding Source={StaticResource oneDrive}, Path=Instance.RepairAlbumCommand}"
+                                        
+                                     >
+                                        <Viewbox>
+                                            <SymbolIcon Symbol="Refresh" />
+                                        </Viewbox>
+                                    </Button>
+
                                     <Button
                                         x:Name="AddButton"
-                                        Width="50"
-                                        Margin="8,0,0,0"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Stretch"
-                                        Background="Transparent"
-                                        Opacity="0">
+ Width="{StaticResource MediumButtonSize}"
+                                    Height="{StaticResource MediumButtonSize}"
+                                    Margin="{StaticResource MediumButtonMargin}"
+                                    Style="{StaticResource RoundButtonStyle}"
+                       >
                                         <Button.Flyout>
                                             <MenuFlyout controls:AddToPlayList.IsPlaylistMenue="{x:Bind PreferedSong}" />
                                         </Button.Flyout>
-                                        <SymbolIcon Symbol="Add" />
+                                        <Viewbox>
 
+                                            <SymbolIcon Symbol="Add" />
+                                        </Viewbox>
                                     </Button>
+
                                     <Button
                                         x:Name="PlayButton"
-                                        Width="50"
-                                        Margin="0,0,8,0"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Stretch"
-                                        Background="Transparent"
+                                        
+                                         Width="{StaticResource MediumButtonSize}"
+                                    Height="{StaticResource MediumButtonSize}"
+                                    Margin="{StaticResource MediumButtonMargin}"
+                                    
+                                    Style="{StaticResource RoundButtonStyle}"
+                                        
                                         Command="{Binding DataContext.PlayAlbumCommand, ElementName=root}"
                                         CommandParameter="{x:Bind PreferedSong}"
-                                        Opacity="0">
-                                        <SymbolIcon Symbol="Play" />
+                >
+                                        <Viewbox>
+                                            <SymbolIcon Symbol="Play" />
+                                        </Viewbox>
 
                                     </Button>
 
@@ -290,24 +333,24 @@
                                     VerticalAlignment="Center"
                                     Visibility="{Binding DataContext.HasMultipleDiscs, ElementName=root, Converter={StaticResource visibilityTrue}}">
                                     <Run Foreground="{StaticResource SystemControlForegroundChromeDisabledLowBrush}" Text="(Disc" />
-                                    <Run Foreground="{StaticResource SystemControlForegroundChromeDisabledLowBrush}" Text="{x:Bind DiscNumber}" /><Run Foreground="{StaticResource SystemControlForegroundChromeDisabledLowBrush}" Text=")" />
-                                    <Run Text="{x:Bind Track}" /><Run Text="." />
-                                    <Run Text="{x:Bind Title}" />
+                                    <Run Foreground="{StaticResource SystemControlForegroundChromeDisabledLowBrush}" Text="{x:Bind DiscNumber, Mode=OneWay}" /><Run Foreground="{StaticResource SystemControlForegroundChromeDisabledLowBrush}" Text=")" />
+                                    <Run Text="{x:Bind Track, Mode=OneWay}" /><Run Text="." />
+                                    <Run Text="{x:Bind Title, Mode=OneWay}" />
                                 </TextBlock>
                                 <TextBlock
                                     Grid.Column="0"
                                     Margin="3,0"
                                     VerticalAlignment="Center"
                                     Visibility="{Binding DataContext.HasMultipleDiscs, ElementName=root, Converter={StaticResource visibilityFalse}}">
-                                    <Run Text="{x:Bind Track}" /><Run Text="." />
-                                    <Run Text="{x:Bind Title}" />
+                                    <Run Text="{x:Bind Track, Mode=OneWay}" /><Run Text="." />
+                                    <Run Text="{x:Bind Title, Mode=OneWay}" />
                                 </TextBlock>
                                 <TextBlock
                                     x:Name="interprets"
                                     Grid.Column="2"
                                     VerticalAlignment="Center"
                                     Foreground="{StaticResource AccentBrush}"
-                                    Text="{x:Bind Interpreters, Converter={StaticResource listConverter}}" />
+                                    Text="{x:Bind Interpreters, Mode=OneWay, Converter={StaticResource listConverter}}" />
                                 <TextBlock
                                     x:Name="interpretSubs"
                                     Grid.Row="1"
@@ -315,7 +358,7 @@
                                     Margin="0,0,0,4"
                                     VerticalAlignment="Center"
                                     Foreground="{StaticResource AccentBrush}"
-                                    Text="{x:Bind Interpreters, Converter={StaticResource listConverter}}"
+                                    Text="{x:Bind Interpreters, Mode=OneWay, Converter={StaticResource listConverter}}"
                                     Visibility="Collapsed" />
 
                                 <TextBlock
@@ -323,7 +366,7 @@
                                     Grid.Column="3"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Center"
-                                    Text="{x:Bind PreferedSong.Duration, Converter={StaticResource stringFormat}, ConverterParameter='{}{0:mm\\\\:ss}'}" />
+                                    Text="{x:Bind PreferedSong.Duration, Mode=OneWay, Converter={StaticResource stringFormat}, ConverterParameter='{}{0:mm\\\\:ss}'}" />
 
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="Width">
@@ -378,18 +421,24 @@
                                     <VisualStateGroup x:Name="Button">
                                         <VisualState x:Name="Normal">
                                             <Storyboard>
-                                                <DoubleAnimation
+                                                <!--<DoubleAnimation
                                                     d:IsOptimized="True"
                                                     Storyboard.TargetName="AddButton"
                                                     Storyboard.TargetProperty="Opacity"
                                                     To="0"
-                                                    Duration="0:0:0.2" />
+                                                    Duration="0:0:0.2" />-->
                                                 <DoubleAnimation
+                                                    d:IsOptimized="True"
+                                                    Storyboard.TargetName="ButtonPanel"
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    To="0"
+                                                    Duration="0:0:0.2" />
+                                                <!--<DoubleAnimation
                                                     d:IsOptimized="True"
                                                     Storyboard.TargetName="PlayButton"
                                                     Storyboard.TargetProperty="Opacity"
                                                     To="0"
-                                                    Duration="0:0:0.2" />
+                                                    Duration="0:0:0.2" />-->
                                             </Storyboard>
 
                                         </VisualState>
@@ -399,18 +448,24 @@
                                         </VisualState.StateTriggers>-->
 
                                             <Storyboard>
-                                                <DoubleAnimation
+                                                <!--<DoubleAnimation
                                                     d:IsOptimized="True"
                                                     Storyboard.TargetName="AddButton"
                                                     Storyboard.TargetProperty="Opacity"
                                                     To="1"
-                                                    Duration="0:0:0.5" />
+                                                    Duration="0:0:0.5" />-->
                                                 <DoubleAnimation
+                                                    d:IsOptimized="True"
+                                                    Storyboard.TargetName="ButtonPanel"
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    To="1"
+                                                    Duration="0:0:0.5" />
+                                                <!--<DoubleAnimation
                                                     d:IsOptimized="True"
                                                     Storyboard.TargetName="PlayButton"
                                                     Storyboard.TargetProperty="Opacity"
                                                     To="1"
-                                                    Duration="0:0:0.5" />
+                                                    Duration="0:0:0.5" />-->
                                             </Storyboard>
 
                                             <!--<VisualState.Setters>-->
