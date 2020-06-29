@@ -386,23 +386,23 @@ namespace MusicPlayer.Core
                     }
 
                     if (albumInterpret != default)
-                        song.AlbumInterpret = albumInterpret;
+                        song.AlbumInterpret = albumInterpret.Trim();
                     if (albumName != default)
-                        song.AlbumName = albumName;
+                        song.AlbumName = albumName.Trim();
                     if (composers != default)
-                        song.Composers = composers.ToImmutableSortedSet();
+                        song.Composers = composers.Select(x => x.Trim()).Where(x => !string.IsNullOrWhiteSpace(x)).ToImmutableSortedSet();
                     if (discNumber != default)
                         song.DiscNumber = discNumber;
                     if (duration != default)
                         song.Duration = duration;
                     if (genres != default)
-                        song.Genres = genres.ToImmutableSortedSet();
+                        song.Genres = genres.Select(x => x.Trim()).Where(x => !string.IsNullOrWhiteSpace(x)).ToImmutableSortedSet();
                     if (interpreters != default)
-                        song.Interpreters = interpreters.ToImmutableSortedSet();
+                        song.Interpreters = interpreters.Select(x => x.Trim()).Where(x => !string.IsNullOrWhiteSpace(x)).ToImmutableSortedSet();
                     if (libraryImageId != default)
                         song.LibraryImageId = libraryImageId;
                     if (title != default)
-                        song.Title = title;
+                        song.Title = title.Trim();
                     if (track != default)
                         song.Track = track;
                     if (year != default)
