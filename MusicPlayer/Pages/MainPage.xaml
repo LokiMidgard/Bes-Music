@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:services="using:MusicPlayer.Services"
     xmlns:viewmodels="using:MusicPlayer.Viewmodels"
-    xmlns:converters="using:MusicPlayer.Converters"
+    xmlns:converters="using:MusicPlayer.Converters" xmlns:musicplayer="using:MusicPlayer"
     x:Name="root"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
@@ -64,7 +64,7 @@
                                 </Button>
                             </Viewbox>
                             <StackPanel x:Name="SongDataContainer" VerticalAlignment="Center" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="1" >
-                               
+
                                 <TextBlock Foreground="{StaticResource ForgroundBrush3}" Margin="0,12,0,0" Text="{Binding Instance.Song.AlbumTitle}"  Style="{StaticResource CaptionTextBlockStyle}"/>
                                 <TextBlock Grid.ColumnSpan="2" Margin="0,-4,0,0" Grid.Column="1"   Grid.Row="2" Text="{Binding Instance.Song.Title}" Style="{StaticResource TitleTextBlockStyle}"/>
                                 <TextBlock  Foreground="{StaticResource AccentBrush}" Grid.ColumnSpan="2" Margin="0,-4,0,0" Grid.Column="1" Grid.Row="3" Text="{Binding Instance.Song.Artist}" Style="{StaticResource SubtitleTextBlockStyle}"/>
@@ -238,7 +238,7 @@
 
             </HubSection>
         </Hub>-->
-
+      
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
 
@@ -246,7 +246,7 @@
                 <!-- Large window VisualState -->
                 <VisualState x:Name="LargeWindow">
 
-                    
+
                     <!-- Large window trigger -->
                     <VisualState.StateTriggers>
                         <AdaptiveTrigger MinWindowWidth="900"/>
@@ -259,8 +259,8 @@
                         <Setter Target="SongDataContainer.Margin" Value="24"></Setter>
                         <Setter Target="LastColumn.MaxWidth" Value="999999"></Setter>
                     </VisualState.Setters>
-                    
-                    
+
+
                 </VisualState>
 
                 <!-- Medium window VisualState -->

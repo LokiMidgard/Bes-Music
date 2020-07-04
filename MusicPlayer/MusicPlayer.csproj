@@ -186,6 +186,7 @@
     <Compile Include="Converters\FileSizeConverter.cs" />
     <Compile Include="Converters\ListConverter.cs" />
     <Compile Include="Converters\StringFormatConverter.cs" />
+    <Compile Include="Converters\VisibleCollapsedOnNull.cs" />
     <Compile Include="DelegateDisposable.cs" />
     <Compile Include="Helpers\ConstantsHelper.cs" />
     <Compile Include="Helpers\CoverExtension.cs" />
@@ -193,9 +194,10 @@
     <Compile Include="Helpers\Observable.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />
     <Compile Include="Helpers\ResourceExtensions.cs" />
+    <Compile Include="NetworkViewmodel.cs" />
     <Compile Include="NotAuthenticatedException.cs" />
+    <Compile Include="ObservableStack.cs" />
     <Compile Include="OneDriveLibrary.cs" />
-    <Compile Include="OneDriveLibrary.MP3Const.cs" />
     <Compile Include="Pages\AlbumPage.xaml.cs">
       <DependentUpon>AlbumPage.xaml</DependentUpon>
     </Compile>

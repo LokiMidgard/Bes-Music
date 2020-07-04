@@ -18,7 +18,7 @@
     <x:Double x:Key="MediumButtonSize">36</x:Double>
     <Thickness x:Key="MediumButtonMargin">3</Thickness>
     <x:Double x:Key="SmalButtonSize">36</x:Double>
-    <Thickness x:Key="SmalButtonMargin">0</Thickness>
+    <Thickness x:Key="SmalButtonMargin">2</Thickness>
     <FontFamily x:Key="ContentControlThemeFontFamily">XamlAutoFontFamily</FontFamily>
     <x:Double x:Key="ControlContentThemeFontSize">15</x:Double>
     <Thickness x:Key="ButtonBorderThemeThickness">2</Thickness>

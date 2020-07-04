@@ -5,7 +5,7 @@
     xmlns:converters="using:MusicPlayer.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:MusicPlayer.Controls"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:core="using:MusicPlayer.Core" xmlns:viewmodels="using:MusicPlayer.Viewmodels"
     x:Name="userControl"
     Height="206"
     d:DesignHeight="300"
@@ -14,6 +14,13 @@
     <UserControl.Resources>
         <converters:ListConverter x:Key="listConverter" />
         <converters:ToTransparent x:Key="toTransparent"/>
+        <viewmodels:OneDriveAccessor x:Name="oneDrive" />
+
+        <converters:VisibilityOnEqualsConverter x:Key="EqualsConverter" OnEquals="Visible" />
+        <core:Availability x:Key="NotAvailable" >NotAvailable</core:Availability>
+        <core:Availability x:Key="UpdateAvailable" >UpdateAvailable</core:Availability>
+        <core:Availability x:Key="Synced" >InSync</core:Availability>
+
     </UserControl.Resources>
 
     <Border
@@ -89,8 +96,49 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Bottom"
                         Command="{Binding PlayAlbumCommand}"
+                                      Visibility="{Binding Model.Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource Synced}}"
+                        
                         Style="{StaticResource RoundButtonStyle}">
                         <SymbolIcon Symbol="Play" />
+
+                    </Button>
+
+
+                    <Button
+                        x:Name="PlayButton2"
+                        Grid.Column="0"
+                        Width="{StaticResource buttonSize}"
+                        Height="{StaticResource buttonSize}"
+                        Margin="8"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Command="{Binding PlayAlbumCommand}"
+                                      Visibility="{Binding Model.Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource UpdateAvailable}}"
+                        
+                        Style="{StaticResource RoundButtonStyle}">
+                        <SymbolIcon Symbol="Play" />
+
+                    </Button>
+
+
+                 
+                    <Button
+                        x:Name="DownloadButton"
+                        Grid.Column="0"
+                        Width="{StaticResource buttonSize}"
+                        Height="{StaticResource buttonSize}"
+                        
+                                      Visibility="{Binding Model.Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource NotAvailable}}"
+                                                                      
+                   
+                        
+                        Margin="8"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                                    CommandParameter="{Binding}"
+                           Command="{Binding Source={StaticResource oneDrive}, Path=Instance.DownloadDataCommand}"
+                                 Style="{StaticResource RoundButtonStyle}">
+                        <SymbolIcon Symbol="Download" />
 
                     </Button>
 

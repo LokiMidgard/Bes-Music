@@ -10,40 +10,27 @@ namespace MusicPlayer.Converters
 {
     public class VisibleCollapsedOnEmpty : IValueConverter
     {
+        public Visibility OnNullValue { get; set; }
+        private Visibility OnNotNullValue => this.OnNullValue == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (value is IEnumerable<object> enumerable)
             {
-                return enumerable.Any() ? Visibility.Visible : Visibility.Collapsed;
+                return enumerable.Any() ? this.OnNotNullValue : this.OnNullValue;
             }
             else if (value is int i)
             {
-                return i > 0 ? Visibility.Visible : Visibility.Collapsed;
+                return i > 0 ? this.OnNotNullValue : this.OnNullValue;
 
             }
             else if (value is long l)
             {
-                return l > 0 ? Visibility.Visible : Visibility.Collapsed;
+                return l > 0 ? this.OnNotNullValue : this.OnNullValue;
 
             }
-            throw new NotImplementedException();
-        }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class VisibleCollapsedOnNull : IValueConverter
-    {
-
-        public Visibility OnNullValue { get; set; }
-        private Visibility OnNotNullValue => this.OnNullValue == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
-
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
             return value is null ? this.OnNullValue : this.OnNotNullValue;
         }
 

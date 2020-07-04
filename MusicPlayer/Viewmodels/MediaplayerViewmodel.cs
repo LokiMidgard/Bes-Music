@@ -163,7 +163,7 @@ namespace MusicPlayer.Viewmodels
         public ICommand GoToSettingsCommand
         {
             get { return (ICommand)this.GetValue(GoToSettingsCommandProperty); }
-           private set { this.SetValue(GoToSettingsCommandProperty, value); }
+            private set { this.SetValue(GoToSettingsCommandProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for GoToSettingsCommand.  This enables animation, styling, binding, etc...
@@ -611,7 +611,8 @@ namespace MusicPlayer.Viewmodels
                 this.mediaItemLookup.Add(song, list);
                 media = await LibraryRegistry<MediaSource, Uri>.Get(song.LibraryProvider).GetMediaSource(song.MediaId, default);
             }
-
+            if (media is null)
+                return null;
             var mediaItem = new MediaPlaybackItem(media);
 
 

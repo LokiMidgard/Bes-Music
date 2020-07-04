@@ -5,18 +5,24 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:MusicPlayer.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels" xmlns:converters="using:MusicPlayer.Converters" xmlns:core="using:MusicPlayer.Core"
     d:DesignHeight="300"
     d:DesignWidth="400"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <viewmodels:PlayListViewmodel x:Key="datacontexed"/>
+    </UserControl.Resources>
+    <Grid  x:Name="rootGrid"  DataContext="{StaticResource datacontexed}">
+        <Grid.Resources>
+            <viewmodels:OneDriveAccessor x:Name="oneDrive" />
+            <converters:VisibilityOnEqualsConverter x:Key="EqualsConverter" OnEquals="Visible" />
+            <core:Availability x:Key="NotAvailable" >NotAvailable</core:Availability>
+            <core:Availability x:Key="UpdateAvailable" >UpdateAvailable</core:Availability>
+            <core:Availability x:Key="Synced" >InSync</core:Availability>
 
-    <Grid>
-        <Grid.DataContext>
-            <viewmodels:PlayListViewmodel />
-        </Grid.DataContext>
+        </Grid.Resources>
 
         <ListView
-            IsItemClickEnabled="True"
             ItemClick="ListView_ItemClick"
             ItemsSource="{Binding PlayList}"
             SelectionMode="None">
@@ -31,6 +37,8 @@
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>-->
+                    <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
                     <Setter Property="ContextFlyout">
                         <Setter.Value>
                             <MenuFlyout Opening="MenuFlyout_Opening" >
@@ -50,11 +58,63 @@
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}">
-                        <!--<TextBlock.ContextFlyout>
+                    <Grid HorizontalAlignment="Stretch" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock VerticalAlignment="Center" Text="{Binding Name}">
+                        </TextBlock>
+                        <Button Style="{StaticResource RoundButtonStyle}"  
+                                Grid.Column="1"
+                                                                    CommandParameter="{Binding Songs}"
+                           Command="{Binding Source={StaticResource oneDrive}, Path=Instance.DownloadDataCommand}"
+                                      Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource NotAvailable}}"
+
+                                Margin="{StaticResource SmalButtonMargin}"
+                                
+                                Height="{StaticResource SmalButtonSize}"
+                                     Width="{StaticResource SmalButtonSize}" >
+                            <Viewbox >
+                                <SymbolIcon Symbol="Download" />
+                            </Viewbox>
+                        </Button>
+
+                        <Button Style="{StaticResource RoundButtonStyle}"  
+                                Grid.Column="1"
+                                                                    CommandParameter="{Binding Songs}"
+                           Command="{Binding Source={StaticResource oneDrive}, Path=Instance.DownloadDataCommand}"
+
+                                Margin="{StaticResource SmalButtonMargin}"
+                                      Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource UpdateAvailable}}"
+                                
+                                Height="{StaticResource SmalButtonSize}"
+                                     Width="{StaticResource SmalButtonSize}" >
+                            <Viewbox >
+                                <SymbolIcon Symbol="Refresh" />
+                            </Viewbox>
+                        </Button>
+
+                        <Button Style="{StaticResource RoundButtonStyle}"  
+                                Grid.Column="2"
+                                                                    CommandParameter="{Binding}"
+                           
+
+                                                       Command="{Binding PlayCommand, Source={StaticResource datacontexed}}"
+                                        
+                                
+                                Margin="{StaticResource SmalButtonMargin}"
+                                Height="{StaticResource SmalButtonSize}"
+                                     Width="{StaticResource SmalButtonSize}" >
+                            <Viewbox >
+                                <SymbolIcon Symbol="Play" />
+                            </Viewbox>
+                        </Button>
+                    </Grid>
+                    <!--<TextBlock.ContextFlyout>
 
                         </TextBlock.ContextFlyout>-->
-                    </TextBlock>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

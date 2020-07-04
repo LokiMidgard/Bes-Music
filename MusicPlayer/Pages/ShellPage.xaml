@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:MusicPlayer.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:playback="using:Windows.Media.Playback"
+    xmlns:playback="using:Windows.Media.Playback" xmlns:musicplayer="using:MusicPlayer" xmlns:converters="using:MusicPlayer.Converters"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     MinWidth="270"
     mc:Ignorable="d">
@@ -15,6 +15,9 @@
 
 
     <Page.Resources>
+        <converters:EmptyToBool x:Key="emptyConverter" OnNullValue="True"></converters:EmptyToBool>
+        <converters:VisibleCollapsedOnEmpty x:Key="emptyVisibilityConverter"  OnNullValue="Collapsed" />
+        <converters:ListConverter x:Key="listConverter"  />
         <ControlTemplate x:Key="CommandBarTemplate1" TargetType="CommandBar">
             <Grid>
                 <TextBlock>asdf</TextBlock>
@@ -38,7 +41,59 @@
         <controls:TransportControls Grid.Row="1" />-->
 
         <Frame x:Name="shellFrame" Grid.RowSpan="2" />
-        
+
+        <ScrollViewer 
+            Visibility="{Binding Instance.Downloading.Count, Converter={StaticResource emptyVisibilityConverter}}"
+            BorderBrush="{ThemeResource ForgroundBrush1}"
+                        BorderThickness="1,0,0,1" 
+                        Padding="15" 
+                        Background="{ThemeResource BackgroundBrush1}" 
+            Width="300" MaxHeight="300" VerticalAlignment="Top" HorizontalAlignment="Right">
+            <ScrollViewer.DataContext>
+                <musicplayer:NetworkViewmodelAccessor />
+            </ScrollViewer.DataContext>
+            <StackPanel >
+                <Button  Command="{Binding Instance.CancelAllCommand}" Style="{StaticResource InvisibleButton}" HorizontalAlignment="Right" >
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="Cancle" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <SymbolIcon Symbol="Cancel"  VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                </Button>
+                <TextBlock Margin="0,0,0,8" Foreground="{ThemeResource ForgroundBrush3}" Visibility="{Binding Instance.WaitForDownloads.Count, Converter={StaticResource emptyVisibilityConverter}}" > <Run Text="Wait in cue" /> <Run Text="{Binding Instance.WaitForDownloads.Count, Mode=OneWay}"></Run></TextBlock>
+                <ItemsControl HorizontalContentAlignment="Stretch" ItemsSource="{Binding Instance.Downloading}">
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel  HorizontalAlignment="Stretch"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel HorizontalAlignment="Stretch" Margin="0,0,0,24">
+                                <TextBlock Text="{Binding Song.Title}"
+                                           Visibility="{Binding Song, Converter={StaticResource emptyVisibilityConverter}}"
+                                           ></TextBlock>
+                                <TextBlock Foreground="{ThemeResource AccentBrush}"
+                                           Visibility="{Binding Song, Converter={StaticResource emptyVisibilityConverter}}"
+                                           Text="{Binding Song.Interpreters, Converter={StaticResource listConverter}}"></TextBlock>
+                                <TextBlock 
+                                    Visibility="{Binding Title, Converter={StaticResource emptyVisibilityConverter}}"
+                                    Text="{Binding Title}"></TextBlock>
+                                <TextBlock Text="{Binding State}"></TextBlock>
+                                <ProgressBar HorizontalAlignment="Stretch" Value="{Binding Downloaded}" Maximum="1" IsIndeterminate="{Binding Downloaded, Converter={StaticResource emptyConverter}}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
 
         <MediaPlayerElement
             x:Name="mediaPlayer"
@@ -68,8 +123,8 @@
                     <ImageBrush ImageSource="/Assets/SplashScreen.png" Stretch="None"/>
                 </Border.Background>
             </Border>
-        
-        <ProgressRing
+
+            <ProgressRing
             x:Name="ProgreessIndecator"
             Margin="0,180,0,0"
             Width="40"
@@ -77,6 +132,6 @@
             Foreground="White"
             Height="40" />
         </Grid>
-        
+
     </Grid>
 </Page>

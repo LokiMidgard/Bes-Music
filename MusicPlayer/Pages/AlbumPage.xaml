@@ -100,7 +100,7 @@
                                     Width="{StaticResource MediumButtonSize}"
                                     Height="{StaticResource MediumButtonSize}"
                                     Margin="{StaticResource MediumButtonMargin}"
-                                    Command="{Binding Source={StaticResource oneDrive}, Path=Instance.RepairAlbumCommand}"
+                                    Command="{Binding Source={StaticResource oneDrive}, Path=Instance.DownloadDataCommand}"
                                     CommandParameter="{Binding}"
                                     Style="{StaticResource RoundButtonStyle}">
                                     <Viewbox>
@@ -255,7 +255,7 @@
                                     Margin="{StaticResource MediumButtonMargin}"
                                     CommandParameter="{Binding}"
                                     Style="{StaticResource RoundButtonStyle}"
-                                    Command="{Binding Source={StaticResource oneDrive}, Path=Instance.RepairAlbumCommand}"
+                                    Command="{Binding Source={StaticResource oneDrive}, Path=Instance.DownloadDataCommand}"
               >
                                         <Viewbox>
                                             <SymbolIcon Symbol="Download" />
@@ -270,7 +270,7 @@
                                     Margin="{StaticResource MediumButtonMargin}"
                                     CommandParameter="{Binding}"
                                     Style="{StaticResource RoundButtonStyle}"
-                                    Command="{Binding Source={StaticResource oneDrive}, Path=Instance.RepairAlbumCommand}"
+                                    Command="{Binding Source={StaticResource oneDrive}, Path=Instance.DownloadDataCommand}"
                                         
                                      >
                                         <Viewbox>

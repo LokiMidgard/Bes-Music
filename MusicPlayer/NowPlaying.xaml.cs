@@ -78,6 +78,8 @@ namespace MusicPlayer
         {
             base.OnNavigatingFrom(e);
             App.Shell.ShowPlayUi = this.oldShowUiValue;
+            d?.Stop();
+            Windows.UI.Xaml.Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
