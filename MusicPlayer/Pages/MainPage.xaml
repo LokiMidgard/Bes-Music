@@ -42,9 +42,9 @@
                 <Grid>
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding Instance.CurrentPlaylist.Count, Converter={StaticResource collapsedOnFilled}}">
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWholeWords" TextAlignment="Center" MaxWidth="400">
-            <Run Text="There are currently no playlists" FontSize="18" FontWeight="Bold"/>
+            <Run Text="There are currently no Songs in the Playlist" FontSize="18" FontWeight="Bold"/>
                 <LineBreak />
-            <Run Foreground="{ThemeResource ForgroundBrush3}" Text="Go to Albums and press on the + on an album or song to create a new playlist. If you have already created playlists on another device you can syncronize them."/>
+            <Run Foreground="{ThemeResource ForgroundBrush3}" Text="Go to Albums tab and start listining to your Music."/>
                         </TextBlock>
                        
                     </StackPanel>
@@ -85,12 +85,14 @@
                                     <TextBlock  Foreground="{StaticResource AccentBrush}" Grid.ColumnSpan="2" Margin="0,-4,0,0" Grid.Column="1" Grid.Row="3" Text="{Binding Instance.Song.Artist}" Style="{StaticResource SubtitleTextBlockStyle}"/>
                                 </StackPanel>
                                 <StackPanel Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="2" Margin="0,24,0,0">
-                                    <Button Style="{StaticResource ButtonStyleRectangle}"
+                                    <Button Style="{StaticResource InvisibleButton}"
                         >
                                         <Button.Flyout>
                                             <MenuFlyout controls:AddToPlayList.SupressCurrentPlayList="True" controls:AddToPlayList.IsPlaylistMenue="{Binding Instance.CurrentPlaylist}" />
                                         </Button.Flyout>
-                                        <TextBlock>
+                                        <StackPanel Orientation="Horizontal">
+                                            <SymbolIcon Symbol="Add" Margin="0,0,8,0" />
+                                            <TextBlock>
                                         
                                         <!--<InlineUIContainer>
                                     <SymbolIcon Symbol="Add" />
@@ -98,6 +100,7 @@
                                         </InlineUIContainer>-->
                                         <Run>Add To Playlist</Run>
                                         </TextBlock>
+                                        </StackPanel>
 
                                     </Button>
 

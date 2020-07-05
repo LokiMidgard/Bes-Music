@@ -47,7 +47,7 @@ namespace MusicPlayer
 
         public string Id => "OneDrive";
         public static OneDriveLibrary instance;
-        public static OneDriveLibrary Instance => instance ??= new OneDriveLibrary();
+        public static OneDriveLibrary Instance => instance ?? (instance = new OneDriveLibrary());
 
         public event Func<string, Task<bool>> OnAskForPermission;
 
@@ -969,9 +969,9 @@ namespace MusicPlayer
                                                             var downloadUrl = sumbnails.Url;
 
                                                             var request = System.Net.WebRequest.CreateHttp(downloadUrl);
-                                                            using var responese = await request.GetResponseAsync();
-                                                            using var sourceStream = responese.GetResponseStream();
-                                                            await sourceStream.CopyToAsync(stream);
+                                                            using (var responese = await request.GetResponseAsync())
+                                                            using (var sourceStream = responese.GetResponseStream())
+                                                                await sourceStream.CopyToAsync(stream);
                                                         }
                                                 }
                                             }

@@ -733,7 +733,7 @@ namespace MusicPlayer.Core
             this.Interpreters = this.Songs.SelectMany(x => x.Interpreters).Distinct().OrderBy(x => x).ToArray();
             this.Composers = this.Songs.SelectMany(x => x.Composers).Distinct().OrderBy(x => x).ToArray();
             this.LibraryImages = this.Songs.SelectMany(x => x.LibraryImages).Distinct().OrderBy(x => x.providerId).ThenBy(x => x.imageId).ToArray();
-            this.Availability = this.Songs.Select(x => x.Availability).OrderBy(y => y switch { Availability.InSync => 1, Availability.UpdateAvailable => 2, Availability.NotAvailable => 3, _ => 4 }).FirstOrDefault();
+            this.Availability = this.Songs.Select(x => x.Availability).OrderBy(y => (int)y).FirstOrDefault();
 
             if (!(oldAvailability.Equals(this.Availability)))
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Availability)));
@@ -761,7 +761,7 @@ namespace MusicPlayer.Core
             this.Interpreters = this.Songs.SelectMany(x => x.Interpreters).Distinct().OrderBy(x => x).ToArray();
             this.Composers = this.Songs.SelectMany(x => x.Composers).Distinct().OrderBy(x => x).ToArray();
             this.LibraryImages = this.Songs.SelectMany(x => x.LibraryImages).Distinct().OrderBy(x => x.providerId).ThenBy(x => x.imageId).ToArray();
-            this.Availability = this.Songs.Select(x => x.Availability).OrderBy(y => y switch { Availability.InSync => 1, Availability.UpdateAvailable => 2, Availability.NotAvailable => 3, _ => 4 }).FirstOrDefault();
+            this.Availability = this.Songs.Select(x => x.Availability).OrderBy(y => (int)y).FirstOrDefault();
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Availability)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Genres)));
@@ -889,7 +889,7 @@ namespace MusicPlayer.Core
             this.Interpreters = this.Songs.SelectMany(x => x.Interpreters).Distinct().OrderBy(x => x).ToArray();
             this.Composers = this.Songs.SelectMany(x => x.Composers).Distinct().OrderBy(x => x).ToArray();
             this.LibraryImages = this.Songs.Select(x => (x.LibraryProvider, x.LibraryImageId)).Distinct().OrderBy(x => x.LibraryProvider).ThenBy(x => x.LibraryImageId).ToArray();
-            this.Availability = this.Songs.Select(x => x.Availability).OrderBy(y => y switch { Availability.InSync => 1, Availability.UpdateAvailable => 2, Availability.NotAvailable => 3, _ => 4 }).FirstOrDefault();
+            this.Availability = this.Songs.Select(x => x.Availability).OrderBy(y => (int)y).FirstOrDefault();
 
             if (!(oldGenres?.SequenceEqual(this.Genres) ?? false))
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Genres)));
@@ -914,7 +914,7 @@ namespace MusicPlayer.Core
             this.Interpreters = this.Songs.SelectMany(x => x.Interpreters).Distinct().OrderBy(x => x).ToArray();
             this.Composers = this.Songs.SelectMany(x => x.Composers).Distinct().OrderBy(x => x).ToArray();
             this.LibraryImages = this.Songs.Select(x => (x.LibraryProvider, x.LibraryImageId)).Distinct().OrderBy(x => x.LibraryProvider).ThenBy(x => x.LibraryImageId).ToArray();
-            this.Availability = this.Songs.Select(x => x.Availability).OrderBy(y => y switch { Availability.InSync => 1, Availability.UpdateAvailable => 2, Availability.NotAvailable => 3, _ => 4 }).FirstOrDefault();
+            this.Availability = this.Songs.Select(x => x.Availability).OrderBy(y => (int)y).FirstOrDefault();
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Availability)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Genres)));
