@@ -22,16 +22,26 @@
     </Page.Resources>
 
     <Grid DataContext="{Binding Instance}">
+        <Grid.Resources>
+            <Style TargetType="ScrollBar">
+                <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />
+            </Style>
+        </Grid.Resources>
 
-
-        <ListView
+        <ScrollViewer
             Grid.Row="1"
             Grid.ColumnSpan="50"
             MaxWidth="800"
-            ItemsSource="{Binding OneDriveWork.DriveItems}"
+            
             ScrollViewer.VerticalScrollBarVisibility="Visible">
-            <ListView.Header>
-                <Grid Padding="0,0,0,48">
+            <ScrollViewer.Style>
+                
+            <Style TargetType="ScrollViewer">
+                <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
+            </Style>
+            </ScrollViewer.Style>
+
+            <Grid Padding="0,0,0,48">
                     <Grid.Resources>
                         <Style x:Key="centerButton" TargetType="FrameworkElement">
                             <Setter Property="Margin" Value="0,0,0,12" />
@@ -112,45 +122,9 @@
                         ItemsSource="{x:Bind PossiblePlcations}"
                         SelectedItem="{Binding StorageLocation, Mode=TwoWay}"
                         Style="{StaticResource centerButton}" />
-                    <TextBlock
-                        Grid.Row="7"
-                        Grid.ColumnSpan="2"
-                        Foreground="{StaticResource SystemControlHighlightAccentBrush}"
-                        Style="{StaticResource TitleTextBlockStyle}"
-                        Text="Current Downloading"
-                        Visibility="{Binding OneDriveWork.CurrentWork.Count, Converter={StaticResource VisibleCount}, FallbackValue={StaticResource collapsed}}" />
-                    <Border
-                        Grid.Row="8"
-                        Grid.ColumnSpan="2"
-                        Height="390"
-                        BorderBrush="{StaticResource SystemControlHighlightAccentBrush}"
-                        BorderThickness="1"
-                        Visibility="{Binding OneDriveWork.CurrentWork.Count, Converter={StaticResource VisibleCount}, FallbackValue={StaticResource collapsed}}">
-
-                        <ItemsControl HorizontalContentAlignment="Stretch" ItemsSource="{Binding OneDriveWork.CurrentWork}">
-                            <ItemsControl.ItemContainerStyle>
-                                <Style TargetType="ContentPresenter" />
-                            </ItemsControl.ItemContainerStyle>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel
-                                        Margin="4,4,4,12"
-                                        HorizontalAlignment="Stretch"
-                                        Orientation="Vertical">
-                                        <TextBlock><Run Text="{Binding CurrentItem.Audio.Album}" /><Run Text=" - " /><Run Text="{Binding CurrentItem.Audio.Title}" /><Run Text=" - " /><Run Text="{Binding CurrentItem.Audio.AlbumArtist}" /></TextBlock>
-                                        <ProgressBar
-                                            HorizontalAlignment="Stretch"
-                                            Maximum="{Binding MaximumToRead}"
-                                            Value="{Binding CurrentRead}" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </Border>
-
+                
                 </Grid>
-            </ListView.Header>
-            <ListView.Style>
+            <!--<ListView.Style>
                 <Style TargetType="ListView">
                     <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
                 </Style>
@@ -164,8 +138,8 @@
                 <DataTemplate>
                     <TextBlock><Run Text="{Binding Audio.Album}" /><Run Text=" - " /><Run Text="{Binding Audio.Title}" /><Run Text=" - " /><Run Text="{Binding Audio.AlbumArtist}" /></TextBlock>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </ListView.ItemTemplate>-->
+        </ScrollViewer>
 
     </Grid>
 </Page>
