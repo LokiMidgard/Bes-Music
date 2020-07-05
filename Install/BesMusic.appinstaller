@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AppInstaller
+	Uri="https://lokimidgard.github.io/WP10-Music-Player/Install/BesMusic.appinstaller"
+	Version="0.4.4.0" xmlns="http://schemas.microsoft.com/appx/appinstaller/2017/2">
+	<MainBundle
+		Name="0c07057b-bcf1-45b5-ae26-058fbc8e8be3"
+		Version="0.4.4.0"
+		Publisher="CN=Patrick Kranz"
+		Uri="https://lokimidgard.github.io/WP10-Music-Player/Install/BesMusic/MusicPlayer_0.4.47.0_x86_x64_arm.appxbundle" />
+	<UpdateSettings>
+		<OnLaunch
+			HoursBetweenUpdateChecks="0" />
+	</UpdateSettings>
+</AppInstaller>
