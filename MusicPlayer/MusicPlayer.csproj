@@ -28,9 +28,8 @@
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <Use64BitCompiler>true</Use64BitCompiler>
-    <PackageCertificateThumbprint>
-    </PackageCertificateThumbprint>
-    <AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
+    <PackageCertificateThumbprint>B3E316FF1F9E0F992FBEBB4299B548198DD84B45</PackageCertificateThumbprint>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <!-- <ShortcutGenericAnalysis>true</ShortcutGenericAnalysis> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
