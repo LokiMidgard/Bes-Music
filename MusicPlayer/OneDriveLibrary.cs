@@ -136,10 +136,9 @@ namespace MusicPlayer
 
             }, () => !this.IsBlockedLoding);
 
-            this.DownloadAllMusic = new DelegateCommand<object>((vm) =>
+            this.DownloadAllMusic = new DelegateCommand(() =>
             {
-                if (vm is null)
-                    return;
+
                 if (this.IsBlockedLoding)
                     return;
 
@@ -671,7 +670,7 @@ namespace MusicPlayer
 
             foreach (var playlist in MusicStore.Instance.PlayLists.ToArray())
                 await MusicStore.Instance.RemovePlaylist(playlist);
-            
+
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             localSettings.Values.Remove(ONE_DRIVE_MUSIC_DELTA_TOKEN);
             localSettings.Values.Remove(ONE_DRIVE_PLAYLIST_DELTA_TOKEN);
@@ -1139,7 +1138,7 @@ namespace MusicPlayer
             }
         }
     }
-   
+
     public class CurrentDownload : DependencyObject
     {
         public DriveItem CurrentItem { get; }
