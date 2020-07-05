@@ -6,7 +6,7 @@
 		Name="0c07057b-bcf1-45b5-ae26-058fbc8e8be3"
 		Version="0.4.4.0"
 		Publisher="CN=Patrick Kranz"
-		Uri="https://lokimidgard.github.io/WP10-Music-Player/Install/BesMusic/MusicPlayer_0.4.47.0_x86_x64_arm.appxbundle" />
+		Uri="https://github.com/LokiMidgard/WP10-Music-Player/releases/download/v0.4.47/MusicPlayer_0.4.47.0_x86_x64_arm.appxbundle" />
 	<UpdateSettings>
 		<OnLaunch
 			HoursBetweenUpdateChecks="0" />
