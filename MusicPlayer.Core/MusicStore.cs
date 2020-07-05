@@ -131,7 +131,7 @@ namespace MusicPlayer.Core
                         {
                             song.TransferFromDatabase();
                             this.songLoockup.Add((song.LibraryProvider, song.MediaId), song);
-                            this.AddSong(song);
+                            await this.AddSong(song);
                         }
                         foreach (var playListEntry in await context.playListEntrys.ToArrayAsync())
                         {
@@ -431,7 +431,7 @@ namespace MusicPlayer.Core
                     if (newSong)
                         context.Add(song);
 
-                    this.AddSong(song);
+                    await this.AddSong(song);
                 }
                 finally
                 {
@@ -557,7 +557,7 @@ namespace MusicPlayer.Core
 
 
 
-        internal void AddSong(Song song)
+        internal async Task AddSong(Song song)
         {
             var insertionPoint = this.albums.BinarySearch(song, s => (Title: s.AlbumName, s.AlbumInterpret), a => (a.Title, a.AlbumInterpret), (x, y) =>
             {
@@ -568,19 +568,24 @@ namespace MusicPlayer.Core
             });
 
             Album album;
+            bool albumAdded = false;
             if (insertionPoint < 0)
             {
                 insertionPoint = ~insertionPoint;
                 album = new Album(song.AlbumName, song.AlbumInterpret);
                 album.PropertyChanged += this.Album_PropertyChanged;
                 (album.Songs as INotifyCollectionChanged).CollectionChanged += this.MusicStore_CollectionChanged;
-
                 this.albums.Insert(insertionPoint, album);
+                albumAdded = true;
             }
             else
                 album = this.albums[insertionPoint];
 
             album.AddSong(song);
+            // this propably does not belong here.
+            // Its actually a UI problem adden to many UI Elements at the same time...
+            if (this.initTask.Value.IsCompleted && albumAdded)
+                await Task.Delay(200);
         }
 
         private void MusicStore_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -838,7 +843,7 @@ namespace MusicPlayer.Core
 
         }
 
-        private void Song_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private async void Song_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
@@ -855,7 +860,7 @@ namespace MusicPlayer.Core
                 case nameof(Song.Track):
                 case nameof(Song.DiscNumber):
                     this.RemoveSong(sender as Song);
-                    MusicStore.Instance.AddSong(sender as Song);
+                    await MusicStore.Instance.AddSong(sender as Song);
                     break;
                 default:
                     break;

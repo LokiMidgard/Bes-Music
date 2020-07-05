@@ -39,6 +39,12 @@ namespace MusicPlayer.Converters
             if (value is int i)
                 return i == 0 ? OnNullValue : OnNotNullValue;
 
+            if (value is long l)
+                return l == 0 ? OnNullValue : OnNotNullValue;
+
+            if (value is double d)
+                return d == 0 ? OnNullValue : OnNotNullValue;
+
             if (value is ICollection c)
                 return c.Count == 0 ? OnNullValue : OnNotNullValue;
 

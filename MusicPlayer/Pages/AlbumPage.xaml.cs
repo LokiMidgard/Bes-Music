@@ -78,28 +78,35 @@ namespace MusicPlayer.Pages
 
         private async void Cover_Loaded(object sender, RoutedEventArgs e)
         {
-            var colorThief = new ColorThiefDotNet.ColorThief();
-            if (this.cover.Source is BitmapImage imageSource)
+            try
             {
-                using (var stream = File.Open(imageSource.UriSour‌​ce.AbsolutePath, FileMode.Open))
+                var colorThief = new ColorThiefDotNet.ColorThief();
+                if (this.cover.Source is BitmapImage imageSource)
                 {
-
-                    //var random = RandomAccessStreamReference.CreateFromUri(imageSource.UriSour‌​ce.AbsolutePath);
-
-                    //using (IRandomAccessStream stream = await random.OpenReadAsync())
+                    using (var stream = File.Open(imageSource.UriSour‌​ce.AbsolutePath, FileMode.Open))
                     {
-                        var decoder = await BitmapDecoder.CreateAsync(stream.AsRandomAccessStream());
-                        var x = await colorThief.GetColor(decoder);
-                        this.headerBackground.Background = new SolidColorBrush(new Windows.UI.Color()
+
+                        //var random = RandomAccessStreamReference.CreateFromUri(imageSource.UriSour‌​ce.AbsolutePath);
+
+                        //using (IRandomAccessStream stream = await random.OpenReadAsync())
                         {
-                            //A = x.Color.A,
-                            A = 100,
-                            R = x.Color.R,
-                            G = x.Color.G,
-                            B = x.Color.B
-                        });
+                            var decoder = await BitmapDecoder.CreateAsync(stream.AsRandomAccessStream());
+                            var x = await colorThief.GetColor(decoder);
+                            this.headerBackground.Background = new SolidColorBrush(new Windows.UI.Color()
+                            {
+                                //A = x.Color.A,
+                                A = 100,
+                                R = x.Color.R,
+                                G = x.Color.G,
+                                B = x.Color.B
+                            });
+                        }
                     }
                 }
+            }
+            catch (Exception)
+            {
+
             }
 
             //var encoder = Windows.Graphics.Imaging.BitmapEncoder.CreateAsync(();
