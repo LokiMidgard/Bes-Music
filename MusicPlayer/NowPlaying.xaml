@@ -574,7 +574,7 @@
                 VerticalAlignment="Bottom"                                    Width="{StaticResource MediumButtonSize}"
                                                     Height="{StaticResource MediumButtonSize}"
                                                     Margin="{StaticResource MediumButtonMargin}"
-                                                    IsChecked="{Binding Path=Instance.IsRepeate, Mode=TwoWay}"
+                                                    IsChecked="{Binding Path=Instance.IsRepeate}"
                                                     IsEnabled="{Binding Path=Instance.RepeateCommand.IsEnabled}"
                                                     >
                 <Viewbox>
@@ -589,7 +589,7 @@
                                                     Width="{StaticResource MediumButtonSize}"
                                                     Height="{StaticResource MediumButtonSize}"
                                                     Margin="{StaticResource MediumButtonMargin}"
-                                                    IsChecked="{Binding Path=Instance.IsShuffled, Mode=TwoWay}"
+                                                    IsChecked="{Binding Path=Instance.IsShuffled}"
                                                     IsEnabled="{Binding Path=Instance.ShuffleCommand.IsEnabled}"
                                                     >
                 <Viewbox Width="20">

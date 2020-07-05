@@ -14,6 +14,7 @@ using Windows.Media.Core;
 using Windows.Media.Playback;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Streams;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -106,9 +107,26 @@ namespace MusicPlayer.Pages
             return this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => f()).AsTask();
         }
 
+        private async System.Threading.Tasks.Task<bool> OneDriveAccessor_OnAskForPermission(string messageText)
+        {
+            var dialog = new MessageDialog(messageText)
+            {
+                Options = MessageDialogOptions.AcceptUserInputAfterDelay
+            };
 
+            var completionSorce = new TaskCompletionSource<bool>();
+            var yesCommand = new UICommand("Yes", cmd => completionSorce.SetResult(true));
+            var cancelCommand = new UICommand("Cancel", cmd => completionSorce.SetResult(false));
 
+            dialog.Commands.Add(yesCommand);
+            dialog.Commands.Add(cancelCommand);
 
+            dialog.DefaultCommandIndex = 1;
+            dialog.CancelCommandIndex = 1;
+            await dialog.ShowAsync();
+
+            return await completionSorce.Task;
+        }
 
     }
 }

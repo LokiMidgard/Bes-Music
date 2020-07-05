@@ -492,7 +492,7 @@
                                                     Height="{StaticResource SmalButtonSize}"
                                                     Margin="{StaticResource SmalButtonMargin}"
                                                     IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsShuffled, Mode=TwoWay}"
-                                                    IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ShuffleCommand.IsEnabled, Mode=TwoWay}"
+                                                    IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ShuffleCommand.IsEnabled}"
                                                     Style="{StaticResource RoundToggleButtonStyle}">
                                                     <Viewbox>
                                                         <SymbolIcon Symbol="Shuffle" />
@@ -504,7 +504,7 @@
                                                     Height="{StaticResource SmalButtonSize}"
                                                     Margin="{StaticResource SmalButtonMargin}"
                                                     IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsRepeate, Mode=TwoWay}"
-                                                    IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=RepeateCommand.IsEnabled, Mode=TwoWay}"
+                                                    IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=RepeateCommand.IsEnabled}"
                                                     Style="{StaticResource RoundToggleButtonStyle}">
                                                     <Viewbox>
                                                         <SymbolIcon Symbol="RepeatAll" />
@@ -586,14 +586,14 @@
                                                                 x:Name="RepeatButtonOvervlow"
                                                                 Icon="RepeatAll"
                                                                 IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsRepeate, Mode=TwoWay}"
-                                                                IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=RepeateCommand.IsEnabled, Mode=TwoWay}"
+                                                                IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=RepeateCommand.IsEnabled, Mode=OneWay}"
                                                                 Text="Repeate"
                                                                 Visibility="Collapsed" />
                                                             <ToggleMenuFlyoutItem
                                                                 x:Name="ShuffleButtonOverflow"
                                                                 Icon="Shuffle"
                                                                 IsChecked="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsShuffled, Mode=TwoWay}"
-                                                                IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ShuffleCommand.IsEnabled, Mode=TwoWay}"
+                                                                IsEnabled="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ShuffleCommand.IsEnabled}"
                                                                 Text="Shuffle"
                                                                 Visibility="Collapsed" />
 

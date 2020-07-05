@@ -7,9 +7,10 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -69,6 +70,12 @@ namespace MusicPlayer.Controls
             {
                 item.DataContext = dataContext;
             }
+        }
+
+        private async void ExceptionHandlerConverter_OnError(Exception exception)
+        {
+            var dialog = new MessageDialog(exception.Message);
+            await dialog.ShowAsync();
         }
     }
 }

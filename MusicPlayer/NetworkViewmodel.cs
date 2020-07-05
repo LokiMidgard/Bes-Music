@@ -126,8 +126,10 @@ namespace MusicPlayer
                 return;
             }
 
-            this.waitForDownloads.Enqueue(new DownloadItem(songToDOwnload, downloadMethod, this.cancellation.Token));
+            var item = new DownloadItem(songToDOwnload, downloadMethod, this.cancellation.Token);
+            this.waitForDownloads.Enqueue(item);
             this.addSemaphore.Release();
+            await item.Finished;
         }
 
 
@@ -147,8 +149,10 @@ namespace MusicPlayer
                 return;
             }
 
-            this.waitForDownloads.Enqueue(new DownloadItem(title, downloadMethod, this.cancellation.Token));
+            var item = new DownloadItem(title, downloadMethod, this.cancellation.Token);
+            this.waitForDownloads.Enqueue(item);
             this.addSemaphore.Release();
+            await item.Finished;
         }
 
 
@@ -193,19 +197,23 @@ namespace MusicPlayer
         public static readonly DependencyProperty IsDownloadingProperty =
             DependencyProperty.Register("IsDownloading", typeof(bool), typeof(DownloadItem), new PropertyMetadata(false));
 
+        private readonly TaskCompletionSource<object> taskCompletionSource;
+        public Task Finished => this.taskCompletionSource.Task;
 
-
-        public DownloadItem(Song songToDownload, DownloadDelegate downloadFunction, CancellationToken cancel)
+        public DownloadItem(Song songToDownload, DownloadDelegate downloadFunction, CancellationToken cancel) : this(downloadFunction, cancel)
         {
-            this.downloadFunction = downloadFunction;
-            this.globalCancle = cancel;
             this.Song = songToDownload;
         }
-        public DownloadItem(string title, DownloadDelegate downloadFunction, CancellationToken cancel)
+        public DownloadItem(string title, DownloadDelegate downloadFunction, CancellationToken cancel) : this(downloadFunction, cancel)
+        {
+            this.Title = title;
+        }
+
+        private DownloadItem(DownloadDelegate downloadFunction, CancellationToken cancel)
         {
             this.downloadFunction = downloadFunction;
             this.globalCancle = cancel;
-            this.Title = title;
+            this.taskCompletionSource = new TaskCompletionSource<object>();
         }
 
         public async Task CancelDownload()
@@ -275,6 +283,7 @@ namespace MusicPlayer
             }
             catch (OperationCanceledException) { }
             this.IsDownloading = false;
+            this.taskCompletionSource.SetResult(null);
         }
 
 

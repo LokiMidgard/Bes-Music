@@ -164,7 +164,7 @@
                             <Grid
                             x:Name="RootGrid"
                             Background="{TemplateBinding Background}"
-                            CornerRadius="{StaticResource IninitCornerRadius}">
+                            CornerRadius="0">
                                 <ContentPresenter
                                 x:Name="ContentPresenter"
                                 Padding="{TemplateBinding Padding}"
@@ -176,7 +176,7 @@
                                 Content="{TemplateBinding Content}"
                                 ContentTemplate="{TemplateBinding ContentTemplate}"
                                 ContentTransitions="{TemplateBinding ContentTransitions}"
-                                CornerRadius="{StaticResource IninitCornerRadius}" />
+                            />
 
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">

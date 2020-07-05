@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:MusicPlayer.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:playback="using:Windows.Media.Playback" xmlns:musicplayer="using:MusicPlayer" xmlns:converters="using:MusicPlayer.Converters"
+    xmlns:playback="using:Windows.Media.Playback" xmlns:musicplayer="using:MusicPlayer" xmlns:converters="using:MusicPlayer.Converters" xmlns:viewmodels="using:MusicPlayer.Viewmodels"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     MinWidth="270"
     mc:Ignorable="d">
@@ -15,6 +15,7 @@
 
 
     <Page.Resources>
+
         <converters:EmptyToBool x:Key="emptyConverter" OnNullValue="True"></converters:EmptyToBool>
         <converters:VisibleCollapsedOnEmpty x:Key="emptyVisibilityConverter"  OnNullValue="Collapsed" />
         <converters:ListConverter x:Key="listConverter"  />
@@ -36,6 +37,12 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>-->
 
+        <TextBlock Height="0" Width="0" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <TextBlock.DataContext>
+                <viewmodels:OneDriveAccessor OnAskForPermission="OneDriveAccessor_OnAskForPermission" />
+
+            </TextBlock.DataContext>
+        </TextBlock>
 
         <!--<Image Width="{Binding ElementName=mediaPlayer, Path=ActualHeight}" Height="{Binding ElementName=mediaPlayer, Path=ActualHeight}" />
         <controls:TransportControls Grid.Row="1" />-->
@@ -48,11 +55,12 @@
                         BorderThickness="1,0,0,1" 
                         Padding="15" 
                         Background="{ThemeResource BackgroundBrush1}" 
-            Width="300" MaxHeight="300" VerticalAlignment="Top" HorizontalAlignment="Right">
+            Width="300" MaxHeight="250" VerticalAlignment="Top" HorizontalAlignment="Right">
             <ScrollViewer.DataContext>
                 <musicplayer:NetworkViewmodelAccessor />
             </ScrollViewer.DataContext>
             <StackPanel >
+                <TextBlock Style="{StaticResource CaptionTextBlockStyle}">Downloads</TextBlock>
                 <Button  Command="{Binding Instance.CancelAllCommand}" Style="{StaticResource InvisibleButton}" HorizontalAlignment="Right" >
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="Cancle" VerticalAlignment="Center" Margin="0,0,8,0" />

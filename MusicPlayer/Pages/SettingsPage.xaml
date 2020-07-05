@@ -12,7 +12,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
     <Page.DataContext>
-        <viewmodels:OneDriveAccessor OnAskForPermission="OneDriveAccessor_OnAskForPermission" />
+        <viewmodels:OneDriveAccessor />
     </Page.DataContext>
     <Page.Resources>
         <converters:FileSizeConverter x:Key="FileSizeConverter" />
@@ -79,44 +79,23 @@
                         View="SmallProfilePhotoLeft" />
 
                     <TextBlock Grid.Row="1" Grid.ColumnSpan="2" TextWrapping="WrapWholeWords">
-                        Peek will first check OneDrive how much music must be downloaded. After that you can decide if you want to start the download.<LineBreak />
-                        You can update Playlists seperatly.</TextBlock>
+                        Syncronize will download the metadata of your songs and one cover per album. It will also donwload your Playlists and update all local changes to your playlists to the remote storage. Most chages can be merged, so you shold not have problems when changing playlists on multiple devices.</TextBlock>
 
                     <Button
                         Grid.Row="2"
-                        Grid.Column="0"
-                        Command="{Binding PeekDataCommand, Converter={StaticResource ErrorHandler}}"
-                        Style="{StaticResource leftButton}">
-                        Peek
-                    </Button>
-                    <Button
-                        Grid.Row="2"
-                        Grid.Column="1"
-                        Padding="0"
-                        HorizontalContentAlignment="Stretch"
-                        Command="{Binding DownloadDataCommand, Converter={StaticResource ErrorHandler}}"
-                        Style="{StaticResource rightButton}">
-                        <StackPanel HorizontalAlignment="Stretch" Orientation="Vertical">
-                            <TextBlock Margin="8" HorizontalAlignment="Center"><Run Text="Donwload " /><Run Text="{Binding OneDriveWork.DownloadSizeInBytes, Converter={StaticResource FileSizeConverter}}" /></TextBlock>
-                            <ProgressBar
-                                HorizontalAlignment="Stretch"
-                                Maximum="{Binding OneDriveWork.DownloadSizeInBytes}"
-                                Value="{Binding BytesDownloaded}" />
-                        </StackPanel>
-                    </Button>
-
-                    <Button
-                        Grid.Row="3"
                         Grid.ColumnSpan="2"
-                        Command="{Binding SyncPlaylistCommand, Converter={StaticResource ErrorHandler}}"
-                        Content="Sync Playlists"
-                        Style="{StaticResource centerButton}" />
+                        Grid.Column="0"
+                        Command="{Binding SyncronizeCommand, Converter={StaticResource ErrorHandler}}"
+                        Style="{StaticResource centerButton}">
+                        Syncronize Data
+                    </Button>
                     <Button
                         Grid.Row="4"
                         Grid.Column="0"
-                        Command="{Binding CancelCommand, Converter={StaticResource ErrorHandler}}"
-                        Content="Cancel"
-                        Style="{StaticResource leftButton}" />
+                        Command="{Binding DownloadAllMusic, Converter={StaticResource ErrorHandler}}"
+                        Style="{StaticResource leftButton}">
+                        Download all Music
+                    </Button>
                     <Button
                         Grid.Row="4"
                         Grid.Column="1"

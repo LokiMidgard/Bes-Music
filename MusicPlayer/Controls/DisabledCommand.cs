@@ -8,6 +8,8 @@ namespace MusicPlayer.Controls
 
         public static ICommand Instance { get; } = new DisabledCommand();
 
+        public bool IsEnabled => false;
+
         private DisabledCommand()
         {
         }

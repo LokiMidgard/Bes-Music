@@ -1,6 +1,8 @@
-﻿using MusicPlayer.Viewmodels;
+﻿using MusicPlayer.Core;
+using MusicPlayer.Viewmodels;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -12,6 +14,7 @@ using Windows.Foundation.Collections;
 using Windows.Media.Core;
 using Windows.Media.Playback;
 using Windows.Storage;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -158,5 +161,23 @@ namespace MusicPlayer.Controls
                 this.AlbumWidth = newSize.Width - 16;
             }
         }
+
+        private async void ExceptionHandlerConverter_OnError(Exception exception)
+        {
+            var dialog = new MessageDialog(exception.Message);
+            await dialog.ShowAsync();
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+            var songs = MusicStore.Instance.Albums
+                .SelectMany(x => x.Songs)
+                .Where(x => x.Availability != Availability.NotAvailable)
+                .Select(x => x.Songs.FirstOrDefault(y => y.Availability != Availability.NotAvailable));
+
+            await MediaplayerViewmodel.Instance.ResetSongs(songs.ToImmutableArray());
+        }
+
     }
 }

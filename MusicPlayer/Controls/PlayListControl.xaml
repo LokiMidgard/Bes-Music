@@ -19,13 +19,41 @@
             <core:Availability x:Key="NotAvailable" >NotAvailable</core:Availability>
             <core:Availability x:Key="UpdateAvailable" >UpdateAvailable</core:Availability>
             <core:Availability x:Key="Synced" >InSync</core:Availability>
+            <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnEmpty" OnNullValue="Collapsed"/>
+            <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnFilled" OnNullValue="Visible" />
+            <converters:ExceptionHandlerConverter x:Key="ErrorHandler" OnError="ExceptionHandlerConverter_OnError" />
+
 
         </Grid.Resources>
 
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding PlayList.Count, Converter={StaticResource collapsedOnFilled}}">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWholeWords" TextAlignment="Center" MaxWidth="400">
+            <Run Text="There are currently no playlists" FontSize="18" FontWeight="Bold"/>
+                <LineBreak />
+            <Run Foreground="{ThemeResource ForgroundBrush3}" Text="Go to Albums and press on the + on an album or song to create a new playlist. If you have already created playlists on another device you can syncronize them."/>
+            </TextBlock>
+            <Button VerticalAlignment="Center" 
+                     Command="{Binding Instance.SyncronizeCommand, Converter={StaticResource ErrorHandler}}"
+                    HorizontalAlignment="Center" Margin="8" Content="Syncronize Now!" Style="{StaticResource ButtonStyleRectangle}" >
+                <Button.DataContext>
+                    <viewmodels:OneDriveAccessor />
+                </Button.DataContext>
+            </Button>
+        </StackPanel>
+        
         <ListView
+            Visibility="{Binding PlayList.Count, Converter={StaticResource collapsedOnEmpty}}"
             ItemClick="ListView_ItemClick"
             ItemsSource="{Binding PlayList}"
             SelectionMode="None">
+
+            <ListView.Header>
+                <Border Height="250" HorizontalAlignment="Stretch" Background="{ThemeResource AccentBrushDark1}">
+                    
+                
+                </Border>
+            </ListView.Header>
+            
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <!--<Setter Property="Background" Value="Green" />-->

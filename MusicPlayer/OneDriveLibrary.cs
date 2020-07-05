@@ -60,8 +60,9 @@ namespace MusicPlayer
                 if (this.isBlockedLoding != value)
                 {
                     this.isBlockedLoding = value;
-                    (this.PeekDataCommand as DelegateCommand).FireCanExecuteChanged();
+                    (this.SyncronizeCommand as DelegateCommand).FireCanExecuteChanged();
                     (this.DownloadDataCommand as DelegateCommand).FireCanExecuteChanged();
+                    (this.DownloadAllMusic as DelegateCommand).FireCanExecuteChanged();
                     (this.ClearDataCommand as DelegateCommand).FireCanExecuteChanged();
                 }
             }
@@ -70,7 +71,7 @@ namespace MusicPlayer
         private OneDriveLibrary()
         {
 
-            this.PeekDataCommand = new DelegateCommand(async () =>
+            this.SyncronizeCommand = new DelegateCommand(async () =>
             {
                 if (this.IsBlockedLoding)
                     return;
@@ -94,52 +95,63 @@ namespace MusicPlayer
                 if (this.IsBlockedLoding)
                     return;
 
-                try
+                IEnumerable<Song> songs;
+                if (vm is AlbumViewmodel albumViewmodel)
                 {
-                    IEnumerable<Song> songs;
-                    if (vm is AlbumViewmodel albumViewmodel)
-                    {
-                        songs = albumViewmodel.Model.Songs.SelectMany(x => x.Songs);
-                    }
-                    else if (vm is IEnumerable<AlbumViewmodel> albumViewmodels)
-                    {
-                        songs = albumViewmodels.SelectMany(m => m.Model.Songs.SelectMany(x => x.Songs));
-                    }
-                    else if (vm is IEnumerable<Song> songs2)
-                    {
-                        songs = songs2;
-                    }
-                    else if (vm is Song song)
-                    {
-                        songs = Enumerable.Repeat(song, 1);
-                    }
-                    else if (vm is SongGroup songGroup)
-                    {
-                        songs = songGroup.Songs;
-                    }
-                    else if (vm is IEnumerable<SongGroup> songGroups)
-                    {
-                        songs = songGroups.SelectMany(x => x.Songs);
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine($"RepairCommandParameter is no of a expected Type, was {vm?.GetType().FullName ?? "<NULL>"}");
-                        return;
-                    }
-
-                    songs = songs.Where(x => x.LibraryProvider == this.Id)
-                    .Where(x => x.Availability != Availability.InSync);
-
-                    //NavigationService.Navigate<SettingsPage>();
-                    foreach (var song in songs)
-                    {
-                        _ = this.DownloadSong(song.MediaId);
-                    }
-                    //await this.Repair(songs.Select(x => x.MediaId), this.GetCancel());
+                    songs = albumViewmodel.Model.Songs.SelectMany(x => x.Songs);
                 }
-                //catch (TaskCanceledException) { }
-                finally
+                else if (vm is IEnumerable<AlbumViewmodel> albumViewmodels)
                 {
+                    songs = albumViewmodels.SelectMany(m => m.Model.Songs.SelectMany(x => x.Songs));
+                }
+                else if (vm is IEnumerable<Song> songs2)
+                {
+                    songs = songs2;
+                }
+                else if (vm is Song song)
+                {
+                    songs = Enumerable.Repeat(song, 1);
+                }
+                else if (vm is SongGroup songGroup)
+                {
+                    songs = songGroup.Songs;
+                }
+                else if (vm is IEnumerable<SongGroup> songGroups)
+                {
+                    songs = songGroups.SelectMany(x => x.Songs);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"RepairCommandParameter is no of a expected Type, was {vm?.GetType().FullName ?? "<NULL>"}");
+                    return;
+                }
+
+                songs = songs.Where(x => x.LibraryProvider == this.Id)
+                .Where(x => x.Availability != Availability.InSync);
+
+                foreach (var song in songs)
+                {
+                    _ = this.DownloadSong(song.MediaId);
+                }
+
+            }, () => !this.IsBlockedLoding);
+
+            this.DownloadAllMusic = new DelegateCommand<object>((vm) =>
+            {
+                if (vm is null)
+                    return;
+                if (this.IsBlockedLoding)
+                    return;
+
+                var songs = MusicStore.Instance.Albums
+                .SelectMany(x => x.Songs)
+                .SelectMany(x => x.Songs)
+                .Where(x => x.LibraryProvider == this.Id)
+                .Where(x => x.Availability != Availability.InSync);
+
+                foreach (var song in songs)
+                {
+                    _ = this.DownloadSong(song.MediaId);
                 }
             }, () => !this.IsBlockedLoding);
 
@@ -181,7 +193,8 @@ namespace MusicPlayer
 
 
 
-        public ICommand PeekDataCommand { get; }
+        public ICommand SyncronizeCommand { get; }
+        public ICommand DownloadAllMusic { get; }
         public ICommand DownloadDataCommand { get; }
         public ICommand ClearDataCommand { get; }
 
@@ -654,8 +667,19 @@ namespace MusicPlayer
             var toDelete = MusicStore.Instance.Albums.SelectMany(x => x.Songs).SelectMany(x => x.Songs).Where(x => x.LibraryProvider == this.Id);
 
             await MusicStore.Instance.RemoveSong(toDelete);
+
+
+            foreach (var playlist in MusicStore.Instance.PlayLists.ToArray())
+                await MusicStore.Instance.RemovePlaylist(playlist);
+            
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             localSettings.Values.Remove(ONE_DRIVE_MUSIC_DELTA_TOKEN);
+            localSettings.Values.Remove(ONE_DRIVE_PLAYLIST_DELTA_TOKEN);
+
+            var localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            var playlistState = await localFolder.CreateFileAsync(LOCAL_SETTINGS_LASTPLAYLIST_STATE, CreationCollisionOption.OpenIfExists);
+            await playlistState.DeleteAsync();
+
             var coverFolder = await this.GetDataStoreFolder(StorageType.Cover);
             var mediaFolder = await this.GetDataStoreFolder(StorageType.Media);
             await mediaFolder.DeleteAsync(Windows.Storage.StorageDeleteOption.PermanentDelete);
@@ -1115,23 +1139,7 @@ namespace MusicPlayer
             }
         }
     }
-
-
-    public class OneDriveWork
-    {
-        public ObservableCollection<CurrentDownload> CurrentWork { get; } = new ObservableCollection<CurrentDownload>();
-        public ObservableCollection<DriveItem> DriveItems { get; }
-        public string NextRequest { get; }
-        public long DownloadSizeInBytes { get; }
-
-        public OneDriveWork(IEnumerable<DriveItem> driveItems, string nextRequest)
-        {
-            this.DriveItems = new ObservableCollection<DriveItem>(driveItems ?? throw new ArgumentNullException(nameof(driveItems)));
-            this.NextRequest = nextRequest ?? throw new ArgumentNullException(nameof(nextRequest));
-            this.DownloadSizeInBytes = driveItems.Sum(x => x.Size ?? 0);
-        }
-    }
-
+   
     public class CurrentDownload : DependencyObject
     {
         public DriveItem CurrentItem { get; }
