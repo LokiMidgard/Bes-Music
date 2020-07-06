@@ -3,12 +3,13 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:MusicPlayer.Controls"
+    xmlns:converters="using:MusicPlayer.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:MusicPlayer.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:musicplayer="using:MusicPlayer"
     xmlns:services="using:MusicPlayer.Services"
     xmlns:viewmodels="using:MusicPlayer.Viewmodels"
-    xmlns:converters="using:MusicPlayer.Converters" xmlns:musicplayer="using:MusicPlayer"
     x:Name="root"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
@@ -16,11 +17,11 @@
 
 
     <Page.Resources>
-        <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnEmpty" OnNullValue="Collapsed"/>
+        <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnEmpty" OnNullValue="Collapsed" />
         <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnFilled" OnNullValue="Visible" />
 
         <converters:StringFormatConverter x:Key="stringFormat" />
-        <converters:ListConverter x:Key="listConverter"></converters:ListConverter>
+        <converters:ListConverter x:Key="listConverter" />
         <DataTemplate x:Key="PivotLeftHeaderTemplate1">
             <Grid>
                 <Button Style="{StaticResource NavigationBackButtonNormalStyle}" Visibility="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Command.IsVisible}">
@@ -33,80 +34,179 @@
     </Page.Resources>
 
     <Grid>
-
-        <Pivot >
-            <PivotItem Header="Now Playing" >
+        <Pivot>
+            <PivotItem Header="Now Playing">
                 <PivotItem.DataContext>
-                    <viewmodels:MediaPlayerAccessor/>
+                    <viewmodels:MediaPlayerAccessor />
                 </PivotItem.DataContext>
                 <Grid>
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding Instance.CurrentPlaylist.Count, Converter={StaticResource collapsedOnFilled}}">
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWholeWords" TextAlignment="Center" MaxWidth="400">
-            <Run Text="There are currently no Songs in the Playlist" FontSize="18" FontWeight="Bold"/>
-                <LineBreak />
-            <Run Foreground="{ThemeResource ForgroundBrush3}" Text="Go to Albums tab and start listining to your Music."/>
+                    <StackPanel
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding Instance.CurrentPlaylist.Count, Converter={StaticResource collapsedOnFilled}}">
+                        <TextBlock
+                            MaxWidth="400"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            TextAlignment="Center"
+                            TextWrapping="WrapWholeWords">
+                            <Run
+                                FontSize="18"
+                                FontWeight="Bold"
+                                Text="There are currently no Songs in the Playlist" />
+                            <LineBreak />
+                            <Run Foreground="{ThemeResource ForgroundBrush3}" Text="Go to Albums tab and start listining to your Music." />
                         </TextBlock>
-                       
+
                     </StackPanel>
 
 
-                    <ListView IsItemClickEnabled="False" 
-                              Visibility="{Binding Instance.CurrentPlaylist.Count, Converter={StaticResource collapsedOnEmpty}}"
-                          ItemsSource="{Binding Instance.CurrentPlaylist}" SelectedIndex="{Binding Instance.CurrentPlayingIndex, Mode=TwoWay}" SelectionMode="Single" HorizontalContentAlignment="Stretch">
+                    <ListView
+                        HorizontalContentAlignment="Stretch"
+                        IsItemClickEnabled="False"
+                        ItemsSource="{Binding Instance.CurrentPlaylist}"
+                        SelectedIndex="{Binding Instance.CurrentPlayingIndex, Mode=TwoWay}"
+                        SelectionMode="Single"
+                        Visibility="{Binding Instance.CurrentPlaylist.Count, Converter={StaticResource collapsedOnEmpty}}">
                         <ListView.Style>
                             <Style TargetType="ListView">
                                 <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
                             </Style>
                         </ListView.Style>
                         <ListView.Header>
-                            <Grid Margin="0,16,0,30">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                    <RowDefinition></RowDefinition>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" MaxWidth="100"/>
-                                    <ColumnDefinition Width="*" MinWidth="160" MaxWidth="300" />
-                                    <ColumnDefinition Width="*" MaxWidth="100" x:Name="LastColumn"/>
-                                </Grid.ColumnDefinitions>
-                                <Viewbox HorizontalAlignment="Left"  Grid.Column="1"  MaxWidth="300">
+                            <Grid>
+                                <!--
+                                    I yust want the cover a maximum size of 300 and left but when there is not
+                                    enough space it should shrink and stay cented. But I can't put the Title in the
+                                    same grind, since when the title is longer it will extend the grid byond the right
+                                    window wich result in the center of the grid no longer is the center of the window
+                                    🤬
+                                -->
+                                <Grid Margin="0,16,0,30">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" MaxWidth="100" />
+                                        <ColumnDefinition
+                                            Width="*"
+                                            MinWidth="160"
+                                            MaxWidth="300" />
+                                        <ColumnDefinition
+                                            x:Name="LastColumn"
+                                            Width="*"
+                                            MaxWidth="100" />
+                                    </Grid.ColumnDefinitions>
+                                    <Viewbox
+                                        Grid.Column="1"
+                                        MaxWidth="300"
+                                        MaxHeight="300"
+                                        HorizontalAlignment="Left">
+                                        <Border Width="999" Height="999" />
+                                    </Viewbox>
+                                    <Viewbox
+                                        Grid.Column="1"
+                                        MaxWidth="300"
+                                        HorizontalAlignment="Left"
+                                        Visibility="Collapsed">
 
-                                    <Button Style="{StaticResource InvisibleButton}"  Click="Button_Click" Background="{x:Null}" Padding="0"  >
-                                        <controls:NowPlayingDisk BorderBrush="{ThemeResource ForgroundBrush1}" Width="300" Height="300"/>
-                                    </Button>
-                                </Viewbox>
-                                <StackPanel x:Name="SongDataContainer" VerticalAlignment="Center" Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="1" >
+                                        <Button
+                                            Padding="0"
+                                            Background="{x:Null}"
+                                            Click="Button_Click"
+                                            Style="{StaticResource InvisibleButton}">
+                                            <controls:NowPlayingDisk
+                                                Width="300"
+                                                Height="300"
+                                                BorderBrush="{ThemeResource ForgroundBrush1}" />
+                                        </Button>
+                                    </Viewbox>
+                                    <StackPanel
+                                        x:Name="SongDataContainer"
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="3"
+                                        VerticalAlignment="Center">
 
-                                    <TextBlock Foreground="{StaticResource ForgroundBrush3}" Margin="0,12,0,0" Text="{Binding Instance.Song.AlbumTitle}"  Style="{StaticResource CaptionTextBlockStyle}"/>
-                                    <TextBlock Grid.ColumnSpan="2" Margin="0,-4,0,0" Grid.Column="1"   Grid.Row="2" Text="{Binding Instance.Song.Title}" Style="{StaticResource TitleTextBlockStyle}"/>
-                                    <TextBlock  Foreground="{StaticResource AccentBrush}" Grid.ColumnSpan="2" Margin="0,-4,0,0" Grid.Column="1" Grid.Row="3" Text="{Binding Instance.Song.Artist}" Style="{StaticResource SubtitleTextBlockStyle}"/>
-                                </StackPanel>
-                                <StackPanel Grid.ColumnSpan="2" Grid.Column="1" Grid.Row="2" Margin="0,24,0,0">
-                                    <Button Style="{StaticResource InvisibleButton}"
-                        >
-                                        <Button.Flyout>
-                                            <MenuFlyout controls:AddToPlayList.SupressCurrentPlayList="True" controls:AddToPlayList.IsPlaylistMenue="{Binding Instance.CurrentPlaylist}" />
-                                        </Button.Flyout>
-                                        <StackPanel Orientation="Horizontal">
-                                            <SymbolIcon Symbol="Add" Margin="0,0,8,0" />
-                                            <TextBlock>
-                                        
-                                        <!--<InlineUIContainer>
-                                    <SymbolIcon Symbol="Add" />
-                                            
-                                        </InlineUIContainer>-->
-                                        <Run>Add To Playlist</Run>
-                                        </TextBlock>
-                                        </StackPanel>
+                                        <TextBlock
+                                            Margin="0,12,0,0"
+                                            Foreground="{StaticResource ForgroundBrush3}"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
+                                            Text="{Binding Instance.Song.AlbumTitle}" />
+                                        <TextBlock
+                                            Grid.Row="2"
+                                            Grid.Column="1"
+                                            Grid.ColumnSpan="2"
+                                            Margin="0,-4,0,0"
+                                            Style="{StaticResource TitleTextBlockStyle}"
+                                            Text="{Binding Instance.Song.Title}" />
+                                        <TextBlock
+                                            Grid.Row="3"
+                                            Grid.Column="1"
+                                            Grid.ColumnSpan="2"
+                                            Margin="0,-4,0,0"
+                                            Foreground="{StaticResource AccentBrush}"
+                                            Style="{StaticResource SubtitleTextBlockStyle}"
+                                            Text="{Binding Instance.Song.Artist}" />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Grid.Row="2"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="2"
+                                        Margin="0,24,0,0">
+                                        <Button Style="{StaticResource InvisibleButton}">
+                                            <Button.Flyout>
+                                                <MenuFlyout controls:AddToPlayList.IsPlaylistMenue="{Binding Instance.CurrentPlaylist}" controls:AddToPlayList.SupressCurrentPlayList="True" />
+                                            </Button.Flyout>
+                                            <StackPanel Orientation="Horizontal">
+                                                <SymbolIcon Margin="0,0,8,0" Symbol="Add" />
+                                                <TextBlock>
+                                                    <Run>Add To Playlist</Run>
+                                                </TextBlock>
+                                            </StackPanel>
 
-                                    </Button>
+                                        </Button>
 
-                                </StackPanel>
-                                <!--<SymbolIcon  Symbol="Up" Grid.ColumnSpan="3" HorizontalAlignment="Left" Grid.Row="3" ></SymbolIcon>-->
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Margin="0,16,0,30">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" MaxWidth="100" />
+                                        <ColumnDefinition
+                                            Width="*"
+                                            MinWidth="160"
+                                            MaxWidth="300" />
+                                        <ColumnDefinition
+                                            x:Name="LastColumn2"
+                                            Width="*"
+                                            MaxWidth="100" />
+                                    </Grid.ColumnDefinitions>
+                                    <Viewbox
+                                        Grid.Column="1"
+                                        MaxWidth="300"
+                                        HorizontalAlignment="Left">
 
+                                        <Button
+                                            Padding="0"
+                                            Background="{x:Null}"
+                                            Click="Button_Click"
+                                            Style="{StaticResource InvisibleButton}">
+                                            <controls:NowPlayingDisk
+                                                Width="300"
+                                                Height="300"
+                                                BorderBrush="{ThemeResource ForgroundBrush1}" />
+                                        </Button>
+                                    </Viewbox>
+
+                                </Grid>
                             </Grid>
                         </ListView.Header>
                         <ListView.Resources>
@@ -114,11 +214,6 @@
                                 <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />
                             </Style>
                         </ListView.Resources>
-                        <!--<ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                        </Style>
-                    </ListView.ItemContainerStyle>-->
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <UserControl>
@@ -129,97 +224,132 @@
                                             <x:Double x:Key="MediumWindowSnapPoint">641</x:Double>
                                             <x:Double x:Key="LargeWindowSnapPoint">1008</x:Double>
                                         </Grid.Resources>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition x:Name="songTitleColumn" Width="6*" />
+                                            <ColumnDefinition x:Name="albumTitleColumn" Width="4*" />
+                                            <ColumnDefinition x:Name="interpretsColumn" Width="4*" />
+                                            <ColumnDefinition x:Name="durationColumn" Width="60" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Grid.ContextFlyout>
+                                            <MenuFlyout>
+                                                <MenuFlyoutItem Click="MenuFlyoutItem_Click" Text="Remove" />
+                                            </MenuFlyout>
+                                        </Grid.ContextFlyout>
+                                        <TextBlock
+                                            x:Name="songTitle"
+                                            Grid.Column="0"
+                                            Margin="8,0"
+                                            Text="{Binding Song.Title}"
+                                            TextTrimming="CharacterEllipsis"
+                                            ToolTipService.ToolTip="{Binding Song.Title}" />
+                                        <TextBlock
+                                            x:Name="albumTitle"
+                                            Grid.Column="1"
+                                            Margin="8,0"
+                                            Text="{Binding Song.AlbumName}"
+                                            TextTrimming="CharacterEllipsis"
+                                            ToolTipService.ToolTip="{Binding Song.AlbumName}" />
+                                        <TextBlock
+                                            x:Name="interprets"
+                                            Grid.Column="2"
+                                            Margin="8,0"
+                                            Foreground="{StaticResource AccentBrush}"
+                                            Text="{Binding Song.Interpreters, Converter={StaticResource listConverter}}"
+                                            TextTrimming="CharacterEllipsis"
+                                            ToolTipService.ToolTip="{Binding Song.Interpreters, Converter={StaticResource listConverter}}" />
+                                        <TextBlock
+                                            Grid.Column="3"
+                                            Margin="8,0"
+                                            HorizontalAlignment="Right"
+                                            Text="{Binding Song.Duration, Converter={StaticResource stringFormat}, ConverterParameter='{}{0:mm\\:ss}'}" />
+
+
+                                        <TextBlock
+                                            x:Name="interpretSubs"
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            Grid.ColumnSpan="2"
+                                            Margin="8,0"
+                                            HorizontalAlignment="Left"
+                                            Foreground="{StaticResource AccentBrush}"
+                                            Style="{StaticResource BodyTextBlockStyle}"
+                                            TextTrimming="CharacterEllipsis"
+                                            TextWrapping="NoWrap"
+                                            Visibility="Collapsed">
+                                            <Run Text="{Binding Song.Interpreters, Converter={StaticResource listConverter}}" />
+                                        </TextBlock>
+
+
+                                        <TextBlock
+                                            x:Name="albumTitleSub"
+                                            Grid.Row="1"
+                                            Grid.ColumnSpan="4"
+                                            Margin="8,0"
+                                            HorizontalAlignment="Stretch"
+                                            Foreground="{StaticResource SystemColorGrayTextBrush}"
+                                            Style="{StaticResource BodyTextBlockStyle}"
+                                            TextTrimming="CharacterEllipsis"
+                                            TextWrapping="NoWrap"
+                                            Visibility="Collapsed">
+                                            <Run Text="{Binding Song.AlbumName}" />
+                                            <Run Text="&#x2022;" />
+                                            <Run Foreground="{StaticResource AccentBrush}" Text="{Binding Song.Interpreters, Converter={StaticResource listConverter}}" />
+                                        </TextBlock>
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup>
 
 
-                                                <!-- Large window VisualState -->
+                                                <!--  Large window VisualState  -->
                                                 <VisualState x:Name="LargeWindow">
 
-                                                    <!-- Large window trigger -->
+                                                    <!--  Large window trigger  -->
                                                     <VisualState.StateTriggers>
-                                                        <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowSnapPoint}"/>
+                                                        <AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowSnapPoint}" />
                                                     </VisualState.StateTriggers>
 
                                                 </VisualState>
 
-                                                <!-- Medium window VisualState -->
+                                                <!--  Medium window VisualState  -->
                                                 <VisualState x:Name="MediumWindow">
                                                     <VisualState.Setters>
-                                                        <Setter Target="interprets.Visibility" Value="Collapsed"/>
-                                                        <Setter Target="interpretsColumn.Width" Value="0"/>
-                                                        <Setter Target="interpretSubs.Visibility" Value="Visible"/>
+                                                        <Setter Target="interprets.Visibility" Value="Collapsed" />
+                                                        <Setter Target="interpretsColumn.Width" Value="0" />
+                                                        <Setter Target="interpretSubs.Visibility" Value="Visible" />
                                                     </VisualState.Setters>
-                                                    <!-- Medium window trigger -->
+                                                    <!--  Medium window trigger  -->
                                                     <VisualState.StateTriggers>
-                                                        <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowSnapPoint}"/>
+                                                        <AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowSnapPoint}" />
                                                     </VisualState.StateTriggers>
 
                                                 </VisualState>
 
-                                                <!-- Small window VisualState -->
+                                                <!--  Small window VisualState  -->
                                                 <VisualState x:Name="SmallWindow">
                                                     <VisualState.Setters>
-                                                        <Setter Target="interprets.Visibility" Value="Collapsed"/>
-                                                        <Setter Target="interpretsColumn.Width" Value="0"/>
+                                                        <Setter Target="interprets.Visibility" Value="Collapsed" />
+                                                        <Setter Target="interpretsColumn.Width" Value="0" />
 
 
-                                                        <Setter Target="albumTitle.Visibility" Value="Collapsed"/>
-                                                        <Setter Target="albumTitleColumn.Width" Value="0"/>
+                                                        <Setter Target="albumTitle.Visibility" Value="Collapsed" />
+                                                        <Setter Target="albumTitleColumn.Width" Value="0" />
 
-                                                        <Setter Target="albumTitleSub.Visibility" Value="Visible"/>
+                                                        <Setter Target="albumTitleSub.Visibility" Value="Visible" />
 
                                                     </VisualState.Setters>
-                                                    <!-- Small window trigger -->
-                                                    <VisualState.StateTriggers >
-                                                        <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowSnapPoint}"/>
+                                                    <!--  Small window trigger  -->
+                                                    <VisualState.StateTriggers>
+                                                        <AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowSnapPoint}" />
                                                     </VisualState.StateTriggers>
 
                                                 </VisualState>
 
                                             </VisualStateGroup>
                                         </VisualStateManager.VisualStateGroups>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition  x:Name="songTitleColumn" Width="6*"/>
-                                            <ColumnDefinition x:Name="albumTitleColumn"  Width="4*"/>
-                                            <ColumnDefinition x:Name="interpretsColumn"  Width="4*"/>
-                                            <ColumnDefinition   x:Name="durationColumn"  Width="60" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" x:Name="songTitle" Margin="8,0" Text="{Binding Song.Title}" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Song.Title}" />
-                                        <TextBlock Grid.Column="1" x:Name="albumTitle" Margin="8,0" Text="{Binding Song.AlbumName}" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Song.AlbumName}" />
-                                        <TextBlock Grid.Column="2"  x:Name="interprets" Margin="8,0" Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" Foreground="{StaticResource AccentBrush}" />
-                                        <TextBlock Grid.Column="3" HorizontalAlignment="Right" Margin="8,0" Text="{Binding Song.Duration, Converter={StaticResource stringFormat}, ConverterParameter='{}{0:mm\\:ss}'}"/>
-
-
-                                        <TextBlock 
-                                        x:Name="interpretSubs"
-                                        Visibility="Collapsed"
-                                        Foreground="{StaticResource AccentBrush}" 
-                                        TextWrapping="NoWrap"
-                                        TextTrimming="CharacterEllipsis"
-                                        Style="{StaticResource  BodyTextBlockStyle}"
-                                        Grid.ColumnSpan="2"
-                                        Grid.Column="1"
-                                        Grid.Row="1" Margin="8,0" HorizontalAlignment="Left">
-                                        <Run Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" />
-                                        </TextBlock>
-
-
-                                        <TextBlock x:Name="albumTitleSub" Visibility="Collapsed" Foreground="{StaticResource SystemColorGrayTextBrush}"  TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource  BodyTextBlockStyle}"  Grid.ColumnSpan="4" Grid.Row="1" Margin="8,0" HorizontalAlignment="Stretch">
-                                        <Run Text="{Binding Song.AlbumName}" />
-                                        <Run Text="&#x2022;" />
-                                        <Run Text="{Binding Song.Interpreters,Converter={StaticResource listConverter}}" Foreground="{StaticResource AccentBrush}" />
-                                        </TextBlock>
-
-                                        <Grid.ContextFlyout>
-                                            <MenuFlyout>
-                                                <MenuFlyoutItem Text="Remove" Click="MenuFlyoutItem_Click"/>
-                                            </MenuFlyout>
-                                        </Grid.ContextFlyout>
                                     </Grid>
                                 </UserControl>
                             </DataTemplate>
@@ -227,78 +357,40 @@
                     </ListView>
                 </Grid>
             </PivotItem>
-            <PivotItem Header="Playlists" >
-                <controls:PlayListControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            <PivotItem Header="Playlists">
+                <controls:PlayListControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             </PivotItem>
             <PivotItem Header="Albums">
                 <controls:Albums HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-
             </PivotItem>
         </Pivot>
-        <!--<Hub Orientation="Horizontal" >
-            <HubSection Header="Now Playing">
-                <DataTemplate>
-                    <Grid Width="{Binding HubSize, ElementName=root}"></Grid>
-
-                </DataTemplate>
-
-            </HubSection>
-            <HubSection Header="Playlists" >
-                <DataTemplate>
-                    <Grid Width="{Binding HubSize, ElementName=root}"></Grid>
-
-                </DataTemplate>
-            </HubSection>
-            <HubSection Header="Albums">
-                <DataTemplate>
-                    <Grid Width="{Binding HubSize, ElementName=root}"></Grid>
-
-                </DataTemplate>
-
-            </HubSection>
-        </Hub>-->
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
-
-
-                <!-- Large window VisualState -->
+                <!--  Large window VisualState  -->
                 <VisualState x:Name="LargeWindow">
-
-
-                    <!-- Large window trigger -->
+                    <!--  Large window trigger  -->
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="900"/>
+                        <AdaptiveTrigger MinWindowWidth="900" />
                     </VisualState.StateTriggers>
 
                     <VisualState.Setters>
-                        <Setter Target="SongDataContainer.(Grid.Column)" Value="2"></Setter>
-                        <Setter Target="SongDataContainer.(Grid.Row)" Value="0"></Setter>
-                        <Setter Target="SongDataContainer.VerticalAlignment" Value="Center"></Setter>
-                        <Setter Target="SongDataContainer.Margin" Value="24"></Setter>
-                        <Setter Target="LastColumn.MaxWidth" Value="999999"></Setter>
+                        <Setter Target="SongDataContainer.(Grid.Column)" Value="2" />
+                        <Setter Target="SongDataContainer.(Grid.Row)" Value="0" />
+                        <Setter Target="SongDataContainer.VerticalAlignment" Value="Center" />
+                        <Setter Target="SongDataContainer.Margin" Value="24" />
+                        <Setter Target="LastColumn.MaxWidth" Value="999999" />
                     </VisualState.Setters>
-
-
                 </VisualState>
 
-                <!-- Medium window VisualState -->
+                <!--  Medium window VisualState  -->
                 <VisualState x:Name="MediumWindow">
-                    <VisualState.Setters>
-                        <!--<Setter Target="interprets.Visibility" Value="Collapsed"/>
-                        <Setter Target="interpretsColumn.Width" Value="0"/>
-                        <Setter Target="interpretSubs.Visibility" Value="Visible"/>-->
-                    </VisualState.Setters>
-                    <!-- Medium window trigger -->
+                    <!--  Medium window trigger  -->
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0"/>
+                        <AdaptiveTrigger MinWindowWidth="0" />
                     </VisualState.StateTriggers>
-
                 </VisualState>
-
-
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-
     </Grid>
 </Page>
