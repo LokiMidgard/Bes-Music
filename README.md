@@ -40,6 +40,7 @@ It will need the latest Windows 10 Mobile Version. It ist Testet on an Lumia 950
     - [ ] Playlist View that lists all entrys in a specific playlist
     - [ ] Artists View
     - [ ] Jump between categorys (semantic zoom?)
+    - [ ] Filter Album view *genres, offline available, etc...*
  - [ ] Performance improvements (esspecially for Phone)
  - [ ] Live Tile
  - [ ] XBox supprot (I think that needs incremental download since the xbox is pretty permissive about storage space)
