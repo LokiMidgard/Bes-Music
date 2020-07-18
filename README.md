@@ -50,10 +50,9 @@ It will need the latest Windows 10 Mobile Version. It ist Testet on an Lumia 950
  
  ## How to install
  
- Currently the app is only available through github releases. It is planed to provide
- a version through the Microsoft Store, but through technical issues with the store, this will be done
- at a later date. (ETA unknown 😢)
- 
+<a href='//www.microsoft.com/store/apps/9plp7dbf6ljn?cid=storebadge&ocid=badge'><img src='https://developer.microsoft.com/en-us/store/badges/images/English_get-it-from-MS.png' alt='English badge' width='284' height='104' style='width: 284px; height: 104px;'/></a>
+
+Or download the MSIX. 
  Since the MSIX requires an certificate and I do not have one of an big certificate authorety, you will need to install the provided certificate into trusted people.
  
  Of course you can also sign it yourself with your own certificate or build from source (which will also sign the package using your own certificate)
