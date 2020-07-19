@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:MusicPlayer.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels" xmlns:musicplayer="using:MusicPlayer"
     d:DesignHeight="300"
     d:DesignWidth="400"
     x:Name="root"
@@ -88,7 +88,7 @@
                 </DataTemplate>
             </GridView.ItemTemplate>
             <GridView.Header>
-                <Border Height="250" HorizontalAlignment="Stretch" >
+                <Border x:Name="header" Height="250" HorizontalAlignment="Stretch" >
                     <Grid>
                         <StackPanel
                             Orientation="Horizontal"
@@ -132,5 +132,18 @@
             </ItemsControl.ItemsPanel>-->
 
         </GridView>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <musicplayer:DeviceFamilyTrigger DeviceFamily="Windows.Xbox"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="header.Height" Value="Auto"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        
     </Grid>
 </UserControl>
