@@ -103,10 +103,15 @@
         </ScrollViewer>
 
 
-        <MediaPlayerElement
-            x:Name="mediaPlayer"
+        <Border
+            
+            Background="{StaticResource BackgroundBrush1}"
             Grid.Row="1"
             VerticalAlignment="Bottom"
+            >
+            
+        <MediaPlayerElement
+            x:Name="mediaPlayer"
             AreTransportControlsEnabled="True">
 
             <MediaPlayerElement.TransportControls>
@@ -118,6 +123,7 @@
                     IsPreviousTrackButtonVisible="True" />
             </MediaPlayerElement.TransportControls>
         </MediaPlayerElement>
+        </Border>
 
 
         <Grid x:Name="LoadingGrid" Grid.RowSpan="2" Background="{ThemeResource AccentBrush}"  >
@@ -140,6 +146,21 @@
             Foreground="White"
             Height="40" />
         </Grid>
+
+        <VisualStateManager.VisualStateGroups>
+                      <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <musicplayer:DeviceFamilyTrigger DeviceFamily="Windows.Xbox"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="mediaPlayer.Margin"
+                        Value="0,0,0,27"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+
+        </VisualStateManager.VisualStateGroups>
 
     </Grid>
 </Page>
