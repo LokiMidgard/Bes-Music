@@ -101,7 +101,7 @@
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" MaxWidth="100" />
+                                        <ColumnDefinition x:Name="FirstColumn" Width="*" MaxWidth="100" />
                                         <ColumnDefinition
                                             x:Name="SongInfoSpaceColumn"
                                             Width="*"
@@ -191,7 +191,7 @@
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" MaxWidth="100" />
+                                        <ColumnDefinition x:Name="FirstColumn2" Width="*" MaxWidth="100" />
                                         <ColumnDefinition
                                             Width="*"
                                             MinWidth="160"
@@ -391,6 +391,8 @@
                         <Setter Target="NowPlayingProxy.Width" Value="160"/>
                         <Setter Target="NowPlayingProxy.Height" Value="160"/>
                         <Setter Target="root.Margin" Value="48,27,48,0"/>
+                        <Setter Target="FirstColumn2.Width" Value="0"/>
+                        <Setter Target="FirstColumn.Width" Value="0"/>
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
