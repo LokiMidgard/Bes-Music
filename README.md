@@ -43,8 +43,8 @@ It will need the latest Windows 10 Mobile Version. It ist Testet on an Lumia 950
     - [ ] Filter Album view *genres, offline available, etc...*
  - [ ] Performance improvements (esspecially for Phone)
  - [ ] Live Tile
- - [ ] XBox supprot (I think that needs incremental download since the xbox is pretty permissive about storage space)
- - [ ] Get a build in the Store (through thats not so much a code problem)
+ - [x] XBox supprot (Its technically working with pointer and no layout optimisation. Actual support is in a branch soon to be merged)
+ - [x] Get a build in the Store
  - [ ] It would also be nice to support different provider besides OneDrive. Storage of information is already prepared for this. But it is not high on the TODO list.
  - [ ] Creating variants for Xamarin (and maybe Blazor)
  
