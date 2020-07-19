@@ -71,13 +71,20 @@ namespace MusicPlayer
 
             this.supportIntensety = Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.Composition.IAmbientLight2");
 
+            this.PreviewKeyDown += this.NowPlaying_PreviewKeyDown;
+
+        }
+
+        private void NowPlaying_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            this.StartFadeOutTimer();
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
             base.OnNavigatingFrom(e);
             App.Shell.ShowPlayUi = this.oldShowUiValue;
-            d?.Stop();
+            fadeOutTimer?.Stop();
             Windows.UI.Xaml.Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
         }
 
@@ -86,6 +93,7 @@ namespace MusicPlayer
             base.OnNavigatedTo(e);
             this.oldShowUiValue = App.Shell.ShowPlayUi;
             App.Shell.ShowPlayUi = false;
+            this.StartFadeOutTimer();
         }
 
 
@@ -274,27 +282,32 @@ namespace MusicPlayer
             return Task.CompletedTask;
         }
 
-        private DispatcherTimer d;
+        private DispatcherTimer fadeOutTimer;
         private void StackPanel_PointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            this.StartFadeOutTimer();
+        }
+
+        private void StartFadeOutTimer()
         {
             Windows.UI.Xaml.Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
             VisualStateManager.GoToState(this, "Moving", true);
-            if (this.d is null)
+            if (this.fadeOutTimer is null)
             {
-                this.d = new DispatcherTimer();
-                this.d.Interval = TimeSpan.FromSeconds(3);
-                this.d.Tick += (sender2, e2) =>
+                this.fadeOutTimer = new DispatcherTimer();
+                this.fadeOutTimer.Interval = TimeSpan.FromSeconds(3);
+                this.fadeOutTimer.Tick += (sender2, e2) =>
                 {
 
-                    this.d.Stop();
+                    this.fadeOutTimer.Stop();
                     VisualStateManager.GoToState(this, "NotMoving", true);
                     Windows.UI.Xaml.Window.Current.CoreWindow.PointerCursor = null;
                 };
             }
             else
-                this.d.Stop();
+                this.fadeOutTimer.Stop();
 
-            this.d.Start();
+            this.fadeOutTimer.Start();
         }
     }
 }
