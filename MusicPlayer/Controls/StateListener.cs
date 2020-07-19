@@ -59,7 +59,9 @@ namespace MusicPlayer.Controls
                 return;
             App.Current.PropertyChanged += this.Current_PropertyChanged;
             this.isTouch = App.Current.IsTochMode;
-            if (this.isTouch)
+            if (App.Current.IsXBox)
+                VisualStateManager.GoToState(this, "XBox", true);
+            else if (this.isTouch)
                 VisualStateManager.GoToState(this, "Touch", true);
             else
                 VisualStateManager.GoToState(this, "NoTouch", true);
@@ -71,7 +73,9 @@ namespace MusicPlayer.Controls
             if (e.PropertyName != nameof(App.IsTochMode))
                 return;
             this.isTouch = App.Current.IsTochMode;
-            if (this.isTouch)
+            if (App.Current.IsXBox)
+                VisualStateManager.GoToState(this, "XBox", true);
+            else if (this.isTouch)
                 VisualStateManager.GoToState(this, "Touch", true);
             else
                 VisualStateManager.GoToState(this, "NoTouch", true);
@@ -93,7 +97,7 @@ namespace MusicPlayer.Controls
 
         private void UpdateMouseOverEffekt()
         {
-            if (this.isTouch)
+            if (this.isTouch || App.Current.IsXBox)
             {
                 switch (this.DisplayMode)
                 {
