@@ -33,7 +33,10 @@ namespace MusicPlayer.Controls
         {
             if (e.ClickedItem is PlayList playList)
             {
-                await MediaplayerViewmodel.Instance.ResetSongs(playList.Songs.ToImmutableArray());
+                if (playList.Availability != Availability.NotAvailable)
+                    await MediaplayerViewmodel.Instance.ResetSongs(playList.Songs.ToImmutableArray());
+                else
+                    OneDriveLibrary.Instance.DownloadDataCommand.Execute(playList);
             }
         }
 
@@ -87,6 +90,15 @@ namespace MusicPlayer.Controls
                 t = new Rect(t.X, t.Y, t.Width, t.Height + Helpers.ConstantsHelper.PlayListHeightField);
                 args.TargetRect = t;
             }
+        }
+
+        private void MenuFlyoutItemDownload_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuFlyoutItem item && item.DataContext is PlayList playList)
+            {
+                OneDriveLibrary.Instance.DownloadDataCommand.Execute(playList);
+            }
+            
         }
     }
 }

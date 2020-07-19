@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:MusicPlayer.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="using:MusicPlayer.Viewmodels" xmlns:converters="using:MusicPlayer.Converters" xmlns:core="using:MusicPlayer.Core"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels" xmlns:converters="using:MusicPlayer.Converters" xmlns:core="using:MusicPlayer.Core" xmlns:musicplayer="using:MusicPlayer"
     d:DesignHeight="300"
     d:DesignWidth="400"
     mc:Ignorable="d">
@@ -42,6 +42,8 @@
         </StackPanel>
         
         <ListView
+            x:Name="PlaylistList"
+            
             Visibility="{Binding PlayList.Count, Converter={StaticResource collapsedOnEmpty}}"
             ItemClick="ListView_ItemClick"
             ItemsSource="{Binding PlayList}"
@@ -52,7 +54,7 @@
                 </Style>
             </ListView.Style>
             <ListView.Header>
-                <Border Height="250" HorizontalAlignment="Stretch" Background="{ThemeResource AccentBrushDark1}">
+                <Border x:Name="HeaderPlaceholder" Height="250" HorizontalAlignment="Stretch" Background="{ThemeResource AccentBrushDark1}">
                     
                 
                 </Border>
@@ -79,8 +81,17 @@
                         <Setter.Value>
                             <MenuFlyout Opening="MenuFlyout_Opening" >
                                 <MenuFlyoutItem
+                                     Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource Synced}}"
                                     Click="MenuFlyoutItemPlay_Click"
                                     Text="Play" />
+                                <MenuFlyoutItem
+                                     Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource UpdateAvailable}}"
+                                    Click="MenuFlyoutItemDownload_Click"
+                                    Text="Update Songs" />
+                                <MenuFlyoutItem
+                                     Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource NotAvailable}}"
+                                    Click="MenuFlyoutItemDownload_Click"
+                                    Text="Download Songs" />
                                 <MenuFlyoutSeparator />
                                 <MenuFlyoutItem Click="MenuFlyoutItemAddToCurrentPlaylist_Click" Text="Add to current Playlist" />
                                 <MenuFlyoutItem
@@ -138,7 +149,8 @@
                            
 
                                                        Command="{Binding PlayCommand, Source={StaticResource datacontexed}}"
-                                        
+                                                                 Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource Synced}}"
+            
                                 
                                 Margin="{StaticResource SmalButtonMargin}"
                                 Height="{StaticResource SmalButtonSize}"
@@ -154,6 +166,20 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <musicplayer:DeviceFamilyTrigger DeviceFamily="Windows.Xbox"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="PlaylistList.IsItemClickEnabled" Value="True"/>
+                        <Setter Target="HeaderPlaceholder.Height" Value="100"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
 
     </Grid>
 </UserControl>
