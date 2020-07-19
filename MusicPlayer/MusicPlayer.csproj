@@ -28,8 +28,10 @@
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <Use64BitCompiler>true</Use64BitCompiler>
-    <PackageCertificateThumbprint>B3E316FF1F9E0F992FBEBB4299B548198DD84B45</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>
+    </PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <PackageCertificateKeyFile>MusicPlayer_TemporaryKey.pfx</PackageCertificateKeyFile>
     <!-- <ShortcutGenericAnalysis>true</ShortcutGenericAnalysis> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
@@ -248,7 +250,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <AppxManifest Include="Package.appxmanifest">
+    <AppxManifest Include="Debug.appxmanifest" Condition="'$(Configuration)' == 'Debug'">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <AppxManifest Include="Package.appxmanifest" Condition="'$(Configuration)' == 'Release'">
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="Controls\UWPToolkit\license.md" />
@@ -300,6 +305,7 @@
     <Content Include="Controls\UWPToolkit\Assets\genericfile.png" />
     <Content Include="Controls\UWPToolkit\Assets\person.png" />
     <Content Include="Controls\UWPToolkit\Assets\photo.png" />
+    <None Include="MusicPlayer_TemporaryKey.pfx" />
     <None Include="Package.StoreAssociation.xml">
       <SubType>Designer</SubType>
     </None>

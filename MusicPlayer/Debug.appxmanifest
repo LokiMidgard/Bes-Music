@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" IgnorableNamespaces="uap mp uap3">
-  <Identity Name="51791Midgard.BesMusic" Publisher="CN=Midgard" Version="0.4.47.0" />
-  <mp:PhoneIdentity PhoneProductId="0aae5b9c-f804-48a5-ae36-35a4e5180dc0" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="51791Midgard.BesMusicDev" Publisher="CN=Midgard" Version="0.4.52.0" />
+  <mp:PhoneIdentity PhoneProductId="4c6a9ad7-584f-439d-ab0b-a1da39b82c00" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>Bes Music</DisplayName>
+    <DisplayName>Bes Music Dev</DisplayName>
     <PublisherDisplayName>Midgard</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="MusicPlayer.App">
-      <uap:VisualElements DisplayName="Bes Music" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="A music player that syncs your music from OneDrive to your device" BackgroundColor="transparent">
+      <uap:VisualElements DisplayName="Bes Music Dev" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="A music player that syncs your music from OneDrive to your device" BackgroundColor="#5511FF">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\LargeTile.png" Square71x71Logo="Assets\SmallTile.png">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
