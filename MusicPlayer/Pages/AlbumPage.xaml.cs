@@ -118,5 +118,15 @@ namespace MusicPlayer.Pages
             //var x = colorThief.GetColor(imageSource);
 
         }
+
+        private void ItemsStackPanel_BringIntoViewRequested(UIElement sender, BringIntoViewRequestedEventArgs args)
+        {
+            if (args.TargetRect.Height <= Helpers.ConstantsHelper.PlayListHeightField)
+            {
+                var t = args.TargetRect;
+                t = new Rect(t.X, t.Y, t.Width, t.Height + Helpers.ConstantsHelper.PlayListHeightField);
+                args.TargetRect = t;
+            }
+        }
     }
 }

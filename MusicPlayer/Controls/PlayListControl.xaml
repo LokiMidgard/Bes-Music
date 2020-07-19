@@ -46,14 +46,22 @@
             ItemClick="ListView_ItemClick"
             ItemsSource="{Binding PlayList}"
             SelectionMode="None">
-
+            <ListView.Style>
+                <Style TargetType="ListView">
+                    <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
+                </Style>
+            </ListView.Style>
             <ListView.Header>
                 <Border Height="250" HorizontalAlignment="Stretch" Background="{ThemeResource AccentBrushDark1}">
                     
                 
                 </Border>
             </ListView.Header>
-            
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel Orientation="Vertical" BringIntoViewRequested="ItemsStackPanel_BringIntoViewRequested"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <!--<Setter Property="Background" Value="Green" />-->

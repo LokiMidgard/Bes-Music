@@ -42,6 +42,11 @@
                 ItemClick="List_ItemClick"
                 ItemsSource="{Binding Model.Songs}"
                 SelectionMode="None">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsStackPanel Orientation="Vertical"  BringIntoViewRequested="ItemsStackPanel_BringIntoViewRequested"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
                 <ListView.Header>
                     <Border x:Name="headerBackground" Background="{StaticResource BackgroundBrush1}">
 

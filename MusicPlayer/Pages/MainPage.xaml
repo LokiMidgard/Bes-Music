@@ -31,6 +31,8 @@
                 </Button>
             </Grid>
         </DataTemplate>
+        
+       
     </Page.Resources>
 
     <Grid>
@@ -62,12 +64,20 @@
 
 
                     <ListView
+                        
                         HorizontalContentAlignment="Stretch"
                         IsItemClickEnabled="False"
+                        x:Name="CurrentPlayingList"
                         ItemsSource="{Binding Instance.CurrentPlaylist}"
                         SelectedIndex="{Binding Instance.CurrentPlayingIndex, Mode=TwoWay}"
                         SelectionMode="Single"
+                        SingleSelectionFollowsFocus="False"
                         Visibility="{Binding Instance.CurrentPlaylist.Count, Converter={StaticResource collapsedOnEmpty}}">
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate >
+                                <ItemsStackPanel BringIntoViewRequested="ListView_BringIntoViewRequested" Orientation="Vertical"/>
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
                         <ListView.Style>
                             <Style TargetType="ListView">
                                 <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
@@ -93,6 +103,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" MaxWidth="100" />
                                         <ColumnDefinition
+                                            x:Name="SongInfoSpaceColumn"
                                             Width="*"
                                             MinWidth="160"
                                             MaxWidth="300" />
@@ -102,13 +113,14 @@
                                             MaxWidth="100" />
                                     </Grid.ColumnDefinitions>
                                     <Viewbox
+                                        x:Name="NowPlayingProxy"
                                         Grid.Column="1"
                                         MaxWidth="300"
                                         MaxHeight="300"
                                         HorizontalAlignment="Left">
                                         <Border Width="999" Height="999" />
                                     </Viewbox>
-                                    <Viewbox
+                                    <!--<Viewbox
                                         Grid.Column="1"
                                         MaxWidth="300"
                                         HorizontalAlignment="Left"
@@ -124,7 +136,7 @@
                                                 Height="300"
                                                 BorderBrush="{ThemeResource ForgroundBrush1}" />
                                         </Button>
-                                    </Viewbox>
+                                    </Viewbox>-->
                                     <StackPanel
                                         x:Name="SongDataContainer"
                                         Grid.Row="1"
@@ -191,6 +203,7 @@
                                     </Grid.ColumnDefinitions>
                                     <Viewbox
                                         Grid.Column="1"
+                                                x:Name="NowPlayingDisk"
                                         MaxWidth="300"
                                         HorizontalAlignment="Left">
 
@@ -366,6 +379,21 @@
         </Pivot>
 
         <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <musicplayer:DeviceFamilyTrigger DeviceFamily="Windows.Xbox"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="SongInfoSpaceColumn.Width" Value="160"/>
+                        <Setter Target="NowPlayingDisk.Width" Value="160"/>
+                        <Setter Target="NowPlayingDisk.Height" Value="160"/>
+                        <Setter Target="NowPlayingProxy.Width" Value="160"/>
+                        <Setter Target="NowPlayingProxy.Height" Value="160"/>
+                        <Setter Target="root.Margin" Value="48,27,48,0"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
             <VisualStateGroup>
                 <!--  Large window VisualState  -->
                 <VisualState x:Name="LargeWindow">

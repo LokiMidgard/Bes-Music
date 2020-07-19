@@ -74,7 +74,19 @@ namespace MusicPlayer.Pages
         {
             MusicPlayer.Services.NavigationService.Navigate<NowPlaying>();
         }
+
+        private void ListView_BringIntoViewRequested(UIElement sender, BringIntoViewRequestedEventArgs args)
+        {
+            if (args.TargetRect.Height == Helpers.ConstantsHelper.PlayListHeightField)
+            {
+
+                var t = args.TargetRect;
+                t = new Rect(t.X, t.Y, t.Width, t.Height + Helpers.ConstantsHelper.PlayListHeightField);
+                args.TargetRect = t;
+            }
+           
+        }
     }
 
-    
+
 }

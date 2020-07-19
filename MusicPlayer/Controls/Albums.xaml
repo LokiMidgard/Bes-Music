@@ -21,7 +21,7 @@
         <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnEmpty" OnNullValue="Collapsed"/>
         <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnFilled" OnNullValue="Visible" />
         <converters:ExceptionHandlerConverter x:Key="ErrorHandler" OnError="ExceptionHandlerConverter_OnError" />
-
+        
     </UserControl.Resources>
     <Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" 
@@ -39,7 +39,7 @@
                 </Button.DataContext>
             </Button>
         </StackPanel>
-        <GridView
+        <GridView 
         x:Name="toRender"
         ContainerContentChanging="ToRender_ContainerContentChanging"
         IsItemClickEnabled="True"
@@ -47,6 +47,12 @@
         ItemClick="AlbumClicked"
         HorizontalContentAlignment="Stretch"
         ItemsSource="{Binding Source={StaticResource groupInfoCVS}}">
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate >
+                    <ItemsWrapGrid BringIntoViewRequested="ItemsWrapGrid_BringIntoViewRequested" Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+
+            </GridView.ItemsPanel>
             <GridView.Resources>
                 <Style TargetType="ScrollBar">
                     <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />

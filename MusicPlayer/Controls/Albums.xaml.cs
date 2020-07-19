@@ -179,5 +179,15 @@ namespace MusicPlayer.Controls
             await MediaplayerViewmodel.Instance.ResetSongs(songs.ToImmutableArray());
         }
 
+        private void ItemsWrapGrid_BringIntoViewRequested(UIElement sender, BringIntoViewRequestedEventArgs args)
+        {
+            if (args.TargetRect.Height <= 246 )
+            {
+
+                var t = args.TargetRect;
+                t = new Rect(t.X, t.Y, t.Width, t.Height + Helpers.ConstantsHelper.PlayListHeightField);
+                args.TargetRect = t;
+            }
+        }
     }
 }
