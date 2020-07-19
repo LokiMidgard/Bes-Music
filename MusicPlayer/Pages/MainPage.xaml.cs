@@ -77,7 +77,7 @@ namespace MusicPlayer.Pages
 
         private void ListView_BringIntoViewRequested(UIElement sender, BringIntoViewRequestedEventArgs args)
         {
-            if (args.TargetRect.Height == Helpers.ConstantsHelper.PlayListHeightField)
+            if (args.TargetRect.Height <= Helpers.ConstantsHelper.PlayListHeightField)
             {
 
                 var t = args.TargetRect;
