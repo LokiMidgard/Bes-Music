@@ -81,6 +81,10 @@ namespace MusicPlayer
                 {
                     await NetworkViewmodel.Instance.AddDownload("Update Metadata", this.SyncronizeData);
                 }
+                catch (Exception e)
+                {
+                    NetworkViewmodel.Instance.ThrowNetworkError(this, e);
+                }
                 finally
                 {
                     this.IsBlockedLoding = false;
@@ -131,7 +135,18 @@ namespace MusicPlayer
 
                 foreach (var song in songs)
                 {
-                    _ = this.DownloadSong(song.MediaId);
+                    _ = this.DownloadSong(song.MediaId)
+                    .ContinueWith(async t =>
+                    {
+                        try
+                        {
+                            await t;
+                        }
+                        catch (Exception e)
+                        {
+                            NetworkViewmodel.Instance.ThrowNetworkError(this, e);
+                        }
+                    }, TaskContinuationOptions.OnlyOnFaulted);
                 }
 
             }, () => !this.IsBlockedLoding);
@@ -150,7 +165,17 @@ namespace MusicPlayer
 
                 foreach (var song in songs)
                 {
-                    _ = this.DownloadSong(song.MediaId);
+                    _ = this.DownloadSong(song.MediaId).ContinueWith(async t =>
+                    {
+                        try
+                        {
+                            await t;
+                        }
+                        catch (Exception e)
+                        {
+                            NetworkViewmodel.Instance.ThrowNetworkError(this, e);
+                        }
+                    }, TaskContinuationOptions.OnlyOnFaulted);
                 }
             }, () => !this.IsBlockedLoding);
 

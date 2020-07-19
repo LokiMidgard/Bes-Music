@@ -5,7 +5,7 @@ namespace MusicPlayer
     [Serializable]
     internal class NotAuthenticatedException : Exception
     {
-        public NotAuthenticatedException()
+        public NotAuthenticatedException() : this("You could not get Authenticated.")
         {
         }
 

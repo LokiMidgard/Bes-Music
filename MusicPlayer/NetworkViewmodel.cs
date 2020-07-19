@@ -42,6 +42,9 @@ namespace MusicPlayer
 
         public ICommand CancelAllCommand { get; }
 
+        public event EventHandler<EventArgs<Exception>> OnError;
+
+
         private NetworkViewmodel()
         {
             this.downloading = new ObservableCollection<DownloadItem>();
@@ -95,6 +98,7 @@ namespace MusicPlayer
                     displayRequest.RequestActive();
 
                 this.downloading.Add(current);
+                current.OnError += this.Download_OnError;
                 _ = Task.Run(() =>
                    current.StartDownload().ContinueWith(async t =>
                   {
@@ -102,6 +106,7 @@ namespace MusicPlayer
                       {
                           this.concurrentSemaphore.Release();
                           this.downloading.Remove(current);
+                          current.OnError -= this.Download_OnError;
                           if (this.downloading.Count == 0)
                               displayRequest.RequestRelease();
                       });
@@ -110,7 +115,10 @@ namespace MusicPlayer
             }
         }
 
-
+        private void Download_OnError(object sender, EventArgs<Exception> e)
+        {
+            this.OnError?.Invoke(sender, e);
+        }
 
         public async Task AddDownload(Song songToDOwnload, DownloadDelegate downloadMethod)
         {
@@ -132,8 +140,15 @@ namespace MusicPlayer
             await item.Finished;
         }
 
-
-
+        /// <summary>
+        /// Allows to raise network related errors from other classes.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        internal void ThrowNetworkError(object sender, Exception e)
+        {
+            this.OnError?.Invoke(sender, new EventArgs<Exception>(e));
+        }
 
         public async Task AddDownload(string title, DownloadDelegate downloadMethod)
         {
@@ -142,8 +157,15 @@ namespace MusicPlayer
                 var completionSource = new TaskCompletionSource<object>();
                 await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                 {
-                    await this.AddDownload(title, downloadMethod);
-                    completionSource.SetResult(null);
+                    try
+                    {
+                        await this.AddDownload(title, downloadMethod);
+                        completionSource.SetResult(null);
+                    }
+                    catch (Exception e)
+                    {
+                        completionSource.SetException(e);
+                    }
                 });
                 await completionSource.Task;
                 return;
@@ -173,7 +195,7 @@ namespace MusicPlayer
         public Song Song { get; }
         public string Title { get; }
 
-
+        public event EventHandler<EventArgs<Exception>> OnError;
 
         public string State
         {
@@ -244,17 +266,20 @@ namespace MusicPlayer
                     try
                     {
                         await this.StartDownload();
+                        completionSource.SetResult(null);
                     }
                     catch (Microsoft.Graph.ServiceException)
                     {
+                        completionSource.SetResult(null);
 
                     }
                     catch (OperationCanceledException)
                     {
-                    }
-                    finally
-                    {
                         completionSource.SetResult(null);
+                    }
+                    catch (Exception e)
+                    {
+                        completionSource.SetException(e);
                     }
                 });
                 await completionSource.Task;
@@ -280,10 +305,17 @@ namespace MusicPlayer
                             this.State = progress.state ?? string.Empty;
                         }), actualCancel.Token);
                 }
+
             }
             catch (OperationCanceledException) { }
+            catch (Exception e)
+            {
+                taskCompletionSource.SetException(e);
+            }
             this.IsDownloading = false;
-            this.taskCompletionSource.SetResult(null);
+            this.taskCompletionSource.TrySetResult(null);
+
+
         }
 
 
