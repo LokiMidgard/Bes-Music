@@ -186,10 +186,12 @@ namespace MusicPlayer.Controls
                     while (toUpdate != null)
                     {
 
-                        Uri thumbnail;
+                        Uri thumbnail = null;
                         do
                         {
                             var cover = this.covers.Next();
+                            if (cover.Id is null || cover.Provider is null)
+                                continue;
                             toUpdate.Id = cover.Id;
                             toUpdate.Provider = cover.Provider;
                             thumbnail = await library.GetImage(toUpdate.Id, (int)(toUpdate.Size * this.ActualTileSize), default);

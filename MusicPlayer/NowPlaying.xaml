@@ -17,6 +17,9 @@
         <x:Double x:Key="hiddenOpacety">0.45</x:Double>
         <converters:VisibilityConverter OnTrue="Visible" x:Key="visibleConverter"></converters:VisibilityConverter>
         <converters:VisibilityConverter OnTrue="Collapsed" x:Key="collapsedConverter"></converters:VisibilityConverter>
+
+        <x:Double x:Key="NowPlayingSize">160</x:Double>
+        <x:Double x:Key="NowPlayingSizeXbox">130</x:Double>
         
         <Style x:Key="OpacetyButton" TargetType="Button" BasedOn="{StaticResource RoundButtonStyle}">
             <Setter Property="Padding" Value="0" />
@@ -41,6 +44,7 @@
                                 ContentTemplate="{TemplateBinding ContentTemplate}"
                                 ContentTransitions="{TemplateBinding ContentTransitions}" />
                             <VisualStateManager.VisualStateGroups>
+                                
                                 <VisualStateGroup x:Name="CommonStates">
                                     <VisualState x:Name="Normal">
                                         <Storyboard>
@@ -371,10 +375,10 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" MaxHeight="80" />
+                <RowDefinition Height="*" MaxHeight="80" x:Name="BotomRow" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" MaxWidth="80" />
+                <ColumnDefinition Width="80" MaxWidth="80" x:Name="LeftColumn" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
@@ -385,13 +389,13 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
+                    <ColumnDefinition  Width="Auto"/>
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
                 <Border Margin="-60,0,0,0"  >
                     <controls1:DropShadowPanel   >
-                        <Ellipse Width="290" Height="240" Fill="#7F000000">
+                        <Ellipse x:Name="NowPlayingShadow" Width="290" Height="240" Fill="#7F000000">
                             <Ellipse.RenderTransform>
                                 <!--Hide this but let it still get renderd so we get our shadow-->
                                 <TranslateTransform Y="99999999"></TranslateTransform>
@@ -420,6 +424,7 @@
                             <TextBlock
                             Margin="0,0,0,0"
                                 Padding="0,20,20,0"
+                                x:Name="AlbumTitleText"
                             Foreground="{StaticResource ForgroundBrush3}"
                             IsTextSelectionEnabled="True"
                             Style="{StaticResource SubheaderTextBlockStyle}"
@@ -446,7 +451,7 @@
                         <Border Padding="0,0,20,20" >
 
                             <TextBlock
-                            x:Name="AlbumTextBlock"
+                            x:Name="ArtistTextBlock"
                             Grid.Row="3"
                             Grid.Column="1"
                             Grid.ColumnSpan="2"
@@ -460,18 +465,19 @@
                 </StackPanel>
 
                 <controls:NowPlayingDisk
-                    Width="160"
+                    Width="{StaticResource NowPlayingSize}"
                         Margin="24,0,0,0"
-                    Height="160"
+                    Height="{StaticResource NowPlayingSize}"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
+                    x:Name="NowPlayingDisc"
                     BorderBrush="White"
                     BorderThickness="10"
                     ProgressThikness="4" />
                 <!--<Border Background="White">
                     
                 <controls1:DropShadowPanel OffsetZ="1" >
-                    <Ellipse Width="160" Height="160" Fill="#7F762626"></Ellipse>
+                    <Ellipse Width="{StaticResource NowPlayingSize}" Height="{StaticResource NowPlayingSize}" Fill="#7F762626"></Ellipse>
                 </controls1:DropShadowPanel>
                 </Border>-->
 
@@ -501,7 +507,8 @@
             <Button
                 Height="{StaticResource MediumButtonSize}"
                                                     Width="{StaticResource MediumButtonSize}"
-                            VerticalAlignment="Bottom"              
+                            VerticalAlignment="Bottom" 
+                x:Name="FullScreenButton"
                     Margin="{StaticResource MediumButtonMargin}"
                 Command="{Binding SwitchFullScreenCommand}"
                 Style="{StaticResource OpacetyButton}">
@@ -646,7 +653,39 @@
                     </Storyboard>
                 </VisualState>
             </VisualStateGroup>
-           
+
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <local:DeviceFamilyTrigger DeviceFamily="Windows.Xbox"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="FullScreenButton.Visibility"
+                        Value="Collapsed"/>
+                        <Setter Target="NowPlayingDisc.Width"
+                            Value="{StaticResource NowPlayingSizeXbox}"/>
+                        <Setter Target="NowPlayingDisc.Height"
+                            Value="{StaticResource NowPlayingSizeXbox}"/>
+                        <Setter Target="BotomRow.Height"
+                            Value="27"/>
+                        <Setter Target="LeftColumn.Width"
+                            Value="48"/>
+                        <Setter Target="AlbumTitleText.FontSize"
+                            Value="24"/>
+                        <Setter Target="TitleTextBlock.FontSize"
+                            Value="34"/>
+                        <Setter Target="ArtistTextBlock.FontSize"
+                            Value="24"/>
+                        <Setter Target="SongDataContainer.Margin"
+                            Value="0,0,0,0"/>
+                        <Setter Target="NowPlayingShadow.Height"
+                            Value="160"/>
+                        <Setter Target="NowPlayingShadow.Width"
+                            Value="230"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+
         </VisualStateManager.VisualStateGroups>
 
 
