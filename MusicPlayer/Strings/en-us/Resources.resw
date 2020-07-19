@@ -120,7 +120,7 @@
   <data name="FirstRun_Body.Text" xml:space="preserve">
     <value>This Player Syncs your Music from OneDrive Music folder.
 
-Goto Settings to start the initial Sync. (OneDrive Account required)</value>
+To get startet Sync your Music. (OneDrive Account required)</value>
     <comment>First use prompt message body</comment>
   </data>
   <data name="FirstRunDialog.Title" xml:space="preserve">
@@ -128,18 +128,11 @@ Goto Settings to start the initial Sync. (OneDrive Account required)</value>
     <comment>First use prompt message title</comment>
   </data>
   <data name="FirstRunDialog.PrimaryButtonText" xml:space="preserve">
-    <value>Bring me to settings</value>
+    <value>Start Sync!</value>
     <comment>First use prompt message primary button text</comment>
   </data>
   <data name="WhatsNew_Body.Text" xml:space="preserve">
-    <value>Replace the content of this dialog with whatever content is appropriate to your app.
-You might want to consider lists of bug fixes and new features.
-Don't feel restricted to just text. You can also include images and animations if you wish too.
-
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Maecenas porttitor congue massa. Fusce posuere, magna sed pulvinar ultricies, purus lectus malesuada libero, sit amet commodo magna eros quis urna.
-Nunc viverra imperdiet enim. Fusce est. Vivamus a tellus.
-Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin pharetra nonummy pede. Mauris et orci.
-Suspendisse dui purus, scelerisque at, vulputate vitae, pretium mattis, nunc. Mauris eget neque at sem venenatis eleifend. Ut nonummy.</value>
+    <value>- Fixes a bug (2#) that crashed the app when there were problems authenticationg</value>
     <comment>What's new prompt message body</comment>
   </data>
   <data name="WhatsNewDialog.Title" xml:space="preserve">

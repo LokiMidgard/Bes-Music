@@ -24,7 +24,18 @@
     </ContentDialog.TitleTemplate>
     <ScrollViewer>
         <StackPanel>
-            <TextBlock x:Uid="WhatsNew_Body" TextWrapping="WrapWholeWords" />
+            <!--<TextBlock TextWrapping="WrapWholeWords" />-->
+            <TextBlock 
+                
+                    TextWrapping="WrapWholeWords">
+                <Run x:Uid="WhatsNew_Body"  />
+                <LineBreak/>
+                <LineBreak/>
+                    <Run Text="You can find the list of bugs and other issues under" />
+                    <Hyperlink NavigateUri="https://github.com/LokiMidgard/Bes-Music/issues" >
+                        <Run Text="https://github.com/LokiMidgard/Bes-Music/issues" />
+                    </Hyperlink><Run Text="." />
+            </TextBlock>
         </StackPanel>
     </ScrollViewer>
 </ContentDialog>

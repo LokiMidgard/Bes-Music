@@ -108,7 +108,7 @@ namespace MusicPlayer
                 this.UpdateIsTouch();
 
                 await FirstRunDisplayService.ShowIfAppropriateAsync();
-                //await WhatsNewDisplayService.ShowIfAppropriateAsync();
+                await WhatsNewDisplayService.ShowIfAppropriateAsync();
 
             }
             // Set the application minimum window size

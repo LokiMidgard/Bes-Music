@@ -22,7 +22,7 @@ namespace MusicPlayer.Views
 
         private void PrimaryButtonClicked(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            NavigationService.Navigate<SettingsPage>();
+            OneDriveLibrary.instance.SyncronizeCommand.Execute(null);
         }
     }
 }
