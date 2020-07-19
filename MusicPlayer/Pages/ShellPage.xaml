@@ -1,4 +1,5 @@
 ﻿<Page
+    PreviewKeyDown="Page_PreviewKeyDown"
     x:Class="MusicPlayer.Pages.ShellPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

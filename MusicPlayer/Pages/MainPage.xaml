@@ -36,7 +36,7 @@
     </Page.Resources>
 
     <Grid>
-        <Pivot>
+        <Pivot x:Name="Pivot" x:FieldModifier="internal">
             <PivotItem Header="Now Playing">
                 <PivotItem.DataContext>
                     <viewmodels:MediaPlayerAccessor />

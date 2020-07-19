@@ -185,5 +185,33 @@ namespace MusicPlayer.Pages
             return await completionSorce.Task;
         }
 
+        private void Page_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
+        {
+
+            if (this.Frame.Content is MainPage mainPage)
+            {
+
+                switch (e.OriginalKey)
+                {
+                    case Windows.System.VirtualKey.GamepadRightShoulder:
+                        if (mainPage.Pivot.SelectedIndex < mainPage.Pivot.Items.Count - 1)
+                            mainPage.Pivot.SelectedIndex++;
+                        else
+                            mainPage.Pivot.SelectedIndex = -0;
+                        e.Handled = true;
+                        break;
+                    case Windows.System.VirtualKey.GamepadLeftShoulder:
+                        if (mainPage.Pivot.SelectedIndex > 0)
+                            mainPage.Pivot.SelectedIndex--;
+                        else
+                            mainPage.Pivot.SelectedIndex = mainPage.Pivot.Items.Count - 1;
+
+                        e.Handled = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
     }
 }
