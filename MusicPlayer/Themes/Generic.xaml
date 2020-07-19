@@ -334,6 +334,7 @@
 
                         </Grid.Background>-->
                         <Grid.Resources>
+                            <converter:AddCoverter x:Key="addConverter"></converter:AddCoverter>
                             <converter:VisibleCollapsedOnNull x:Key="CollapseOnNull" OnNullValue="Collapsed"/>
                             <Style x:Key="MediaTextBlockStyle" TargetType="TextBlock">
                                 <Setter Property="VerticalAlignment" Value="Center" />
@@ -371,7 +372,7 @@
                             Height="1"
                             Background="{x:Null}"
                             Visibility="Visible">
-                            <helpers:ConstantsHelper PlayListHeightSet="{Binding ElementName=RootGrid, Path=Height, Mode=OneWay}" />
+                            <helpers:ConstantsHelper PlayListHeightSet="{Binding ElementName=RootGrid, Path=Height, Mode=OneWay, Converter={StaticResource addConverter}, ConverterParameter=35}" />
                         </Border>
                         <Border
                             x:Name="ControlPanel_ControlPanelVisibilityStates_Border"

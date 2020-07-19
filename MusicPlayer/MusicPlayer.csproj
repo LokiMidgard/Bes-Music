@@ -148,6 +148,7 @@
     <Compile Include="Controls\StateListener.cs" />
     <Compile Include="Controls\UWPToolkit\Extensions\ListViewBase\ListViewExtensions.cs" />
     <Compile Include="Controls\UWPToolkit\Extensions\ListViewBase\StretchDirection.cs" />
+    <Compile Include="Converters\AddCoverter.cs" />
     <Compile Include="Converters\ExceptionHandlerConverter.cs" />
     <Compile Include="Controls\MediaBehaviorCommand.cs" />
     <Compile Include="Controls\PlayListControl.xaml.cs">
