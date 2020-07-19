@@ -44,6 +44,8 @@ namespace MusicPlayer
             _ = LocalLibrary.Instance;
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+            this.RequiresPointerMode = Windows.UI.Xaml.ApplicationRequiresPointerMode.WhenRequested;
+            this.IsXBox = (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Xbox"); ;
 
         }
 
@@ -112,11 +114,14 @@ namespace MusicPlayer
 
             }
             // Set the application minimum window size
-            Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetPreferredMinSize(
+            var applicationView = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView();
+            applicationView.SetPreferredMinSize(
                 new Size(
                     width: 270,
                     height: 400
                     ));
+
+            applicationView.SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
         }
 
         private bool isTouchMode;
@@ -136,6 +141,7 @@ namespace MusicPlayer
             }
         }
 
+        public bool IsXBox { get; }
 
         private void WindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
         {

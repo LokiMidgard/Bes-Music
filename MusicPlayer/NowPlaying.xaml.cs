@@ -79,9 +79,6 @@ namespace MusicPlayer
             App.Shell.ShowPlayUi = this.oldShowUiValue;
             d?.Stop();
             Windows.UI.Xaml.Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
-            Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetDesiredBoundsMode
-    (Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseVisible);
-            //bool result = Windows.UI.ViewManagement.ApplicationViewScaling.TrySetDisableLayoutScaling(false);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -89,9 +86,6 @@ namespace MusicPlayer
             base.OnNavigatedTo(e);
             this.oldShowUiValue = App.Shell.ShowPlayUi;
             App.Shell.ShowPlayUi = false;
-            Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetDesiredBoundsMode
-    (Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
-            //bool result = Windows.UI.ViewManagement.ApplicationViewScaling.TrySetDisableLayoutScaling(true);
         }
 
 
