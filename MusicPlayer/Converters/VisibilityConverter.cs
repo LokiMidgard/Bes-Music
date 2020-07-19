@@ -37,9 +37,13 @@ namespace MusicPlayer.Converters
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value?.GetType().GetTypeInfo().IsEnum?? false)
+            if (value?.GetType().GetTypeInfo().IsEnum ?? false)
             {
                 value = (int)value; // enums defind in xaml are for whatever rea
+            }
+            if (parameter?.GetType().GetTypeInfo().IsEnum ?? false)
+            {
+                parameter = (int)parameter; // enums defind in xaml are for whatever rea
             }
             if (Equals(value, parameter))
                 return this.OnEquals;

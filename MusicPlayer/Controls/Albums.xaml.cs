@@ -79,6 +79,8 @@ namespace MusicPlayer.Controls
         private async void ToRender_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
             var root = args.ItemContainer.ContentTemplateRoot as FrameworkElement;
+            if (root is null)
+                return;
             var image = root.FindName("cover") as ImageBrush;
             var vm = args.Item as AlbumViewmodel;
             if (args.Phase == 0)

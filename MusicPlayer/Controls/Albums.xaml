@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:MusicPlayer.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels" xmlns:core="using:MusicPlayer.Core"
     d:DesignHeight="300"
     d:DesignWidth="400"
     x:Name="root"
@@ -21,6 +21,11 @@
         <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnEmpty" OnNullValue="Collapsed"/>
         <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnFilled" OnNullValue="Visible" />
         <converters:ExceptionHandlerConverter x:Key="ErrorHandler" OnError="ExceptionHandlerConverter_OnError" />
+
+        <converters:VisibilityOnEqualsConverter x:Key="EqualsConverter" OnEquals="Visible" />
+        <core:Availability x:Key="NotAvailable" >NotAvailable</core:Availability>
+        <core:Availability x:Key="UpdateAvailable" >UpdateAvailable</core:Availability>
+        <core:Availability x:Key="Synced" >InSync</core:Availability>
 
     </UserControl.Resources>
     <Grid>
@@ -68,6 +73,30 @@
             </GridView.GroupStyle>
             <GridView.ItemContainerStyle>
                 <Style TargetType="GridViewItem" >
+                    <Style.Setters>
+                        <!--<Setter Property="Visibility" Value="Collapsed"/>-->
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="GridViewItem">
+                                    <StackPanel Background="DarkCyan">
+                                        <TextBlock Text="{TemplateBinding Content}" Foreground="Blue"/>
+                                        <TextBlock Text="{Binding Mode=OneWay}" Foreground="Blue"/>
+
+                                        <local:AlbumControl 
+                    DataContext="{TemplateBinding Content}" 
+                    IsDisplayedLarge="{Binding ElementName=root, Path=IsAlbumDisplayedLarge}" 
+                    Width="{Binding ElementName=root, Path=AlbumWidth}"
+                    MinWidth="{Binding ElementName=root, Path=AlbumWidth}"
+                    MaxWidth="{Binding ElementName=root, Path=AlbumWidth}"></local:AlbumControl>
+
+                                        <!--<ContentPresenter x:Name="Pres" Content="{TemplateBinding Content}"/>-->
+                                        <TextBlock Text="{Binding Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}, ConverterParameter={StaticResource Synced}}" Foreground="Blue"/>
+                                        <!--<TextBlock Text="{Binding Content, Mode=OneWay, ElementName=Pres, ConverterParameter={StaticResource Synced}}" Foreground="Blue"/>-->
+                                    </StackPanel>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style.Setters>
                     <!--<Setter Target="HorizontalAlignment" Value="Right"/>-->
                 </Style>
             </GridView.ItemContainerStyle>
