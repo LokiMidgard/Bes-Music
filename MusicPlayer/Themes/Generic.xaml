@@ -9,10 +9,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <x:Double x:Key="NormalMediaControlHeight">90</x:Double>
+    <x:Double x:Key="NormalMediaControlHeightXbox">117</x:Double>
     <x:Double x:Key="NormalCoverControlHeight">92</x:Double>
     <x:Double x:Key="SmallMediaControlHeight">58</x:Double>
+    <x:Double x:Key="SmallMediaControlHeightXbox">85</x:Double>
     <x:Double x:Key="SmallCoverControlHeight">50</x:Double>
 
+    <Thickness x:Key="MediaTransportControlsTitleSafeBounds">48,0,48,0</Thickness>
 
     <!--  Default style for Windows.UI.Xaml.Controls.Slider  -->
     <Style x:Key="MediaControlSlider" TargetType="Slider">
@@ -388,7 +391,7 @@
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" x:Name="CommandBarFirstColumn" />
-                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition x:Name="CommandBarCenterColumn" Width="Auto" />
                                     <ColumnDefinition x:Name="CommandBarLastColumn" Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
@@ -458,7 +461,7 @@
                                     Grid.Column="2"
                                     IsEnabled="True">
 
-                                    <Border x:Name="MediaTransportControls_Command_Border">
+                                    <Border x:Name="MediaTransportControls_Command_Border" HorizontalAlignment="Center">
 
                                         <Grid x:Name="MediaControlsCommandBar">
                                             <Grid.RowDefinitions>
@@ -720,7 +723,25 @@
                         </Border>
 
                         <VisualStateManager.VisualStateGroups>
-
+                            <VisualStateGroup>
+                                
+                                
+                                    <VisualState>
+                                        <VisualState.StateTriggers>
+                                            <local:DeviceFamilyTrigger DeviceFamily="Windows.Xbox"/>
+                                        </VisualState.StateTriggers>
+                                        <VisualState.Setters>
+                                        <Setter Target="RootGrid.Height" Value="{StaticResource NormalMediaControlHeightXbox}" />
+                                        <!--<Setter Target="RootGrid.Margin" Value="0,0,0,-27" />-->
+                                        <Setter Target="MediaTransportControls_Timeline_Border.Width" Value="Auto" />
+                                        
+                                        <Setter Target="CommandBarFirstColumn.Width" Value="Auto" />
+                                        <Setter Target="CommandBarCenterColumn.Width" Value="*" />
+                                        <Setter Target="CommandBarLastColumn.Width" Value="Auto" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                
+                            </VisualStateGroup>
                             <VisualStateGroup x:Name="SizeMode">
                                 <VisualState x:Name="LargeSize">
                                     <VisualState.StateTriggers>

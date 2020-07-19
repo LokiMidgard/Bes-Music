@@ -119,7 +119,7 @@
 
                 <controls:TransportControls
                     x:Name="TransportControls" 
-                    IsCompact="False"
+                    IsCompact="False" 
                     IsNextTrackButtonVisible="True"
                     IsPreviousTrackButtonVisible="True" />
             </MediaPlayerElement.TransportControls>
@@ -148,7 +148,7 @@
             Height="40" />
         </Grid>
 
-        <VisualStateManager.VisualStateGroups>
+        <!--<VisualStateManager.VisualStateGroups>
                       <VisualStateGroup>
                 <VisualState>
                     <VisualState.StateTriggers>
@@ -161,7 +161,7 @@
                 </VisualState>
             </VisualStateGroup>
 
-        </VisualStateManager.VisualStateGroups>
+        </VisualStateManager.VisualStateGroups>-->
 
     </Grid>
 </Page>
