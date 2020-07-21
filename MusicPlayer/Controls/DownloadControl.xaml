@@ -42,7 +42,10 @@
         </StackPanel>
 
         <ListView
+            x:Name="list"
             HorizontalContentAlignment="Stretch"
+            IsItemClickEnabled="False"
+            ItemClick="list_ItemClick"
             ItemsSource="{Binding Instance.AllQueued}"
             SelectionMode="None"
             Visibility="{Binding Instance.AllQueued.Count, Converter={StaticResource collapsedOnEmpty}}">
@@ -142,6 +145,7 @@
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
 
+                        <Setter Target="list.IsItemClickEnabled" Value="True" />
                         <Setter Target="HeaderPlaceholder.Height" Value="150" />
                     </VisualState.Setters>
                 </VisualState>

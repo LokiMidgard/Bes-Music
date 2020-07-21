@@ -45,5 +45,13 @@ namespace MusicPlayer.Controls
             }
 
         }
+
+        private void list_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (e.ClickedItem is DownloadItem downloadItem)
+            {
+                downloadItem.CancelCommand.Execute(null);
+            }
+        }
     }
 }
