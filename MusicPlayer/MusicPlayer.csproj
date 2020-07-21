@@ -149,6 +149,7 @@
     </Compile>
     <Compile Include="Controls\SlidingInformationControl.cs" />
     <Compile Include="Controls\StateListener.cs" />
+    <Compile Include="Controls\SymbolButton.cs" />
     <Compile Include="Controls\UWPToolkit\Extensions\ListViewBase\ListViewExtensions.cs" />
     <Compile Include="Controls\UWPToolkit\Extensions\ListViewBase\StretchDirection.cs" />
     <Compile Include="Converters\AddCoverter.cs" />
