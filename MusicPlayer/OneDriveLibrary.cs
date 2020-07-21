@@ -124,6 +124,14 @@ namespace MusicPlayer
                 {
                     songs = songGroups.SelectMany(x => x.Songs);
                 }
+                else if (vm is PlayList playlist)
+                {
+                    songs = playlist.Songs;
+                }
+                else if (vm is IEnumerable<PlayList> playlists)
+                {
+                    songs = playlists.SelectMany(x => x.Songs);
+                }
                 else
                 {
                     System.Diagnostics.Debug.WriteLine($"RepairCommandParameter is no of a expected Type, was {vm?.GetType().FullName ?? "<NULL>"}");
