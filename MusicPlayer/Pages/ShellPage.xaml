@@ -1,15 +1,18 @@
 ﻿<Page
-    
     x:Class="MusicPlayer.Pages.ShellPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:MusicPlayer.Controls"
+    xmlns:converters="using:MusicPlayer.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:MusicPlayer.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:playback="using:Windows.Media.Playback" xmlns:musicplayer="using:MusicPlayer" xmlns:converters="using:MusicPlayer.Converters" xmlns:viewmodels="using:MusicPlayer.Viewmodels"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    xmlns:musicplayer="using:MusicPlayer"
+    xmlns:playback="using:Windows.Media.Playback"
+    xmlns:trigger="using:MusicPlayer.Triggers"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
     MinWidth="270"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
 
 
@@ -17,9 +20,9 @@
 
     <Page.Resources>
 
-        <converters:EmptyToBool x:Key="emptyConverter" OnNullValue="True"></converters:EmptyToBool>
-        <converters:VisibleCollapsedOnEmpty x:Key="emptyVisibilityConverter"  OnNullValue="Collapsed" />
-        <converters:ListConverter x:Key="listConverter"  />
+        <converters:EmptyToBool x:Key="emptyConverter" OnNullValue="True" />
+        <converters:VisibleCollapsedOnEmpty x:Key="emptyVisibilityConverter" OnNullValue="Collapsed" />
+        <converters:ListConverter x:Key="listConverter" />
         <ControlTemplate x:Key="CommandBarTemplate1" TargetType="CommandBar">
             <Grid>
                 <TextBlock>asdf</TextBlock>
@@ -28,7 +31,6 @@
     </Page.Resources>
 
     <Grid>
-
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -38,7 +40,11 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>-->
 
-        <TextBlock Height="0" Width="0" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <TextBlock
+            Width="0"
+            Height="0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top">
             <TextBlock.DataContext>
                 <viewmodels:OneDriveAccessor OnAskForPermission="OneDriveAccessor_OnAskForPermission" />
 
@@ -49,65 +55,115 @@
         <controls:TransportControls Grid.Row="1" />-->
 
         <Frame x:Name="shellFrame" Grid.RowSpan="2" />
-
-      <Border
-            
-            Background="{StaticResource BackgroundBrush1}"
+        <TextBlock
+            x:Name="DownloadText"
+            VerticalAlignment="Top"
+            FontSize="10">
+            <TextBlock.RenderTransform>
+                <TranslateTransform x:Name="DownloadTransfrom" Y="-48" />
+            </TextBlock.RenderTransform>
+            <TextBlock.DataContext>
+                <musicplayer:NetworkViewmodelAccessor />
+            </TextBlock.DataContext>
+            <Run Text="Downloading" />
+            <Run Text="{Binding Instance.AllQueued.Count}" />
+        </TextBlock>
+        <Border
             Grid.Row="1"
             VerticalAlignment="Bottom"
-            >
-            
-        <MediaPlayerElement
-            x:Name="mediaPlayer"
-            AreTransportControlsEnabled="True">
+            Background="{StaticResource BackgroundBrush1}">
 
-            <MediaPlayerElement.TransportControls>
+            <MediaPlayerElement x:Name="mediaPlayer" AreTransportControlsEnabled="True">
 
-                <controls:TransportControls
-                    x:Name="TransportControls" 
-                    IsCompact="False" 
-                    IsNextTrackButtonVisible="True"
-                    IsPreviousTrackButtonVisible="True" />
-            </MediaPlayerElement.TransportControls>
-        </MediaPlayerElement>
+                <MediaPlayerElement.TransportControls>
+
+                    <controls:TransportControls
+                        x:Name="TransportControls"
+                        IsCompact="False"
+                        IsNextTrackButtonVisible="True"
+                        IsPreviousTrackButtonVisible="True" />
+                </MediaPlayerElement.TransportControls>
+            </MediaPlayerElement>
         </Border>
 
 
-        <Grid x:Name="LoadingGrid" Grid.RowSpan="2" Background="{ThemeResource AccentBrush}"  >
+        <Grid
+            x:Name="LoadingGrid"
+            Grid.RowSpan="2"
+            Background="{ThemeResource AccentBrush}">
             <Grid.Resources>
                 <Storyboard x:Name="HideAnimation">
-                    <DoubleAnimation To="0" Duration="0:0:0.5" Storyboard.TargetName="LoadingGrid" Storyboard.TargetProperty="Opacity" />
+                    <DoubleAnimation
+                        Storyboard.TargetName="LoadingGrid"
+                        Storyboard.TargetProperty="Opacity"
+                        To="0"
+                        Duration="0:0:0.5" />
                 </Storyboard>
             </Grid.Resources>
-            <Border   >
+            <Border>
                 <Border.Background>
-                    <ImageBrush ImageSource="/Assets/SplashScreen.png" Stretch="None"/>
+                    <ImageBrush ImageSource="/Assets/SplashScreen.png" Stretch="None" />
                 </Border.Background>
             </Border>
 
             <ProgressRing
-            x:Name="ProgreessIndecator"
-            Margin="0,180,0,0"
-            Width="40"
-            IsActive="True"
-            Foreground="White"
-            Height="40" />
+                x:Name="ProgreessIndecator"
+                Width="40"
+                Height="40"
+                Margin="0,180,0,0"
+                Foreground="White"
+                IsActive="True" />
         </Grid>
 
-        <!--<VisualStateManager.VisualStateGroups>
-                      <VisualStateGroup>
-                <VisualState>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualStateGroup.Transitions>
+                    <VisualTransition From="Vis" To="Non">
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetName="DownloadTransfrom"
+                                Storyboard.TargetProperty="Y"
+                                To="-48"
+                                Duration="0:0:1" />
+
+                        </Storyboard>
+                    </VisualTransition>
+                    <VisualTransition From="Non" To="Vis">
+                        <Storyboard>
+                            <DoubleAnimation
+                                Storyboard.TargetName="DownloadTransfrom"
+                                Storyboard.TargetProperty="Y"
+                                To="48"
+                                Duration="0:0:1" />
+
+                        </Storyboard>
+                    </VisualTransition>
+                </VisualStateGroup.Transitions>
+                <VisualState x:Name="Non">
                     <VisualState.StateTriggers>
-                        <musicplayer:DeviceFamilyTrigger DeviceFamily="Windows.Xbox"/>
+                        <trigger:EqualsTrigger
+                            Input="{Binding ElementName=DownloadText, Path=DataContext.Instance.AllQueued.Count}"
+                            Reference="0"
+                            TriggerOnEquals="True" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="mediaPlayer.Margin"
-                        Value="0,0,0,27"/>
+                        <Setter Target="DownloadTransfrom.Y" Value="-48" />
                     </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Vis">
+                    <VisualState.StateTriggers>
+                        <trigger:EqualsTrigger
+                            Input="{Binding ElementName=DownloadText, Path=DataContext.Instance.AllQueued.Count}"
+                            Reference="0"
+                            TriggerOnEquals="False" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="DownloadTransfrom.Y" Value="48" />
+                    </VisualState.Setters>
+                    <Storyboard />
                 </VisualState>
             </VisualStateGroup>
 
-        </VisualStateManager.VisualStateGroups>-->
-
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </Page>

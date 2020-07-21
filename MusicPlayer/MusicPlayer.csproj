@@ -222,6 +222,7 @@
     <Compile Include="Services\FirstRunDisplayService.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\WhatsNewDisplayService.cs" />
+    <Compile Include="Triggers\EqualsTrigger.cs" />
     <Compile Include="Viewmodels\AlbumCollectionViewmodel.cs" />
     <Compile Include="Viewmodels\AlbumViewmodel.cs" />
     <Compile Include="App.xaml.cs">

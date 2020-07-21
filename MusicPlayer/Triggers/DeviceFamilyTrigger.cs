@@ -1,4 +1,6 @@
-﻿using Windows.System.Profile;
+﻿using System;
+
+using Windows.System.Profile;
 using Windows.UI.Xaml;
 
 namespace MusicPlayer.Triggers
@@ -22,4 +24,5 @@ namespace MusicPlayer.Triggers
             }
         }
     }
+
 }
