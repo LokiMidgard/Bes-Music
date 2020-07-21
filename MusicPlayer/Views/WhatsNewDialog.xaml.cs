@@ -13,5 +13,12 @@ namespace MusicPlayer.Views
             RequestedTheme = (Window.Current.Content as FrameworkElement).RequestedTheme;
             InitializeComponent();
         }
+
+        private async void MarkdownTextBlock_LinkClicked(object sender, Microsoft.Toolkit.Uwp.UI.Controls.LinkClickedEventArgs e)
+        {
+            if (Uri.TryCreate(e.Link, UriKind.Absolute, out var uri))
+                await Windows.System.Launcher.LaunchUriAsync(uri);
+
+        }
     }
 }

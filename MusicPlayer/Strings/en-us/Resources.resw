@@ -132,7 +132,33 @@ To get startet Sync your Music. (OneDrive Account required)</value>
     <comment>First use prompt message primary button text</comment>
   </data>
   <data name="WhatsNew_Body.Text" xml:space="preserve">
-    <value>- Fixes a bug (2#) that crashed the app when there were problems authenticationg</value>
+    <value>**We improved usabillity for XBox useres** 🎉
+
+## Known issues
+
+- High memory consumption in background  
+  The App currently does not reduces its memory foot print
+  while it's send to the background. On XBox this results
+  in the system suspending the App quickly.
+
+  On other systems there seems to be no drawback besids a high memory foot print.
+
+## Fixed issues
+
+- [Bug #4](https://github.com/LokiMidgard/Bes-Music/issues/4) On XBox we don't get access to the 
+  Music folder. The resulting error was not handled and crashed the App
+    - We now handle the errors and show an *(more or less)* apropiate message
+    - The option is no longer available on XBox since it never worked anyway
+- [Bug #3](https://github.com/LokiMidgard/Bes-Music/issues/3) The *Now Playing Fullscreen* View
+  did not render correctly.
+- On Xbox there were UI and usebility problems. Ranging from inconviniend to nightmarish.
+  Most of those have been addressed. But there is still room for improvement.
+   - No longer using cursor input
+   - Lists can now be scroled to the bottom without oclusion of the last elements
+   - UI extends to the borders of the screen. *(We still must not display any info near the edges)*
+   - Changed the Download UI to be a tab on the Main screen
+
+The memory issue is not easy to fix. So it may take some time. It dosn't mean the issue is ignored, If it's not in the next version. It just takes more time.</value>
     <comment>What's new prompt message body</comment>
   </data>
   <data name="WhatsNewDialog.Title" xml:space="preserve">

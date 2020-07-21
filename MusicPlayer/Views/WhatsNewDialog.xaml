@@ -2,6 +2,7 @@
     x:Class="MusicPlayer.Views.WhatsNewDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Uid="WhatsNewDialog"
@@ -25,16 +26,12 @@
     <ScrollViewer>
         <StackPanel>
             <!--<TextBlock TextWrapping="WrapWholeWords" />-->
-            <TextBlock 
-                
-                    TextWrapping="WrapWholeWords">
-                <Run x:Uid="WhatsNew_Body"  />
-                <LineBreak/>
-                <LineBreak/>
-                    <Run Text="You can find the list of bugs and other issues under" />
-                    <Hyperlink NavigateUri="https://github.com/LokiMidgard/Bes-Music/issues" >
-                        <Run Text="https://github.com/LokiMidgard/Bes-Music/issues" />
-                    </Hyperlink><Run Text="." />
+            <controls:MarkdownTextBlock x:Uid="WhatsNew_Body" LinkClicked="MarkdownTextBlock_LinkClicked" />
+            <TextBlock TextWrapping="WrapWholeWords" Margin="0,24,0,0">
+                <Run Text="You can find the list of bugs and other issues under" />
+                <Hyperlink NavigateUri="https://github.com/LokiMidgard/Bes-Music/issues">
+                    <Run Text="https://github.com/LokiMidgard/Bes-Music/issues" />
+                </Hyperlink><Run Text="." />
             </TextBlock>
         </StackPanel>
     </ScrollViewer>
