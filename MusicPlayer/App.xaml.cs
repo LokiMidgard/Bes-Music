@@ -1,11 +1,15 @@
 ﻿using Microsoft.Toolkit.Services.MicrosoftGraph;
+
 using MusicPlayer.Services;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
+
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -125,6 +129,33 @@ namespace MusicPlayer
                 applicationView.SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
         }
 
+        internal event EventHandler<EventArgs<(Exception exception, ErroType erroType)>> ErrorOccured;
+
+        public void NotifyError(object sender, Exception exception)
+        {
+            ErroType errorType;
+
+            switch (exception)
+            {
+                case WebException _:
+                    errorType = ErroType.Network;
+                    break;
+                case IOException _:
+                    errorType = ErroType.FileIo;
+                    break;
+                default:
+                    errorType = ErroType.Other;
+                    break;
+            }
+
+            this.NotifyError(sender, exception, errorType);
+        }
+
+        private void NotifyError(object sender, Exception exception, ErroType errorType)
+        {
+            this.ErrorOccured?.Invoke(sender, new EventArgs<(Exception exception, ErroType erroType)>((exception, errorType)));
+        }
+
         private bool isTouchMode;
 
         public bool IsMouseMode => !this.IsTochMode;
@@ -189,5 +220,12 @@ namespace MusicPlayer
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
+    }
+
+    public enum ErroType
+    {
+        Other,
+        FileIo,
+        Network
     }
 }
