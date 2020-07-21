@@ -16,7 +16,7 @@ namespace MusicPlayer.Viewmodels
     {
 
 
-        public ReadOnlyObservableCollection<PlayList> PlayList => MusicStore.Instance.PlayLists;
+        public ReadOnlyObservableCollection<PlayList> PlayList => App.Current.MusicStore.PlayLists;
 
         public ICommand PlayCommand { get; }
 
@@ -24,18 +24,18 @@ namespace MusicPlayer.Viewmodels
 
         public PlayListViewmodel()
         {
-            MusicStore.Instance.PropertyChanged += this.Instance_PropertyChanged;
+            App.Current.MusicStore.PropertyChanged += this.Instance_PropertyChanged;
 
             this.PlayCommand = new DelegateCommand<PlayList>(async (song) =>
             {
-                await MediaplayerViewmodel.Instance.ResetSongs(song.Songs.ToImmutableArray(), null);
+                await App.Current.MediaplayerViewmodel.ResetSongs(song.Songs.ToImmutableArray(), null);
             });
 
         }
 
         private void Instance_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(MusicStore.Instance.PlayLists))
+            if (e.PropertyName == nameof(App.Current.MusicStore.PlayLists))
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.PlayList)));
         }
     }

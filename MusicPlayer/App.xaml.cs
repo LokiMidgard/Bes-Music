@@ -1,5 +1,7 @@
 ﻿using Microsoft.Toolkit.Services.MicrosoftGraph;
+using MusicPlayer.Core;
 using MusicPlayer.Services;
+using MusicPlayer.Viewmodels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -34,19 +36,101 @@ namespace MusicPlayer
     {
         public static new App Current => Application.Current as App;
 
-        public static Pages.ShellPage Shell { get; private set; }
+        private bool showPlayerControls;
+
+        public bool ShowPlayerControls
+        {
+            get { return this.showPlayerControls; }
+            set
+            {
+                this.showPlayerControls = value;
+
+                if (Window.Current.Content is Pages.ShellPage shellPage)
+                {
+                    shellPage.ShowPlayUi = value;
+                }
+            }
+        }
+
+        public bool DisableUI
+        {
+            get => !(Window.Current.Content is Pages.ShellPage);
+            set
+            {
+                if (value)
+                {
+                    _ = Window.Current.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                    {
+                        Window.Current.Content = null;
+                        this.stopEverything.Cancel();
+                        this.stopEverything.Dispose();
+                        this.stopEverything = new System.Threading.CancellationTokenSource();
+                        // it is actually not yet initilized so it should only hold 4 empty ObservableCollectsion and no data.
+                        //System.Threading.Interlocked.Exchange(ref this.musicStore, new MusicStore());
+                        //System.Threading.Interlocked.Exchange(ref this.mediaplayerViewmodel, new MediaplayerViewmodel())?.Dispose();
+                        //System.Threading.Interlocked.Exchange(ref this.albumCollectionViewmodel, new AlbumCollectionViewmodel())?.Dispose();
+
+
+                        var weakmusicStore = new WeakReference(this.musicStore);
+                        var weakmediaplayerViewmodel = new WeakReference(this.mediaplayerViewmodel);
+                        var weakalbumCollectionViewmodel = new WeakReference(this.albumCollectionViewmodel);
+
+                        this.musicStore = null;
+                        this.mediaplayerViewmodel.Dispose();
+                        this.albumCollectionViewmodel.Dispose();
+
+                        this.musicStore = null;
+                        this.mediaplayerViewmodel = null;
+                        this.albumCollectionViewmodel = null;
+
+                        GC.AddMemoryPressure(1024 * 1024 * 700);
+
+                        await System.Threading.Tasks.Task.Delay(10000);
+
+                        for (int i = 0; i < GC.MaxGeneration; i++)
+                        {
+                            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+                            GC.WaitForPendingFinalizers();
+                        }
+                        GC.RemoveMemoryPressure(1024 * 1024 * 700);
+                    });
+                }
+                else
+                {
+                    Window.Current.Content = new Pages.ShellPage();
+                }
+            }
+        }
+
+        public System.Threading.CancellationToken StopEverything => this.stopEverything.Token;
+        private System.Threading.CancellationTokenSource stopEverything;
+
+
+        private MusicStore musicStore;
+        public MusicStore MusicStore => this.musicStore;
+
+        private AlbumCollectionViewmodel albumCollectionViewmodel;
+        public AlbumCollectionViewmodel AlbumCollectionViewmodel => this.albumCollectionViewmodel;
+
+        private MediaplayerViewmodel mediaplayerViewmodel;
+        public MediaplayerViewmodel MediaplayerViewmodel => this.mediaplayerViewmodel;
+
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
         {
-            _ = LocalLibrary.Instance;
+            this.stopEverything = new System.Threading.CancellationTokenSource();
+
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
             this.RequiresPointerMode = Windows.UI.Xaml.ApplicationRequiresPointerMode.WhenRequested;
             this.IsXBox = (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Xbox"); ;
-
+            this.musicStore = new MusicStore();
+            this.mediaplayerViewmodel = new MediaplayerViewmodel();
+            this.albumCollectionViewmodel = new AlbumCollectionViewmodel();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -73,6 +157,14 @@ namespace MusicPlayer
                 });
 
 
+            if (Window.Current.Content is null)
+            {
+                this.Suspending += this.App_Suspending;
+
+                this.EnteredBackground += this.App_EnteredBackground;
+                this.LeavingBackground += this.App_LeavingBackground;
+            }
+
             var rootFrame = Window.Current.Content as Pages.ShellPage;
 
             // Do not repeat app initialization when the Window already has content,
@@ -92,7 +184,7 @@ namespace MusicPlayer
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
             }
-            Shell = rootFrame;
+            //Shell = rootFrame;
             if (e.PrelaunchActivated == false)
             {
                 if (Services.NavigationService.Frame.Content == null)
@@ -120,8 +212,23 @@ namespace MusicPlayer
                     width: 270,
                     height: 400
                     ));
+            if (this.IsXBox) // Only do this on XBox, on phone the ui will be behind system app bar otherwise.
+                applicationView.SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
+        }
 
-            applicationView.SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
+        private void App_LeavingBackground(object sender, LeavingBackgroundEventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void App_EnteredBackground(object sender, EnteredBackgroundEventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void App_Suspending(object sender, SuspendingEventArgs e)
+        {
+            var deadline = e.SuspendingOperation.Deadline;
         }
 
         private bool isTouchMode;

@@ -1,4 +1,5 @@
 ﻿using MusicPlayer.Core;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -7,10 +8,9 @@ using Windows.UI.Xaml;
 
 namespace MusicPlayer.Viewmodels
 {
-    public class AlbumCollectionViewmodel : DependencyObject
+    public class AlbumCollectionViewmodel : DependencyObject, IDisposable
     {
 
-        public static readonly AlbumCollectionViewmodel Instance = new AlbumCollectionViewmodel();
 
         //private readonly ILibrary<MediaSource, StorageItemThumbnail> library = LocalLibrary.Instance;
 
@@ -18,9 +18,13 @@ namespace MusicPlayer.Viewmodels
         public ReadOnlyObservableCollection<AlbumViewmodel> Albums { get; }
 
         private readonly GroupedObservableCollection<char, AlbumViewmodel> alphabetGrouped;
+        private bool disposedValue;
+
         public ReadOnlyObservableCollection<SortedGroup<char, AlbumViewmodel>> AlphabetGrouped { get; }
 
-        private AlbumCollectionViewmodel()
+        private MusicStore musicStore;
+
+        public AlbumCollectionViewmodel()
         {
             this.Albums = new ReadOnlyObservableCollection<AlbumViewmodel>(this.albums);
 
@@ -46,7 +50,8 @@ namespace MusicPlayer.Viewmodels
 
 
 
-            MusicStore.Instance.PropertyChanged += this.Instance_PropertyChanged;
+            this.musicStore = App.Current.MusicStore;
+            this.musicStore.PropertyChanged += this.Instance_PropertyChanged;
 
         }
 
@@ -58,16 +63,16 @@ namespace MusicPlayer.Viewmodels
 
         private void UpdateCollection()
         {
-            foreach (var item in MusicStore.Instance.Albums)
+            foreach (var item in App.Current.MusicStore.Albums)
             {
                 this.Add(item);
             }
 
-                    (MusicStore.Instance.Albums as INotifyCollectionChanged).CollectionChanged += this.AlbumCollectionViewmodel_CollectionChanged1;
-            InitAsync();
+            (this.musicStore.Albums as INotifyCollectionChanged).CollectionChanged += this.AlbumCollectionViewmodel_CollectionChanged1;
+            this.InitAsync();
         }
 
-        private  void InitAsync()
+        private void InitAsync()
         {
         }
 
@@ -96,5 +101,34 @@ namespace MusicPlayer.Viewmodels
             this.albums.Remove(vm);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposedValue)
+            {
+                if (disposing)
+                {
+                    this.musicStore.PropertyChanged -= this.Instance_PropertyChanged;
+                    (this.musicStore.Albums as INotifyCollectionChanged).CollectionChanged -= this.AlbumCollectionViewmodel_CollectionChanged1;
+                }
+                this.musicStore = null;
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                this.disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~AlbumCollectionViewmodel()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            this.Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

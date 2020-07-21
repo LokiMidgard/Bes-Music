@@ -35,10 +35,13 @@ namespace MusicPlayer.Controls
             var albumText = (TextBlock)this.GetTemplateChild("AlbumText");
             var artistText = (TextBlock)this.GetTemplateChild("ArtistText");
 
+            var currentStopToken = App.Current.StopEverything;
 
             var delay = TimeSpan.FromSeconds(5);
             enterTitle.Completed += async (sender, e) =>
             {
+                if (currentStopToken.IsCancellationRequested)
+                    return;
                 await Task.Delay(delay);
                 if (albumText.Text?.Length > 0)
                     enterAlbum.Begin();
@@ -49,6 +52,8 @@ namespace MusicPlayer.Controls
             };
             enterAlbum.Completed += async (sender, e) =>
             {
+                if (currentStopToken.IsCancellationRequested)
+                    return;
                 await Task.Delay(delay);
                 if (artistText.Text?.Length > 0)
                     enterArtist.Begin();
@@ -59,6 +64,8 @@ namespace MusicPlayer.Controls
             };
             enterArtist.Completed += async (sender, e) =>
             {
+                if (currentStopToken.IsCancellationRequested)
+                    return;
                 await Task.Delay(delay);
                 if (titleText.Text?.Length > 0)
                     enterTitle.Begin();

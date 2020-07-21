@@ -53,6 +53,12 @@ namespace MusicPlayer.Controls
             this.InitializeComponent();
             this.Loaded += this.AlbumControl_Loaded;
             this.Unloaded += this.AlbumControl_Unloaded;
+
+            App.Current.StopEverything.Register(() =>
+            {
+                this.AlbumControl_Unloaded(null, null);
+            });
+
         }
 
         private void AlbumControl_Unloaded(object sender, RoutedEventArgs e)

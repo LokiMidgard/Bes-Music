@@ -8,6 +8,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
 using Windows.Graphics.Imaging;
 using Windows.Media.Core;
 using Windows.Storage.FileProperties;
@@ -61,7 +62,7 @@ namespace MusicPlayer.Pages
         {
             var button = sender as Button;
             var song = button.Tag as SongGroup;
-            await Viewmodels.MediaplayerViewmodel.Instance.AddSong(song.Songs.First());
+            await App.Current.MediaplayerViewmodel.AddSong(song.Songs.First());
 
 
 
@@ -127,6 +128,16 @@ namespace MusicPlayer.Pages
                 t = new Rect(t.X, t.Y, t.Width, t.Height + Helpers.ConstantsHelper.PlayListHeightField);
                 args.TargetRect = t;
             }
+        }
+
+        private void ItemsStackPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (ApiInformation.IsEventPresent("Windows.UI.Xaml.UIElement", nameof(this.PreviewKeyDown)))
+            {
+                var panel = sender as UIElement;
+                panel.BringIntoViewRequested += this.ItemsStackPanel_BringIntoViewRequested;
+            }
+
         }
     }
 }

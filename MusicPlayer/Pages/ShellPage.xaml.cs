@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
 using Windows.Media.Core;
 using Windows.Media.Playback;
 using Windows.Storage.FileProperties;
@@ -64,20 +65,17 @@ namespace MusicPlayer.Pages
             this.DataContext = this.ViewModel;
 
 
-            MediaplayerViewmodel.Init(this.TransportControls);
+            if (ApiInformation.IsEventPresent("Windows.UI.Xaml.UIElement", nameof(this.PreviewKeyDown)))
+                this.PreviewKeyDown += this.Page_PreviewKeyDown;
+
+            App.Current.MediaplayerViewmodel.Init(this.TransportControls);
 
 
             IList<KeyboardAccelerator> keyboardAccelerators;
-            try
-            {
+            if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.UIElement", nameof(this.KeyboardAccelerators)))
                 keyboardAccelerators = this.KeyboardAccelerators;
-
-            }
-            catch (InvalidCastException)
-            {
-
+            else
                 keyboardAccelerators = new List<KeyboardAccelerator>();
-            }
             this.ViewModel.Initialize(this.shellFrame, null, keyboardAccelerators);
 
             this.Loaded += this.ShellPage_Loaded;
@@ -85,9 +83,9 @@ namespace MusicPlayer.Pages
 
         private async void ShellPage_Loaded(object sender, RoutedEventArgs e)
         {
-            this.ShowPlayUi = false;
+            App.Current.ShowPlayerControls = false;
             _ = OneDriveLibrary.Instance;
-            _ = AlbumCollectionViewmodel.Instance;
+            
 
             var hideLoding = this.LoadingGrid.Resources["HideAnimation"] as Storyboard;
             hideLoding.Completed += (sender2, e2) =>
@@ -95,12 +93,12 @@ namespace MusicPlayer.Pages
                   this.LoadingGrid.Visibility = Visibility.Collapsed;
                   this.ProgreessIndecator.IsActive = false;
               };
-            await Core.MusicStore.Instance.Init();
-            await MusicStore.Instance.SetUITask(this.RunOnDispatcher);
+            await App.Current.MusicStore.Init();
+            await App.Current.MusicStore.SetUITask(this.RunOnDispatcher);
 
             NetworkViewmodel.Instance.OnError += this.Network_OnError;
 
-            this.ShowPlayUi = true;
+            App.Current.ShowPlayerControls = true;
             hideLoding.Begin();
         }
 

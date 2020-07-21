@@ -15,7 +15,7 @@ namespace MusicPlayer.Services
 
         internal static async Task ShowIfAppropriateAsync()
         {
-            await App.Shell.Dispatcher.RunAsync(
+            await Windows.UI.Xaml.Window.Current.Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal, async () =>
                 {
                     if (SystemInformation.IsFirstRun && !shown)

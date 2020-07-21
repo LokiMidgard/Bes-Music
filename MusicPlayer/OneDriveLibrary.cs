@@ -157,7 +157,7 @@ namespace MusicPlayer
                 if (this.IsBlockedLoding)
                     return;
 
-                var songs = MusicStore.Instance.Albums
+                var songs = App.Current.MusicStore.Albums
                 .SelectMany(x => x.Songs)
                 .SelectMany(x => x.Songs)
                 .Where(x => x.LibraryProvider == this.Id)
@@ -512,7 +512,7 @@ namespace MusicPlayer
                             var mediaId = array[2];
 
 
-                            var playlist = MusicStore.Instance.PlayLists.FirstOrDefault(x => x.Id == playListId);
+                            var playlist = App.Current.MusicStore.PlayLists.FirstOrDefault(x => x.Id == playListId);
 
                             if (playlist is null)
                             {
@@ -527,7 +527,7 @@ namespace MusicPlayer
 
                                 var songToDelete = playlist.Songs.FirstOrDefault(x => x.MediaId == mediaId && x.LibraryProvider == providerId);
                                 if (songToDelete != null)
-                                    await MusicStore.Instance.RemovePlaylistSong(playlist, songToDelete);
+                                    await App.Current.MusicStore.RemovePlaylistSong(playlist, songToDelete);
                             }
                             else
                             {
@@ -536,10 +536,10 @@ namespace MusicPlayer
 
                                 if (toChange is null) // we need to AddIt
                                 {
-                                    var song = MusicStore.Instance.GetSongByMediaId(providerId, mediaId);
+                                    var song = App.Current.MusicStore.GetSongByMediaId(providerId, mediaId);
                                     if (song is null) // not jet synced?
                                         continue; // TODO: well we need to remember this....
-                                    await MusicStore.Instance.AddPlaylistSong(playlist, song);
+                                    await App.Current.MusicStore.AddPlaylistSong(playlist, song);
                                 }
                                 else // otherwise we changed the index, but the player does not store index of songs yet....
                                 { }
@@ -558,15 +558,15 @@ namespace MusicPlayer
                             var id = Guid.Parse(Path.GetFileNameWithoutExtension(item.Name));
                             if (item.Deleted != null)
                             {
-                                var toDeleted = MusicStore.Instance.PlayLists.FirstOrDefault(x => x.Id == id);
+                                var toDeleted = App.Current.MusicStore.PlayLists.FirstOrDefault(x => x.Id == id);
                                 if (toDeleted != null)
-                                    await MusicStore.Instance.RemovePlaylist(toDeleted);
+                                    await App.Current.MusicStore.RemovePlaylist(toDeleted);
                             }
                             else
                             {
-                                var toChange = MusicStore.Instance.PlayLists.FirstOrDefault(x => x.Id == id);
+                                var toChange = App.Current.MusicStore.PlayLists.FirstOrDefault(x => x.Id == id);
                                 if (toChange is null) // we need to create it
-                                    await MusicStore.Instance.CreatePlaylist(item.Description, id);
+                                    await App.Current.MusicStore.CreatePlaylist(item.Description, id);
                                 else // otherwise rename it
                                     toChange.Name = item.Description;
                             }
@@ -589,10 +589,10 @@ namespace MusicPlayer
 
             async Task<PlayListCollectionState> GetCurrentPlayListState()
             {
-                await MusicStore.Instance.WhenInitilized;
+                await App.Current.MusicStore.WhenInitilized;
                 return new PlayListCollectionState(
 
-                    playlists: MusicStore.Instance.PlayLists.ToArray().Select(p =>
+                    playlists: App.Current.MusicStore.PlayLists.ToArray().Select(p =>
                     {
 
                         return new PlaylistState(
@@ -687,14 +687,14 @@ namespace MusicPlayer
 
         private async Task ClearData()
         {
-            await MusicStore.Instance.WhenInitilized;
-            var toDelete = MusicStore.Instance.Albums.SelectMany(x => x.Songs).SelectMany(x => x.Songs).Where(x => x.LibraryProvider == this.Id);
+            await App.Current.MusicStore.WhenInitilized;
+            var toDelete = App.Current.MusicStore.Albums.SelectMany(x => x.Songs).SelectMany(x => x.Songs).Where(x => x.LibraryProvider == this.Id);
 
-            await MusicStore.Instance.RemoveSong(toDelete);
+            await App.Current.MusicStore.RemoveSong(toDelete);
 
 
-            foreach (var playlist in MusicStore.Instance.PlayLists.ToArray())
-                await MusicStore.Instance.RemovePlaylist(playlist);
+            foreach (var playlist in App.Current.MusicStore.PlayLists.ToArray())
+                await App.Current.MusicStore.RemovePlaylist(playlist);
 
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             localSettings.Values.Remove(ONE_DRIVE_MUSIC_DELTA_TOKEN);
@@ -786,7 +786,7 @@ namespace MusicPlayer
 
         private async Task DownloadSong(string id)
         {
-            var songMetadata = MusicStore.Instance.GetSongByMediaId(this.Id, id);
+            var songMetadata = App.Current.MusicStore.GetSongByMediaId(this.Id, id);
             await NetworkViewmodel.Instance.AddDownload(songMetadata, async (progress, cancle) =>
              {
 
@@ -826,7 +826,7 @@ namespace MusicPlayer
 
 
 
-                 var song = await MusicStore.Instance.AddSong(this.Id, mediaData.targetFileName,
+                 var song = await App.Current.MusicStore.AddSong(this.Id, mediaData.targetFileName,
                              duration: mediaData.duration,
                              composers: mediaData.composers,
                              interpreters: mediaData.performers,
@@ -853,7 +853,7 @@ namespace MusicPlayer
                 if (!await MicrosoftGraphService.Instance.TryLoginAsync())
                     throw new NotAuthenticatedException();
             progress.Report(("Wait for Database", 0));
-            await MusicStore.Instance.WhenInitilized;
+            await App.Current.MusicStore.WhenInitilized;
 
             progress.Report(("Loding Song Metadata", 0));
 
@@ -897,7 +897,7 @@ namespace MusicPlayer
             var processced = 0;
             progress.Report(("Process Metadata", processced / (double)total));
 
-            using (await MusicStore.Instance.BeginnTransaction(cancel))
+            using (await App.Current.MusicStore.BeginnTransaction(cancel))
             using (var throttler = new SemaphoreSlim(10, 10))
             {
                 var allDownloads = new List<Task>();
@@ -942,9 +942,9 @@ namespace MusicPlayer
                                 }
                                 container.Values.Remove(driveItem.Id);
 
-                                var song = MusicStore.Instance.GetSongByMediaId(this.Id, driveItem.Id);
+                                var song = App.Current.MusicStore.GetSongByMediaId(this.Id, driveItem.Id);
                                 if (song != null)
-                                    await MusicStore.Instance.RemoveSong(song);
+                                    await App.Current.MusicStore.RemoveSong(song);
 
                             }
                             else
@@ -1011,7 +1011,7 @@ namespace MusicPlayer
                                 var extension = Path.GetExtension(driveItem.Name);
                                 var targetFileName = $"{driveItem.Id}{extension}";
 
-                                var song = await MusicStore.Instance.AddSong(this.Id, targetFileName,
+                                var song = await App.Current.MusicStore.AddSong(this.Id, targetFileName,
                                             duration: duration,
                                             composers: composers,
                                             interpreters: artist,

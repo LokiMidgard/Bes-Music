@@ -30,10 +30,10 @@ namespace MusicPlayer.Controls
         {
             if (Windows.ApplicationModel.DesignMode.DesignModeEnabled)
                 return;
-            Viewmodels.MediaplayerViewmodel.Instance.BindIsPlaying(this, IsPlayingProperty);
-            Viewmodels.MediaplayerViewmodel.Instance.BindCurrentCover(this, CoverProperty);
-            Viewmodels.MediaplayerViewmodel.Instance.BindCurrentPosition(this, PositionProperty);
-            Viewmodels.MediaplayerViewmodel.Instance.BindCurrentDuration(this, DurationProperty);
+            App.Current.MediaplayerViewmodel.BindIsPlaying(this, IsPlayingProperty);
+            App.Current.MediaplayerViewmodel.BindCurrentCover(this, CoverProperty);
+            App.Current.MediaplayerViewmodel.BindCurrentPosition(this, PositionProperty);
+            App.Current.MediaplayerViewmodel.BindCurrentDuration(this, DurationProperty);
         }
 
         public bool IsPlaying

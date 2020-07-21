@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace MusicPlayer.Controls
 {
@@ -99,7 +100,7 @@ namespace MusicPlayer.Controls
 
             if (oldSong != null)
             {
-                ((INotifyCollectionChanged)MusicStore.Instance.PlayLists).CollectionChanged -= handler;
+                ((INotifyCollectionChanged)App.Current.MusicStore.PlayLists).CollectionChanged -= handler;
                 if (oldSong is INotifyCollectionChanged collectionChanged2)
                     collectionChanged2.CollectionChanged -= handler;
 
@@ -112,6 +113,17 @@ namespace MusicPlayer.Controls
                 items.Clear();
 
                 UpdateEntys(items, song, album, songs, albums, supressCurrentPlaylist, playListSong, playListSongs);
+
+                App.Current.StopEverything.Register(() =>
+                {
+                    song = null;
+                    songs = null;
+                    album = null;
+                    albums = null;
+                    playListSong = null;
+                    playListSongs = null;
+                    items = null;
+                });
 
                 handler = async (sender, e) =>
                  {
@@ -137,7 +149,7 @@ namespace MusicPlayer.Controls
                     collectionChanged.CollectionChanged += handler;
 
 
-                ((INotifyCollectionChanged)MusicStore.Instance.PlayLists).CollectionChanged += handler;
+                ((INotifyCollectionChanged)App.Current.MusicStore.PlayLists).CollectionChanged += handler;
 
                 if (d is MenuFlyoutSubItem subItem)
                 {
@@ -161,7 +173,16 @@ namespace MusicPlayer.Controls
         {
             if (!supressCurrentPlaylist)
             {
-
+                App.Current.StopEverything.Register(() =>
+                {
+                    song = null;
+                    songs = null;
+                    album = null;
+                    albums = null;
+                    playListSong = null;
+                    playListSongs = null;
+                    items = null;
+                });
                 var currentPlaying = new MenuFlyoutItem()
                 {
                     Text = "Add To Now Playing"
@@ -170,21 +191,21 @@ namespace MusicPlayer.Controls
                 currentPlaying.Click += async (sender, e) =>
                 {
                     if (song != null)
-                        await Viewmodels.MediaplayerViewmodel.Instance.AddSong(song);
+                        await App.Current.MediaplayerViewmodel.AddSong(song);
                     if (songs != null)
                         foreach (var item in songs)
-                            await Viewmodels.MediaplayerViewmodel.Instance.AddSong(song);
+                            await App.Current.MediaplayerViewmodel.AddSong(song);
                     if (album != null)
                         foreach (var item in album.Songs)
-                            await Viewmodels.MediaplayerViewmodel.Instance.AddSong(item.Songs.First());
+                            await App.Current.MediaplayerViewmodel.AddSong(item.Songs.First());
                     if (albums != null)
                         foreach (var item in albums.SelectMany(x => x.Songs))
-                            await Viewmodels.MediaplayerViewmodel.Instance.AddSong(item.Songs.First());
+                            await App.Current.MediaplayerViewmodel.AddSong(item.Songs.First());
                     if (playListSong != null)
-                        await Viewmodels.MediaplayerViewmodel.Instance.AddSong(playListSong.Song);
+                        await App.Current.MediaplayerViewmodel.AddSong(playListSong.Song);
                     if (playListSongs != null)
                         foreach (var item in playListSongs.Select(x => x.Song))
-                            await Viewmodels.MediaplayerViewmodel.Instance.AddSong(item);
+                            await App.Current.MediaplayerViewmodel.AddSong(item);
                 };
 
                 items.Add(currentPlaying);
@@ -201,18 +222,18 @@ namespace MusicPlayer.Controls
 
             newPlaylist.Click += (sender, e) =>
             {
-                flyOut.ShowAt(App.Shell);
+                flyOut.ShowAt(e.OriginalSource as FrameworkElement ?? Window.Current.Content as FrameworkElement);
             };
 
             items.Add(newPlaylist);
 
-            if (MusicStore.Instance.PlayLists?.Any() ?? false)
+            if (App.Current.MusicStore.PlayLists?.Any() ?? false)
                 items.Add(new MenuFlyoutSeparator());
 
 
 
-            if (MusicStore.Instance.PlayLists != null)
-                foreach (var playList in MusicStore.Instance.PlayLists)
+            if (App.Current.MusicStore.PlayLists != null)
+                foreach (var playList in App.Current.MusicStore.PlayLists)
                 {
                     var addToPlaylist = new MenuFlyoutItem()
                     {
@@ -222,21 +243,21 @@ namespace MusicPlayer.Controls
                     addToPlaylist.Click += async (sender, e) =>
                     {
                         if (song != null)
-                            await MusicStore.Instance.AddPlaylistSong(playList, song);
+                            await App.Current.MusicStore.AddPlaylistSong(playList, song);
                         if (album != null)
                             foreach (var s in album.Songs)
-                                await MusicStore.Instance.AddPlaylistSong(playList, s.Songs.First());
+                                await App.Current.MusicStore.AddPlaylistSong(playList, s.Songs.First());
                         if (songs != null)
                             foreach (var s in songs)
-                                await MusicStore.Instance.AddPlaylistSong(playList, song);
+                                await App.Current.MusicStore.AddPlaylistSong(playList, song);
                         if (albums != null)
                             foreach (var s in albums.SelectMany(x => x.Songs))
-                                await MusicStore.Instance.AddPlaylistSong(playList, s.Songs.First());
+                                await App.Current.MusicStore.AddPlaylistSong(playList, s.Songs.First());
                         if (playListSong != null)
-                            await MusicStore.Instance.AddPlaylistSong(playList, playListSong.Song);
+                            await App.Current.MusicStore.AddPlaylistSong(playList, playListSong.Song);
                         if (playListSongs != null)
                             foreach (var item in playListSongs.Select(x => x.Song))
-                                await MusicStore.Instance.AddPlaylistSong(playList, item);
+                                await App.Current.MusicStore.AddPlaylistSong(playList, item);
                     };
 
                     items.Add(addToPlaylist);
@@ -246,6 +267,16 @@ namespace MusicPlayer.Controls
 
         private static Flyout GenerateFlyOut(Song song, Album album, IEnumerable<Song> songs, IEnumerable<Album> albums, PlayingSong playListSong, IEnumerable<PlayingSong> playListSongs)
         {
+
+            App.Current.StopEverything.Register(() =>
+            {
+                song = null;
+                songs = null;
+                album = null;
+                albums = null;
+                playListSong = null;
+                playListSongs = null;
+            });
             var stackPanel = new StackPanel();
             var flyout = new Flyout();
 
@@ -260,23 +291,23 @@ namespace MusicPlayer.Controls
                     return;
 
                 flyout.Hide();
-                var playlist = await MusicStore.Instance.CreatePlaylist(textbox.Text.Trim());
+                var playlist = await App.Current.MusicStore.CreatePlaylist(textbox.Text.Trim());
                 if (song != null)
-                    await MusicStore.Instance.AddPlaylistSong(playlist, song);
+                    await App.Current.MusicStore.AddPlaylistSong(playlist, song);
                 if (album != null)
                     foreach (var s in album.Songs)
-                        await MusicStore.Instance.AddPlaylistSong(playlist, s.Songs.First());
+                        await App.Current.MusicStore.AddPlaylistSong(playlist, s.Songs.First());
                 if (songs != null)
                     foreach (var s in songs)
-                        await MusicStore.Instance.AddPlaylistSong(playlist, song);
+                        await App.Current.MusicStore.AddPlaylistSong(playlist, song);
                 if (albums != null)
                     foreach (var s in albums.SelectMany(x => x.Songs))
-                        await MusicStore.Instance.AddPlaylistSong(playlist, s.Songs.First());
+                        await App.Current.MusicStore.AddPlaylistSong(playlist, s.Songs.First());
                 if (playListSong != null)
-                    await MusicStore.Instance.AddPlaylistSong(playlist, playListSong.Song);
+                    await App.Current.MusicStore.AddPlaylistSong(playlist, playListSong.Song);
                 if (playListSongs != null)
                     foreach (var item in playListSongs.Select(x => x.Song))
-                        await MusicStore.Instance.AddPlaylistSong(playlist, item);
+                        await App.Current.MusicStore.AddPlaylistSong(playlist, item);
 
             };
 

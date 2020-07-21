@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
 using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
@@ -71,7 +72,8 @@ namespace MusicPlayer
 
             this.supportIntensety = Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.Composition.IAmbientLight2");
 
-            this.PreviewKeyDown += this.NowPlaying_PreviewKeyDown;
+            if (ApiInformation.IsEventPresent("Windows.UI.Xaml.UIElement", nameof(this.PreviewKeyDown)))
+                this.PreviewKeyDown += this.NowPlaying_PreviewKeyDown;
 
         }
 
@@ -83,16 +85,16 @@ namespace MusicPlayer
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
             base.OnNavigatingFrom(e);
-            App.Shell.ShowPlayUi = this.oldShowUiValue;
-            fadeOutTimer?.Stop();
+            App.Current.ShowPlayerControls = this.oldShowUiValue;
+            this.fadeOutTimer?.Stop();
             Windows.UI.Xaml.Window.Current.CoreWindow.PointerCursor = new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Arrow, 0);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            this.oldShowUiValue = App.Shell.ShowPlayUi;
-            App.Shell.ShowPlayUi = false;
+            this.oldShowUiValue = App.Current.ShowPlayerControls;
+            App.Current.ShowPlayerControls = false;
             this.StartFadeOutTimer();
         }
 
@@ -277,7 +279,7 @@ namespace MusicPlayer
 
         private Task InitAsync()
         {
-            var covers = Core.MusicStore.Instance.LibraryImages.Distinct().Select(x => new CoverData() { Id = x.imageId, Provider = x.providerId });
+            var covers = App.Current.MusicStore.LibraryImages.Distinct().Select(x => new CoverData() { Id = x.imageId, Provider = x.providerId });
             this.backgroundLarge.Covers = covers;
             return Task.CompletedTask;
         }

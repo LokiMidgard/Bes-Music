@@ -49,7 +49,7 @@
         ItemsSource="{Binding Source={StaticResource groupInfoCVS}}">
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate >
-                    <ItemsWrapGrid BringIntoViewRequested="ItemsWrapGrid_BringIntoViewRequested" Orientation="Horizontal"/>
+                    <ItemsWrapGrid Loaded="ItemsPanel_Loaded" Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
 
             </GridView.ItemsPanel>
@@ -95,6 +95,7 @@
                             HorizontalAlignment="Left" 
                                 VerticalAlignment="Bottom"
                                 >
+                            <Button Click="Button_Click_1">NoPage</Button>
 
                             <Button Style="{StaticResource SmalButtonStyle}"
                                 HorizontalAlignment="Left" 

@@ -74,7 +74,7 @@ namespace MusicPlayer.Viewmodels
             this.Model = item ?? throw new ArgumentNullException(nameof(item));
             this.PlayAlbumCommand = new DelegateCommand<Song>(async (song) =>
             {
-                await MediaplayerViewmodel.Instance.ResetSongs(this.Model.Songs.Select(x => x.Songs.First()).ToImmutableArray(), song);
+                await App.Current.MediaplayerViewmodel.ResetSongs(this.Model.Songs.Select(x => x.Songs.First()).ToImmutableArray(), song);
             });
 
             ((System.Collections.Specialized.INotifyCollectionChanged)this.Model.Songs).CollectionChanged += this.AlbumViewmodel_CollectionChanged;

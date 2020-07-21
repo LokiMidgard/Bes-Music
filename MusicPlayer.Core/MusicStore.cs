@@ -21,7 +21,6 @@ namespace MusicPlayer.Core
     {
         private readonly AsyncManualResetEvent initilisation = new AsyncManualResetEvent(false);
         private readonly AsyncManualResetEvent databaseLoad = new AsyncManualResetEvent(false);
-        public static MusicStore Instance { get; } = new MusicStore();
 
         private readonly Dictionary<(string provider, string mediaId), Song> songLoockup = new Dictionary<(string provider, string mediaId), Song>();
         private readonly Dictionary<Guid, PlayList> playListLoockup = new Dictionary<Guid, PlayList>();
@@ -86,7 +85,7 @@ namespace MusicPlayer.Core
         }
 
 
-        private MusicStore()
+        public MusicStore()
         {
             this.albums = new ObservableCollection<Album>();
             this.playLists = new ObservableCollection<PlayList>();
@@ -572,7 +571,7 @@ namespace MusicPlayer.Core
             if (insertionPoint < 0)
             {
                 insertionPoint = ~insertionPoint;
-                album = new Album(song.AlbumName, song.AlbumInterpret);
+                album = new Album(song.AlbumName, song.AlbumInterpret, this);
                 album.PropertyChanged += this.Album_PropertyChanged;
                 (album.Songs as INotifyCollectionChanged).CollectionChanged += this.MusicStore_CollectionChanged;
                 this.albums.Insert(insertionPoint, album);
@@ -619,11 +618,11 @@ namespace MusicPlayer.Core
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        internal Album(string title, string albumInterpret)
+        internal Album(string title, string albumInterpret, MusicStore musicStore)
         {
             this.Title = title ?? throw new ArgumentNullException(nameof(title));
             this.AlbumInterpret = albumInterpret ?? throw new ArgumentNullException(nameof(albumInterpret));
-
+            this.musicStore = musicStore;
             this.songs = new ObservableCollection<SongGroup>();
             this.Songs = new ReadOnlyObservableCollection<SongGroup>(this.songs);
         }
@@ -632,6 +631,7 @@ namespace MusicPlayer.Core
         public string AlbumInterpret { get; }
         public ReadOnlyObservableCollection<SongGroup> Songs { get; }
         private readonly ObservableCollection<SongGroup> songs;
+        private readonly MusicStore musicStore;
 
         internal void AddSong(Song song)
         {
@@ -653,7 +653,7 @@ namespace MusicPlayer.Core
             if (insertionIndex < 0)
             {
                 insertionIndex = ~insertionIndex;
-                songGroup = new SongGroup(this, song.Title, song.Track, song.DiscNumber);
+                songGroup = new SongGroup(this, song.Title, song.Track, song.DiscNumber, this.musicStore);
                 songGroup.PropertyChanged += this.SongGroup_PropertyChanged;
                 (songGroup.Songs as INotifyCollectionChanged).CollectionChanged += this.Songroup_CollectionChanged;
                 this.songs.Insert(insertionIndex, songGroup);
@@ -720,7 +720,7 @@ namespace MusicPlayer.Core
         private void UpdateProperties()
         {
 
-            if (!MusicStore.Instance.IsInitilized)
+            if (!this.musicStore.IsInitilized)
                 return;
 
             var oldGenres = this.Genres;
@@ -787,12 +787,13 @@ namespace MusicPlayer.Core
         public int DiscNumber { get; }
 
         private readonly ObservableCollection<Song> songs;
+        private readonly MusicStore musicStore;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public Song PreferedSong => this.songs.FirstOrDefault();
 
-        internal SongGroup(Album album, string title, int track, int discNumber)
+        internal SongGroup(Album album, string title, int track, int discNumber, MusicStore musicStore)
         {
             this.songs = new ObservableCollection<Song>();
             this.Songs = new ReadOnlyObservableCollection<Song>(this.songs);
@@ -800,6 +801,7 @@ namespace MusicPlayer.Core
             this.Title = title;
             this.Track = track;
             this.DiscNumber = discNumber;
+            this.musicStore = musicStore;
         }
 
         internal void AddSong(Song song)
@@ -860,7 +862,7 @@ namespace MusicPlayer.Core
                 case nameof(Song.Track):
                 case nameof(Song.DiscNumber):
                     this.RemoveSong(sender as Song);
-                    await MusicStore.Instance.AddSong(sender as Song);
+                    await this.musicStore.AddSong(sender as Song);
                     break;
                 default:
                     break;
@@ -876,7 +878,7 @@ namespace MusicPlayer.Core
 
         private void UpdateProperties()
         {
-            if (!MusicStore.Instance.IsInitilized)
+            if (!this.musicStore.IsInitilized)
                 return;
 
             var oldGenres = this.Genres;

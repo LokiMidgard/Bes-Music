@@ -334,11 +334,11 @@ namespace MusicPlayer.Controls
 
                 this.GoToSettingsCommand = new DelegateCommand(() =>
                 {
-                    App.Shell.Frame.Navigate(typeof(Pages.SettingsPage));
+                    Services.NavigationService.Navigate<Pages.SettingsPage>();
                 });
                 this.GoToNowPlayingCommand = new DelegateCommand(() =>
                 {
-                    App.Shell.Frame.Navigate(typeof(NowPlaying));
+                    Services.NavigationService.Navigate<NowPlaying>();
                 });
 
                 this.IsShuffled = this.PlayList.ShuffleEnabled;

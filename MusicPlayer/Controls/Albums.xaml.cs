@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
 using Windows.Media.Core;
 using Windows.Media.Playback;
 using Windows.Storage;
@@ -31,7 +32,7 @@ namespace MusicPlayer.Controls
     public sealed partial class Albums : UserControl
     {
 
-        public AlbumCollectionViewmodel AlbumViewmodel => AlbumCollectionViewmodel.Instance;
+        public AlbumCollectionViewmodel AlbumViewmodel => App.Current.AlbumCollectionViewmodel;
 
 
 
@@ -65,6 +66,7 @@ namespace MusicPlayer.Controls
         public Albums()
         {
             this.InitializeComponent();
+
 
             this.Loaded += this.Albums_Loaded;
         }
@@ -171,23 +173,38 @@ namespace MusicPlayer.Controls
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
 
-            var songs = MusicStore.Instance.Albums
+            var songs = App.Current.MusicStore.Albums
                 .SelectMany(x => x.Songs)
                 .Where(x => x.Availability != Availability.NotAvailable)
                 .Select(x => x.Songs.FirstOrDefault(y => y.Availability != Availability.NotAvailable));
 
-            await MediaplayerViewmodel.Instance.ResetSongs(songs.ToImmutableArray());
+            await App.Current.MediaplayerViewmodel.ResetSongs(songs.ToImmutableArray());
         }
 
         private void ItemsWrapGrid_BringIntoViewRequested(UIElement sender, BringIntoViewRequestedEventArgs args)
         {
-            if (args.TargetRect.Height <= 246 )
+            if (args.TargetRect.Height <= 246)
             {
 
                 var t = args.TargetRect;
                 t = new Rect(t.X, t.Y, t.Width, t.Height + Helpers.ConstantsHelper.PlayListHeightField);
                 args.TargetRect = t;
             }
+        }
+
+        private void ItemsPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (ApiInformation.IsEventPresent("Windows.UI.Xaml.UIElement", nameof(this.PreviewKeyDown)))
+            {
+                var panel = sender as UIElement;
+                panel.BringIntoViewRequested += this.ItemsWrapGrid_BringIntoViewRequested;
+            }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            //Services.NavigationService.Navigate<Pages.BackgroundPage>();
+            App.Current.DisableUI = true;
         }
     }
 }

@@ -26,7 +26,7 @@ namespace MusicPlayer.Viewmodels
 {
     public class MediaPlayerAccessor : INotifyPropertyChanged
     {
-        public MediaplayerViewmodel Instance => MediaplayerViewmodel.Instance;
+        public MediaplayerViewmodel Instance => App.Current.MediaplayerViewmodel;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -37,33 +37,32 @@ namespace MusicPlayer.Viewmodels
 
         private async void Init()
         {
-            if (MediaplayerViewmodel.Initilized.IsCompleted)
+            if (App.Current.MediaplayerViewmodel.Initilized.IsCompleted)
                 return;
-            await MediaplayerViewmodel.Initilized;
+            await App.Current.MediaplayerViewmodel.Initilized;
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Instance)));
         }
     }
 
-    public class MediaplayerViewmodel : DependencyObject
+    public class MediaplayerViewmodel : DependencyObject, IDisposable
     {
-        public static MediaplayerViewmodel Instance { get; private set; }
-        public static Task Initilized { get; }
-        private static readonly TaskCompletionSource<object> initilized;
-        static MediaplayerViewmodel()
+        public Task Initilized { get; }
+        private readonly TaskCompletionSource<object> initilized;
+        internal MediaplayerViewmodel()
         {
-            initilized = new TaskCompletionSource<object>();
-            Initilized = initilized.Task;
+            this.initilized = new TaskCompletionSource<object>();
+            this.Initilized = this.initilized.Task;
         }
 
 
-        private readonly TransportControls transportControls;
-        private readonly MediaPlaybackList mediaPlaybackList;
+        private TransportControls transportControls;
+        private MediaPlaybackList mediaPlaybackList;
         //private readonly MediaPlaybackList singleRepeatPlaylist;
         private readonly Dictionary<Song, List<PlayingSong>> mediaItemLookup = new Dictionary<Song, List<PlayingSong>>();
         private readonly Dictionary<MediaPlaybackItem, PlayingSong> playbackItemLookup = new Dictionary<MediaPlaybackItem, PlayingSong>();
 
-        public ReadOnlyObservableCollection<PlayingSong> CurrentPlaylist { get; }
-        private readonly ObservableCollection<PlayingSong> currentPlaylist;
+        public ReadOnlyObservableCollection<PlayingSong> CurrentPlaylist { get; private set; }
+        private ObservableCollection<PlayingSong> currentPlaylist;
 
         private readonly System.Threading.SemaphoreSlim semaphore = new System.Threading.SemaphoreSlim(1, 1);
 
@@ -104,59 +103,6 @@ namespace MusicPlayer.Viewmodels
                 me.CurrentPlayingIndexChanged(newIndex);
             }
         }
-
-        private MediaplayerViewmodel(TransportControls transportControls)
-        {
-            this.transportControls = transportControls;
-
-            this.mediaPlaybackList = new MediaPlaybackList();
-            //this.singleRepeatPlaylist = new MediaPlaybackList();
-            //this._mediaPlaybackList.CurrentItemChanged += this._mediaPlaybackList_CurrentItemChanged;
-            this.transportControls.PlayList = this.mediaPlaybackList;
-
-            this.currentPlaylist = new ObservableCollection<PlayingSong>();
-            this.CurrentPlaylist = new ReadOnlyObservableCollection<PlayingSong>(this.currentPlaylist);
-
-            transportControls.RegisterPropertyChangedCallback(TransportControls.IsShuffledProperty, (sender, e) =>
-            {
-                //using (await this.semaphore.Lock())
-                this.ResetSorting();
-            });
-
-            transportControls.RegisterPropertyChangedCallback(TransportControls.CurrentMediaPlaybackItemProperty, (sender, e) => this.RefresCurrentIndex());
-
-            BindToTransportControl(SongProperty, nameof(this.transportControls.CurrentSong));
-            BindToTransportControl(GoToSettingsCommandProperty, nameof(this.transportControls.GoToSettingsCommand));
-            BindToTransportControl(GoToNowPlayingCommandProperty, nameof(this.transportControls.GoToNowPlayingCommand));
-            BindToTransportControl(NextCommandProperty, nameof(this.transportControls.NextCommand));
-            BindToTransportControl(PreviousCommandProperty, nameof(this.transportControls.PreviousCommand));
-            BindToTransportControl(PlayCommandProperty, nameof(this.transportControls.PlayCommand));
-            BindToTransportControl(PauseCommandProperty, nameof(this.transportControls.PauseCommand));
-            BindToTransportControl(ShuffleCommandProperty, nameof(this.transportControls.ShuffleCommand));
-            BindToTransportControl(RepeateCommandProperty, nameof(this.transportControls.RepeateCommand));
-
-            BindToTransportControl(IsShuffledProperty, nameof(this.transportControls.IsRepeate));
-            BindToTransportControl(IsRepeateProperty, nameof(this.transportControls.IsShuffled));
-            BindToTransportControl(IsPlayingProperty, nameof(this.transportControls.IsPlaying));
-            //return myBinding;
-
-
-
-            void BindToTransportControl(DependencyProperty songProperty, string Path)
-            {
-                var myBinding = new Binding
-                {
-                    Source = this.transportControls,
-                    Path = new PropertyPath(Path),
-                    Mode = BindingMode.OneWay,
-                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-                };
-                BindingOperations.SetBinding(this, songProperty, myBinding);
-            }
-        }
-
-
-
 
 
 
@@ -408,13 +354,62 @@ namespace MusicPlayer.Viewmodels
             }
         }
 
-        public static void Init(TransportControls transportControls)
+        public void Init(TransportControls transportControls)
         {
-            if (Instance != null)
+
+            if (this.transportControls != null)
                 throw new InvalidOperationException("Already Initilized");
 
-            Instance = new MediaplayerViewmodel(transportControls);
-            initilized.SetResult(null);
+
+            this.transportControls = transportControls;
+
+            this.mediaPlaybackList = new MediaPlaybackList();
+            //this.singleRepeatPlaylist = new MediaPlaybackList();
+            //this._mediaPlaybackList.CurrentItemChanged += this._mediaPlaybackList_CurrentItemChanged;
+            this.transportControls.PlayList = this.mediaPlaybackList;
+
+            this.currentPlaylist = new ObservableCollection<PlayingSong>();
+            this.CurrentPlaylist = new ReadOnlyObservableCollection<PlayingSong>(this.currentPlaylist);
+
+            transportControls.RegisterPropertyChangedCallback(TransportControls.IsShuffledProperty, (sender, e) =>
+            {
+                //using (await this.semaphore.Lock())
+                this.ResetSorting();
+            });
+
+            transportControls.RegisterPropertyChangedCallback(TransportControls.CurrentMediaPlaybackItemProperty, (sender, e) => this.RefresCurrentIndex());
+
+            BindToTransportControl(SongProperty, nameof(this.transportControls.CurrentSong));
+            BindToTransportControl(GoToSettingsCommandProperty, nameof(this.transportControls.GoToSettingsCommand));
+            BindToTransportControl(GoToNowPlayingCommandProperty, nameof(this.transportControls.GoToNowPlayingCommand));
+            BindToTransportControl(NextCommandProperty, nameof(this.transportControls.NextCommand));
+            BindToTransportControl(PreviousCommandProperty, nameof(this.transportControls.PreviousCommand));
+            BindToTransportControl(PlayCommandProperty, nameof(this.transportControls.PlayCommand));
+            BindToTransportControl(PauseCommandProperty, nameof(this.transportControls.PauseCommand));
+            BindToTransportControl(ShuffleCommandProperty, nameof(this.transportControls.ShuffleCommand));
+            BindToTransportControl(RepeateCommandProperty, nameof(this.transportControls.RepeateCommand));
+
+            BindToTransportControl(IsShuffledProperty, nameof(this.transportControls.IsRepeate));
+            BindToTransportControl(IsRepeateProperty, nameof(this.transportControls.IsShuffled));
+            BindToTransportControl(IsPlayingProperty, nameof(this.transportControls.IsPlaying));
+            //return myBinding;
+
+
+
+            void BindToTransportControl(DependencyProperty songProperty, string Path)
+            {
+                var myBinding = new Binding
+                {
+                    Source = this.transportControls,
+                    Path = new PropertyPath(Path),
+                    Mode = BindingMode.OneWay,
+                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                };
+                BindingOperations.SetBinding(this, songProperty, myBinding);
+            }
+
+
+            this.initilized.SetResult(null);
         }
 
         private void ResetSorting()
@@ -515,6 +510,8 @@ namespace MusicPlayer.Viewmodels
         }
 
         private CancellationTokenSource resetCancelation = new CancellationTokenSource();
+        private bool disposedValue;
+
         public async Task ResetSongs(ImmutableArray<Song> songs, Song startingSong = null)
         {
             if (!this.Dispatcher.HasThreadAccess)
@@ -660,6 +657,35 @@ namespace MusicPlayer.Viewmodels
             if (getCover != null)
                 await getCover;
             return viewModel;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposedValue)
+            {
+                if (disposing)
+                {
+                    this.semaphore.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                this.disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~MediaplayerViewmodel()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            this.Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 
