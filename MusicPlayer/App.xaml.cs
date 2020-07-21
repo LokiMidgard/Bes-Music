@@ -62,6 +62,15 @@ namespace MusicPlayer
         /// <param name="e">Details about the launch request and process.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
+            // Set the application minimum window size
+            var applicationView = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView();
+            applicationView.SetPreferredMinSize(
+                new Size(
+                    width: 270,
+                    height: 400
+                    ));
+            if (this.IsXBox) // Only do this on XBox, on phone the ui will be behind system app bar otherwise.
+                applicationView.SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
 
 
             MicrosoftGraphService.Instance.AuthenticationModel = MicrosoftGraphEnums.AuthenticationModel.V2;
@@ -117,16 +126,7 @@ namespace MusicPlayer
                 await WhatsNewDisplayService.ShowIfAppropriateAsync();
 
             }
-            // Set the application minimum window size
-            var applicationView = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView();
-            applicationView.SetPreferredMinSize(
-                new Size(
-                    width: 270,
-                    height: 400
-                    ));
 
-            if (this.IsXBox) // Only do this on XBox, on phone the ui will be behind system app bar otherwise.
-                applicationView.SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
         }
 
         internal event EventHandler<EventArgs<(Exception exception, ErroType erroType)>> ErrorOccured;
