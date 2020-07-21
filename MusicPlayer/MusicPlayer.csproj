@@ -193,7 +193,7 @@
     <Compile Include="Converters\StringFormatConverter.cs" />
     <Compile Include="Converters\VisibleCollapsedOnNull.cs" />
     <Compile Include="DelegateDisposable.cs" />
-    <Compile Include="DeviceFamilyTrigger.cs" />
+    <Compile Include="Triggers\DeviceFamilyTrigger.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="Helpers\ConstantsHelper.cs" />
     <Compile Include="Helpers\CoverExtension.cs" />
@@ -460,6 +460,7 @@
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

@@ -1,7 +1,7 @@
 ﻿using Windows.System.Profile;
 using Windows.UI.Xaml;
 
-namespace MusicPlayer
+namespace MusicPlayer.Triggers
 {
     internal class DeviceFamilyTrigger : StateTriggerBase
     {

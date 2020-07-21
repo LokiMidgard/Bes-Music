@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:MusicPlayer.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="using:MusicPlayer.Viewmodels" xmlns:converters="using:MusicPlayer.Converters" xmlns:core="using:MusicPlayer.Core" xmlns:musicplayer="using:MusicPlayer"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels" xmlns:converters="using:MusicPlayer.Converters" xmlns:core="using:MusicPlayer.Core" xmlns:musicplayer="using:MusicPlayer" xmlns:triggers="using:MusicPlayer.Triggers"
     d:DesignHeight="300"
     d:DesignWidth="400"
     mc:Ignorable="d">
@@ -171,7 +171,7 @@
             <VisualStateGroup>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <musicplayer:DeviceFamilyTrigger DeviceFamily="Windows.Xbox"/>
+                        <triggers:DeviceFamilyTrigger DeviceFamily="Windows.Xbox"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="PlaylistList.IsItemClickEnabled" Value="True"/>

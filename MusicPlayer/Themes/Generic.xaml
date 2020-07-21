@@ -7,6 +7,7 @@
     xmlns:local="using:MusicPlayer"
     xmlns:local2="using:MusicPlayer.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:triggers="using:MusicPlayer.Triggers"
     mc:Ignorable="d">
     <x:Double x:Key="NormalMediaControlHeight">90</x:Double>
     <x:Double x:Key="NormalMediaControlHeightXbox">117</x:Double>
@@ -337,8 +338,8 @@
 
                         </Grid.Background>-->
                         <Grid.Resources>
-                            <converter:AddCoverter x:Key="addConverter"></converter:AddCoverter>
-                            <converter:VisibleCollapsedOnNull x:Key="CollapseOnNull" OnNullValue="Collapsed"/>
+                            <converter:AddCoverter x:Key="addConverter" />
+                            <converter:VisibleCollapsedOnNull x:Key="CollapseOnNull" OnNullValue="Collapsed" />
                             <Style x:Key="MediaTextBlockStyle" TargetType="TextBlock">
                                 <Setter Property="VerticalAlignment" Value="Center" />
                                 <Setter Property="Foreground" Value="{ThemeResource ForgroundBrush1}" />
@@ -390,7 +391,7 @@
                                 RenderTransformOrigin="0.5,0.5">
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" x:Name="CommandBarFirstColumn" />
+                                    <ColumnDefinition x:Name="CommandBarFirstColumn" Width="*" />
                                     <ColumnDefinition x:Name="CommandBarCenterColumn" Width="Auto" />
                                     <ColumnDefinition x:Name="CommandBarLastColumn" Width="*" />
                                 </Grid.ColumnDefinitions>
@@ -403,23 +404,23 @@
                                     <TranslateTransform x:Name="TranslateVertical" />
                                 </Grid.RenderTransform>
 
-                                <!--x:Name="ProgressSlider"-->
+                                <!--  x:Name="ProgressSlider"  -->
                                 <Slider
-                                    Maximum="{Binding ElementName=ProgressSlider, Path=Maximum}"
-                                    Value="{Binding ElementName=ProgressSlider, Path=Value}"
-                                    Grid.ColumnSpan="3"
-                                                Grid.Row="3"
-                                    Height="1"
-                                    IsHitTestVisible="False"
                                     x:Name="seccondaryProgress"
+                                    Grid.Row="3"
+                                    Grid.ColumnSpan="3"
+                                    Height="1"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Bottom"
+                                    IsHitTestVisible="False"
+                                    IsThumbToolTipEnabled="False"
+                                    Maximum="{Binding ElementName=ProgressSlider, Path=Maximum}"
+                                    Style="{StaticResource MediaControlSlider}"
                                     Visibility="Collapsed"
-                                                HorizontalAlignment="Stretch"
-                                                VerticalAlignment="Bottom"
-                                                IsThumbToolTipEnabled="False"
-                                                Style="{StaticResource MediaControlSlider}"></Slider>
+                                    Value="{Binding ElementName=ProgressSlider, Path=Value}" />
 
 
-                    
+
                                 <Border
                                     x:Name="ErrorBorder"
                                     Grid.ColumnSpan="3"
@@ -454,7 +455,7 @@
                                         </Viewbox>
                                     </Button>
                                 </StackPanel>
-                         
+
                                 <UserControl
                                     x:Name="WrappingControl"
                                     Grid.Row="2"
@@ -465,30 +466,29 @@
 
                                         <Grid x:Name="MediaControlsCommandBar">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="*"/>
-                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
-                                         
+
                                             <local2:SlidingInformationControl
+                                                x:Name="SecondaryTitleInformation"
                                                 Title="{Binding CurrentSong.Title, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                                 Grid.Row="0"
-                                                VerticalContentAlignment="Bottom"
-                                                HorizontalContentAlignment="Left"
-                                                x:Name="SecondaryTitleInformation"
                                                 Margin="8,8,8,4"
-                                                Visibility="Collapsed"
                                                 VerticalAlignment="Stretch"
+                                                HorizontalContentAlignment="Left"
+                                                VerticalContentAlignment="Bottom"
                                                 Album="{Binding CurrentSong.AlbumTitle, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                Interpret="{Binding CurrentSong.Artist, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                                                Interpret="{Binding CurrentSong.Artist, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                                Visibility="Collapsed" />
 
 
                                             <!--<StackPanel Grid.Column="0" HorizontalAlignment="Left" />-->
                                             <StackPanel
+                                                x:Name="MainButtonPanel"
                                                 Grid.Row="1"
-                                               
                                                 Margin="0,0,18,0"
                                                 HorizontalAlignment="Right"
-                                                x:Name="MainButtonPanel"
                                                 Orientation="Horizontal">
                                                 <ToggleButton
                                                     x:Name="ShuffleButtonMain"
@@ -601,7 +601,7 @@
                                                                 Text="Shuffle"
                                                                 Visibility="Collapsed" />
 
-                                                       
+
                                                         </MenuFlyout>
                                                     </Button.Flyout>
                                                 </Button>
@@ -622,7 +622,10 @@
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
 
-                                        <Grid Grid.Column="1" Margin="0,0,12,0" x:Name="TrackInformationMain">
+                                        <Grid
+                                            x:Name="TrackInformationMain"
+                                            Grid.Column="1"
+                                            Margin="0,0,12,0">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="*" />
                                                 <RowDefinition Height="Auto" />
@@ -644,56 +647,53 @@
                                                 MinWidth="80"
                                                 VerticalAlignment="Center"
                                                 IsThumbToolTipEnabled="False"
-                                                Style="{StaticResource MediaControlSlider}">
-
-                                    
-                                            </Slider>
+                                                Style="{StaticResource MediaControlSlider}" />
 
                                             <Border
-                                                HorizontalAlignment="Left"
-                                                VerticalAlignment="Top"
                                                 Grid.Row="3"
                                                 Margin="0"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Top"
                                                 Visibility="{Binding CurrentSong, Converter={StaticResource CollapseOnNull}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                                
-                                            <TextBlock
-                                                x:Name="TimeElapsedElement"
-                                                Margin="0"
-                                                Style="{StaticResource MediaTextBlockStyle}"
-                                                Text="00:00" />
+
+                                                <TextBlock
+                                                    x:Name="TimeElapsedElement"
+                                                    Margin="0"
+                                                    Style="{StaticResource MediaTextBlockStyle}"
+                                                    Text="00:00" />
                                             </Border>
 
                                             <TextBlock
                                                 x:Name="TimeRemainingElement"
                                                 Grid.Row="3"
-                                                Visibility="{Binding CurrentSong, Converter={StaticResource CollapseOnNull}, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Top"
                                                 Style="{StaticResource MediaTextBlockStyle}"
-                                                Text="00:00" />
+                                                Text="00:00"
+                                                Visibility="{Binding CurrentSong, Converter={StaticResource CollapseOnNull}, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
 
                                             <Border
+                                                Grid.Row="2"
                                                 Margin="0,0,0,0"
                                                 VerticalAlignment="Top"
                                                 IsHitTestVisible="False"
-                                                Grid.Row="2"
                                                 Visibility="{Binding CurrentSong, Converter={StaticResource CollapseOnNull}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
-                                                
-                                            <ProgressBar
-                                                x:Name="BufferingProgressBar"
-                                                Margin="0,0,0,0"
-                                                Height="2"
-                                                IsIndeterminate="True"
-                                                Visibility="Collapsed" />
+
+                                                <ProgressBar
+                                                    x:Name="BufferingProgressBar"
+                                                    Height="2"
+                                                    Margin="0,0,0,0"
+                                                    IsIndeterminate="True"
+                                                    Visibility="Collapsed" />
                                             </Border>
-                                        
+
                                         </Grid>
 
 
                                         <Button
+                                            x:Name="CoverButton"
                                             Grid.Column="0"
                                             Margin="12"
-                                            x:Name="CoverButton"
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
                                             Command="{TemplateBinding GoToNowPlayingCommand}"
@@ -701,19 +701,18 @@
 
                                             <Border Width="64" Height="64">
                                                 <Border
-                                                Visibility="{Binding CurrentSong, Converter={StaticResource CollapseOnNull}, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                Padding="3"
-                                                Background="White"
-                                                BorderBrush="Black"
-                                                BorderThickness="1">
-                                                <Border >
-                                                    <Border.Background>
-                                                        <ImageBrush ImageSource="{Binding CurrentSong.Thumbnail, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                                    Stretch="UniformToFill"/>
-                                                    </Border.Background>
+                                                    Padding="3"
+                                                    Background="White"
+                                                    BorderBrush="Black"
+                                                    BorderThickness="1"
+                                                    Visibility="{Binding CurrentSong, Converter={StaticResource CollapseOnNull}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+                                                    <Border>
+                                                        <Border.Background>
+                                                            <ImageBrush ImageSource="{Binding CurrentSong.Thumbnail, RelativeSource={RelativeSource Mode=TemplatedParent}}" Stretch="UniformToFill" />
+                                                        </Border.Background>
+                                                    </Border>
                                                 </Border>
                                             </Border>
-                                </Border>
                                         </Button>
 
                                     </Grid>
@@ -724,23 +723,23 @@
 
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup>
-                                
-                                
-                                    <VisualState>
-                                        <VisualState.StateTriggers>
-                                            <local:DeviceFamilyTrigger DeviceFamily="Windows.Xbox"/>
-                                        </VisualState.StateTriggers>
-                                        <VisualState.Setters>
+
+
+                                <VisualState>
+                                    <VisualState.StateTriggers>
+                                        <triggers:DeviceFamilyTrigger DeviceFamily="Windows.Xbox" />
+                                    </VisualState.StateTriggers>
+                                    <VisualState.Setters>
                                         <Setter Target="RootGrid.Height" Value="{StaticResource NormalMediaControlHeightXbox}" />
                                         <!--<Setter Target="RootGrid.Margin" Value="0,0,0,-27" />-->
                                         <Setter Target="MediaTransportControls_Timeline_Border.Width" Value="Auto" />
-                                        
+
                                         <Setter Target="CommandBarFirstColumn.Width" Value="Auto" />
                                         <Setter Target="CommandBarCenterColumn.Width" Value="*" />
                                         <Setter Target="CommandBarLastColumn.Width" Value="Auto" />
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                
+                                    </VisualState.Setters>
+                                </VisualState>
+
                             </VisualStateGroup>
                             <VisualStateGroup x:Name="SizeMode">
                                 <VisualState x:Name="LargeSize">
@@ -797,12 +796,12 @@
                                         <Setter Target="NowPlayingButtonMain.Visibility" Value="Collapsed" />
                                         <Setter Target="SettingsMain.Visibility" Value="Collapsed" />
 
-                                        <Setter Target="MediaTransportControls_Timeline_Border.Width" Value="Auto"/>
-                                        <Setter Target="TrackInformationMain.Visibility" Value="Collapsed"/>
+                                        <Setter Target="MediaTransportControls_Timeline_Border.Width" Value="Auto" />
+                                        <Setter Target="TrackInformationMain.Visibility" Value="Collapsed" />
                                         <Setter Target="CommandBarFirstColumn.Width" Value="0" />
 
-                                        <Setter Target="SecondaryTitleInformation.Visibility" Value="Visible"/>
-                                        <Setter Target="seccondaryProgress.Visibility" Value="Visible"/>
+                                        <Setter Target="SecondaryTitleInformation.Visibility" Value="Visible" />
+                                        <Setter Target="seccondaryProgress.Visibility" Value="Visible" />
 
                                         <Setter Target="MainButtonPanel.Margin" Value="12,0,12,12" />
                                         <Setter Target="MainButtonPanel.VerticalAlignment" Value="Bottom" />
@@ -832,8 +831,8 @@
                                         <Setter Target="NowPlayingButtonMain.Visibility" Value="Collapsed" />
                                         <Setter Target="SettingsMain.Visibility" Value="Collapsed" />
 
-                                        <Setter Target="MediaTransportControls_Timeline_Border.Width" Value="Auto"/>
-                                        <Setter Target="TrackInformationMain.Visibility" Value="Collapsed"/>
+                                        <Setter Target="MediaTransportControls_Timeline_Border.Width" Value="Auto" />
+                                        <Setter Target="TrackInformationMain.Visibility" Value="Collapsed" />
                                         <Setter Target="CommandBarFirstColumn.Width" Value="0" />
 
                                         <Setter Target="MainButtonPanel.Margin" Value="12,0,12,12" />
@@ -845,9 +844,9 @@
                                         <Setter Target="CoverButton.Margin" Value="12,12,0,12" />
                                         <Setter Target="MediaTransportControls_Timeline_Grid.Margin" Value="0" />
 
-                                        <Setter Target="SecondaryTitleInformation.Visibility" Value="Visible"/>
-                                        <Setter Target="SecondaryTitleInformation.HorizontalContentAlignment" Value="Center"/>
-                                        <Setter Target="seccondaryProgress.Visibility" Value="Visible"/>
+                                        <Setter Target="SecondaryTitleInformation.Visibility" Value="Visible" />
+                                        <Setter Target="SecondaryTitleInformation.HorizontalContentAlignment" Value="Center" />
+                                        <Setter Target="seccondaryProgress.Visibility" Value="Visible" />
 
                                         <!--<Setter Target="CommandBarLastColumn.Width" Value="Auto" />-->
 
@@ -914,7 +913,7 @@
                                 <VisualState x:Name="Buffering">
                                     <VisualState.Setters>
                                         <Setter Target="BufferingProgressBar.Visibility" Value="Visible" />
-                                        <Setter Target="ProgressSlider.Visibility" Value="Collapsed"/>
+                                        <Setter Target="ProgressSlider.Visibility" Value="Collapsed" />
                                     </VisualState.Setters>
                                 </VisualState>
                                 <VisualState x:Name="Loading">
@@ -929,7 +928,7 @@
                                         <Setter Target="NowPlayingButtonOverflow.IsEnabled" Value="false" />
                                         <Setter Target="RepeatButtonOvervlow.IsEnabled" Value="false" />
                                         <Setter Target="ShuffleButtonOverflow.IsEnabled" Value="false" />
-                                        <Setter Target="ProgressSlider.Visibility" Value="Collapsed"/>
+                                        <Setter Target="ProgressSlider.Visibility" Value="Collapsed" />
                                     </VisualState.Setters>
                                     <Storyboard>
                                         <DoubleAnimation
@@ -1055,51 +1054,160 @@
             <Setter.Value>
                 <ControlTemplate TargetType="local2:SlidingInformationControl">
                     <Grid x:Name="root">
-                        <Grid.Resources >
+                        <Grid.Resources>
                             <x:Double x:Key="TranslateFrom">-30</x:Double>
                             <x:Double x:Key="TranslateTo">30</x:Double>
-                              <Storyboard x:Name="EnterTitle">
-                                <DoubleAnimation Storyboard.TargetName="TitleText" Storyboard.TargetProperty="Opacity" Duration="0:0:1" BeginTime="0:0:1" To="1"/>
-                                <DoubleAnimation Storyboard.TargetName="TitleText" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Duration="0:0:1" BeginTime="0:0:1" From="{StaticResource TranslateFrom}" To="0"/>
+                            <Storyboard x:Name="EnterTitle">
+                                <DoubleAnimation
+                                    BeginTime="0:0:1"
+                                    Storyboard.TargetName="TitleText"
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="1"
+                                    Duration="0:0:1" />
+                                <DoubleAnimation
+                                    BeginTime="0:0:1"
+                                    Storyboard.TargetName="TitleText"
+                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                    From="{StaticResource TranslateFrom}"
+                                    To="0"
+                                    Duration="0:0:1" />
 
-                                <DoubleAnimation Storyboard.TargetName="AlbumText" Storyboard.TargetProperty="Opacity" Duration="0:0:1"  To="0"/>
-                                <DoubleAnimation Storyboard.TargetName="AlbumText" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Duration="0:0:1" BeginTime="0:0:0" From="0" To="{StaticResource TranslateTo}"/>
+                                <DoubleAnimation
+                                    Storyboard.TargetName="AlbumText"
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="0"
+                                    Duration="0:0:1" />
+                                <DoubleAnimation
+                                    BeginTime="0:0:0"
+                                    Storyboard.TargetName="AlbumText"
+                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                    From="0"
+                                    To="{StaticResource TranslateTo}"
+                                    Duration="0:0:1" />
 
-                                <DoubleAnimation Storyboard.TargetName="ArtistText" Storyboard.TargetProperty="Opacity" Duration="0:0:1"  To="0"/>
-                                <DoubleAnimation Storyboard.TargetName="ArtistText" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Duration="0:0:1" BeginTime="0:0:0" From="0" To="{StaticResource TranslateTo}"/>
+                                <DoubleAnimation
+                                    Storyboard.TargetName="ArtistText"
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="0"
+                                    Duration="0:0:1" />
+                                <DoubleAnimation
+                                    BeginTime="0:0:0"
+                                    Storyboard.TargetName="ArtistText"
+                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                    From="0"
+                                    To="{StaticResource TranslateTo}"
+                                    Duration="0:0:1" />
 
                             </Storyboard>
                             <Storyboard x:Name="EnterAlbum">
-                                <DoubleAnimation Storyboard.TargetName="AlbumText" Storyboard.TargetProperty="Opacity" Duration="0:0:1" BeginTime="0:0:1" To="1"/>
-                                <DoubleAnimation Storyboard.TargetName="AlbumText" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Duration="0:0:1" BeginTime="0:0:1" From="{StaticResource TranslateFrom}" To="0"/>
+                                <DoubleAnimation
+                                    BeginTime="0:0:1"
+                                    Storyboard.TargetName="AlbumText"
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="1"
+                                    Duration="0:0:1" />
+                                <DoubleAnimation
+                                    BeginTime="0:0:1"
+                                    Storyboard.TargetName="AlbumText"
+                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                    From="{StaticResource TranslateFrom}"
+                                    To="0"
+                                    Duration="0:0:1" />
 
-                                <DoubleAnimation Storyboard.TargetName="TitleText" Storyboard.TargetProperty="Opacity" Duration="0:0:1"  To="0"/>
-                                <DoubleAnimation Storyboard.TargetName="TitleText" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Duration="0:0:1" BeginTime="0:0:0" From="0" To="{StaticResource TranslateTo}"/>
+                                <DoubleAnimation
+                                    Storyboard.TargetName="TitleText"
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="0"
+                                    Duration="0:0:1" />
+                                <DoubleAnimation
+                                    BeginTime="0:0:0"
+                                    Storyboard.TargetName="TitleText"
+                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                    From="0"
+                                    To="{StaticResource TranslateTo}"
+                                    Duration="0:0:1" />
 
-                                <DoubleAnimation Storyboard.TargetName="ArtistText" Storyboard.TargetProperty="Opacity" Duration="0:0:1"  To="0"/>
-                                <DoubleAnimation Storyboard.TargetName="ArtistText" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Duration="0:0:1" BeginTime="0:0:0" From="0" To="{StaticResource TranslateTo}"/>
+                                <DoubleAnimation
+                                    Storyboard.TargetName="ArtistText"
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="0"
+                                    Duration="0:0:1" />
+                                <DoubleAnimation
+                                    BeginTime="0:0:0"
+                                    Storyboard.TargetName="ArtistText"
+                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                    From="0"
+                                    To="{StaticResource TranslateTo}"
+                                    Duration="0:0:1" />
                             </Storyboard>
                             <Storyboard x:Name="EnterArtist">
-                                <DoubleAnimation Storyboard.TargetName="ArtistText" Storyboard.TargetProperty="Opacity" Duration="0:0:1" BeginTime="0:0:1" To="1"/>
-                                <DoubleAnimation Storyboard.TargetName="ArtistText" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Duration="0:0:1" BeginTime="0:0:1" From="{StaticResource TranslateFrom}" To="0"/>
+                                <DoubleAnimation
+                                    BeginTime="0:0:1"
+                                    Storyboard.TargetName="ArtistText"
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="1"
+                                    Duration="0:0:1" />
+                                <DoubleAnimation
+                                    BeginTime="0:0:1"
+                                    Storyboard.TargetName="ArtistText"
+                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                    From="{StaticResource TranslateFrom}"
+                                    To="0"
+                                    Duration="0:0:1" />
 
-                                <DoubleAnimation Storyboard.TargetName="AlbumText" Storyboard.TargetProperty="Opacity" Duration="0:0:1"  To="0"/>
-                                <DoubleAnimation Storyboard.TargetName="AlbumText" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Duration="0:0:1" BeginTime="0:0:0" From="0" To="{StaticResource TranslateTo}"/>
+                                <DoubleAnimation
+                                    Storyboard.TargetName="AlbumText"
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="0"
+                                    Duration="0:0:1" />
+                                <DoubleAnimation
+                                    BeginTime="0:0:0"
+                                    Storyboard.TargetName="AlbumText"
+                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                    From="0"
+                                    To="{StaticResource TranslateTo}"
+                                    Duration="0:0:1" />
 
-                                <DoubleAnimation Storyboard.TargetName="TitleText" Storyboard.TargetProperty="Opacity" Duration="0:0:1"  To="0"/>
-                                <DoubleAnimation Storyboard.TargetName="TitleText" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" Duration="0:0:1" BeginTime="0:0:0" From="0" To="{StaticResource TranslateTo}"/>
+                                <DoubleAnimation
+                                    Storyboard.TargetName="TitleText"
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="0"
+                                    Duration="0:0:1" />
+                                <DoubleAnimation
+                                    BeginTime="0:0:0"
+                                    Storyboard.TargetName="TitleText"
+                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                    From="0"
+                                    To="{StaticResource TranslateTo}"
+                                    Duration="0:0:1" />
                             </Storyboard>
                             <Style TargetType="TextBlock">
                                 <Setter Property="RenderTransform">
                                     <Setter.Value>
-                                        <TranslateTransform  />
+                                        <TranslateTransform />
                                     </Setter.Value>
                                 </Setter>
                             </Style>
                         </Grid.Resources>
-                        <TextBlock x:Name="TitleText" FontWeight="Bold" Text="{TemplateBinding Title}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                        <TextBlock x:Name="AlbumText" Text="{TemplateBinding Album}" Opacity="0"  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                        <TextBlock x:Name="ArtistText" Foreground="{StaticResource AccentBrush}"  Text="{TemplateBinding Interpret}" Opacity="0"  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        <TextBlock
+                            x:Name="TitleText"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            FontWeight="Bold"
+                            Text="{TemplateBinding Title}" />
+                        <TextBlock
+                            x:Name="AlbumText"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Opacity="0"
+                            Text="{TemplateBinding Album}" />
+                        <TextBlock
+                            x:Name="ArtistText"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Foreground="{StaticResource AccentBrush}"
+                            Opacity="0"
+                            Text="{TemplateBinding Interpret}" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

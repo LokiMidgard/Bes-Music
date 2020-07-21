@@ -8,7 +8,7 @@
     xmlns:local="using:MusicPlayer.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:musicplayer="using:MusicPlayer"
-    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels" xmlns:triggers="using:MusicPlayer.Triggers"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
     <Page.DataContext>
@@ -154,7 +154,7 @@
             <VisualStateGroup>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <musicplayer:DeviceFamilyTrigger DeviceFamily="Windows.Xbox" />
+                        <triggers:DeviceFamilyTrigger DeviceFamily="Windows.Xbox" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="StorageLocationCombobox.Visibility" Value="Collapsed" />

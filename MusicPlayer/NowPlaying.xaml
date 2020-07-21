@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="controls"
     xmlns:converters="using:MusicPlayer.Converters"
-    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels" xmlns:triggers="using:MusicPlayer.Triggers"
     Background="{ThemeResource BackgroundBrush1}"
     RequestedTheme="Dark"
     mc:Ignorable="d">
@@ -657,7 +657,7 @@
             <VisualStateGroup>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <local:DeviceFamilyTrigger DeviceFamily="Windows.Xbox"/>
+                        <triggers:DeviceFamilyTrigger DeviceFamily="Windows.Xbox"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="FullScreenButton.Visibility"

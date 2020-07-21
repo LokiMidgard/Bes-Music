@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:musicplayer="using:MusicPlayer"
     xmlns:services="using:MusicPlayer.Services"
-    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels" xmlns:triggers="using:MusicPlayer.Triggers"
     x:Name="root"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
@@ -397,7 +397,7 @@
             <VisualStateGroup>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <musicplayer:DeviceFamilyTrigger DeviceFamily="Windows.Xbox" />
+                        <triggers:DeviceFamilyTrigger DeviceFamily="Windows.Xbox" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="SongInfoSpaceColumn.Width" Value="160" />

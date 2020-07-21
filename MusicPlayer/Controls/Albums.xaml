@@ -7,7 +7,7 @@
     xmlns:local="using:MusicPlayer.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:musicplayer="using:MusicPlayer"
-    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels" xmlns:triggers="using:MusicPlayer.Triggers"
     x:Name="root"
     d:DesignHeight="300"
     d:DesignWidth="400"
@@ -152,7 +152,7 @@
             <VisualStateGroup>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <musicplayer:DeviceFamilyTrigger DeviceFamily="Windows.Xbox" />
+                        <triggers:DeviceFamilyTrigger DeviceFamily="Windows.Xbox" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="header.Height" Value="Auto" />
