@@ -23,11 +23,11 @@
             </StackPanel>
         </DataTemplate>
     </ContentDialog.TitleTemplate>
-    <ScrollViewer>
+    <ScrollViewer IsFocusEngagementEnabled="True">
         <StackPanel>
             <!--<TextBlock TextWrapping="WrapWholeWords" />-->
             <controls:MarkdownTextBlock x:Uid="WhatsNew_Body" LinkClicked="MarkdownTextBlock_LinkClicked" />
-            <TextBlock TextWrapping="WrapWholeWords" Margin="0,24,0,0">
+            <TextBlock Margin="0,24,0,0" TextWrapping="WrapWholeWords">
                 <Run Text="You can find the list of bugs and other issues under" />
                 <Hyperlink NavigateUri="https://github.com/LokiMidgard/Bes-Music/issues">
                     <Run Text="https://github.com/LokiMidgard/Bes-Music/issues" />
