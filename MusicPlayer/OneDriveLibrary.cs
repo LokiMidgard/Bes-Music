@@ -242,80 +242,88 @@ namespace MusicPlayer
         private bool storageLocationChangeIgnoreAskUser;
         private static async void StorageLocationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var me = (OneDriveLibrary)d;
-            var oldLocation = (StorageLocation)e.OldValue;
-            var newLocation = (StorageLocation)e.NewValue;
-            if (newLocation == StorageLocation.Unspecified)
-                throw new NotSupportedException("This value is the initial value befor settings are loded. It can't be specified explicitly");
-            if (oldLocation == StorageLocation.Unspecified)
-                return; // nothing todo here this only happen whil initilizing
-
-            if (oldLocation != newLocation)
+            try
             {
-                if (!me.storageLocationChangeIgnoreAskUser)
-                {
+                var me = (OneDriveLibrary)d;
+                var oldLocation = (StorageLocation)e.OldValue;
+                var newLocation = (StorageLocation)e.NewValue;
+                if (newLocation == StorageLocation.Unspecified)
+                    throw new NotSupportedException("This value is the initial value befor settings are loded. It can't be specified explicitly");
+                if (oldLocation == StorageLocation.Unspecified)
+                    return; // nothing todo here this only happen whil initilizing
 
-                    var answer = me.OnAskForPermission?.Invoke($"Do you realy want to move all Data?.");
-                    if (answer != null && !(await answer))
+                if (oldLocation != newLocation)
+                {
+                    if (!me.storageLocationChangeIgnoreAskUser)
                     {
-                        me.storageLocationChangeIgnoreAskUser = true;
-                        try
+
+                        var answer = me.OnAskForPermission?.Invoke($"Do you realy want to move all Data?.");
+                        if (answer != null && !(await answer))
                         {
-                            me.StorageLocation = oldLocation;
-                            return;
+                            me.storageLocationChangeIgnoreAskUser = true;
+                            try
+                            {
+                                me.StorageLocation = oldLocation;
+                                return;
+                            }
+                            finally
+                            {
+                                me.storageLocationChangeIgnoreAskUser = false;
+                            }
                         }
-                        finally
-                        {
-                            me.storageLocationChangeIgnoreAskUser = false;
-                        }
+
                     }
 
-                }
-
-                var oldFolder = await me.GetDataStoreFolder(StorageType.Root, oldLocation);
-                var newFolder = await me.GetDataStoreFolder(StorageType.Root, newLocation);
-                if (Path.GetPathRoot(oldFolder.Path) == Path.GetPathRoot(newFolder.Path))
-                {
-                    await newFolder.DeleteAsync(StorageDeleteOption.Default);
-                    await Task.Run(() => System.IO.Directory.Move(oldFolder.Path, newFolder.Path));
-                }
-                else
-                {
-                    // we are on different roots. Move will throw exception tehn :/
-                    await Task.Run(() => DirectoryCopy(oldFolder.Path, newFolder.Path));
-
-                    void DirectoryCopy(string sourceBasePath, string destinationBasePath)
+                    var oldFolder = await me.GetDataStoreFolder(StorageType.Root, oldLocation);
+                    var newFolder = await me.GetDataStoreFolder(StorageType.Root, newLocation);
+                    if (Path.GetPathRoot(oldFolder.Path) == Path.GetPathRoot(newFolder.Path))
                     {
-                        if (!System.IO.Directory.Exists(sourceBasePath))
-                            throw new DirectoryNotFoundException($"Directory '{sourceBasePath}' not found");
+                        await newFolder.DeleteAsync(StorageDeleteOption.Default);
+                        await Task.Run(() => System.IO.Directory.Move(oldFolder.Path, newFolder.Path));
+                    }
+                    else
+                    {
+                        // we are on different roots. Move will throw exception tehn :/
+                        await Task.Run(() => DirectoryCopy(oldFolder.Path, newFolder.Path));
 
-                        var directoriesToProcess = new Queue<(string sourcePath, string destinationPath)>();
-                        directoriesToProcess.Enqueue((sourcePath: sourceBasePath, destinationPath: destinationBasePath));
-                        while (directoriesToProcess.Any())
+                        void DirectoryCopy(string sourceBasePath, string destinationBasePath)
                         {
-                            (string sourcePath, string destinationPath) = directoriesToProcess.Dequeue();
+                            if (!System.IO.Directory.Exists(sourceBasePath))
+                                throw new DirectoryNotFoundException($"Directory '{sourceBasePath}' not found");
 
-                            if (!System.IO.Directory.Exists(destinationPath))
-                                System.IO.Directory.CreateDirectory(destinationPath);
+                            var directoriesToProcess = new Queue<(string sourcePath, string destinationPath)>();
+                            directoriesToProcess.Enqueue((sourcePath: sourceBasePath, destinationPath: destinationBasePath));
+                            while (directoriesToProcess.Any())
+                            {
+                                (string sourcePath, string destinationPath) = directoriesToProcess.Dequeue();
 
-                            var sourceDirectoryInfo = new DirectoryInfo(sourcePath);
-                            foreach (var sourceFileInfo in sourceDirectoryInfo.EnumerateFiles())
-                                sourceFileInfo.CopyTo(Path.Combine(destinationPath, sourceFileInfo.Name), true);
+                                if (!System.IO.Directory.Exists(destinationPath))
+                                    System.IO.Directory.CreateDirectory(destinationPath);
 
-                            foreach (var sourceSubDirectoryInfo in sourceDirectoryInfo.EnumerateDirectories())
-                                directoriesToProcess.Enqueue((
-                                    sourcePath: sourceSubDirectoryInfo.FullName,
-                                    destinationPath: Path.Combine(destinationPath, sourceSubDirectoryInfo.Name)));
+                                var sourceDirectoryInfo = new DirectoryInfo(sourcePath);
+                                foreach (var sourceFileInfo in sourceDirectoryInfo.EnumerateFiles())
+                                    sourceFileInfo.CopyTo(Path.Combine(destinationPath, sourceFileInfo.Name), true);
+
+                                foreach (var sourceSubDirectoryInfo in sourceDirectoryInfo.EnumerateDirectories())
+                                    directoriesToProcess.Enqueue((
+                                        sourcePath: sourceSubDirectoryInfo.FullName,
+                                        destinationPath: Path.Combine(destinationPath, sourceSubDirectoryInfo.Name)));
+                            }
                         }
                     }
+                    var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                    localSettings.Values[LOCAL_SETTINGS_STORAGE_LOCATION] = (int)newLocation;
+
                 }
-                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-                localSettings.Values[LOCAL_SETTINGS_STORAGE_LOCATION] = (int)newLocation;
+
+                if (!Enum.IsDefined(typeof(StorageLocation), newLocation))
+                    throw new NotSupportedException("This is not flaggable");
 
             }
-
-            if (!Enum.IsDefined(typeof(StorageLocation), newLocation))
-                throw new NotSupportedException("This is not flaggable");
+            catch (Exception ex)
+            {
+                App.Current.NotifyError(d, ex);
+            }
         }
 
 
