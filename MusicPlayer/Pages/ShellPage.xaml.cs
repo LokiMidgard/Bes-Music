@@ -68,7 +68,7 @@ namespace MusicPlayer.Pages
             if (ApiInformation.IsEventPresent("Windows.UI.Xaml.UIElement", nameof(this.PreviewKeyDown)))
                 this.PreviewKeyDown += this.Page_PreviewKeyDown;
 
-
+            MediaplayerViewmodel.Init(this.TransportControls);
             IList<KeyboardAccelerator> keyboardAccelerators;
             if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.UIElement", nameof(this.KeyboardAccelerators)))
                 keyboardAccelerators = this.KeyboardAccelerators;
@@ -95,9 +95,79 @@ namespace MusicPlayer.Pages
             await MusicStore.Instance.SetUITask(this.RunOnDispatcher);
 
             NetworkViewmodel.Instance.OnError += this.Network_OnError;
+            App.Current.ErrorOccured += this.App_ErrorOccured; ;
 
             this.ShowPlayUi = true;
             hideLoding.Begin();
+        }
+
+        private async void App_ErrorOccured(object sender, EventArgs<(Exception exception, ErroType erroType)> e)
+        {
+            string caption = null;
+
+            if (sender is DownloadItem downloadItem)
+            {
+                var albumName = downloadItem.Song?.AlbumName;
+                var songTitle = downloadItem.Song?.Title;
+                if (albumName is null && songTitle is null)
+                {
+                    caption = downloadItem.Title;
+                    if (caption is null)
+                        caption = "a download";
+
+                }
+                else
+                {
+                    if (albumName is null)
+                        caption = songTitle;
+                    if (songTitle is null)
+                        caption = albumName;
+                    else
+                        caption = $"{albumName} - {songTitle}";
+                }
+            }
+
+            if (caption is null)
+            {
+                switch (e.Argument.erroType)
+                {
+
+                    case ErroType.FileIo:
+                        caption = "There was some problem with the Filesystem.";
+                        break;
+                    case ErroType.Network:
+                        caption = "There was some problem with the Network.";
+                        break;
+                    default:
+                    case ErroType.Other:
+                        caption = "There was some problem.";
+                        break;
+                }
+
+            }
+            else
+            {
+                caption = $"There was some probelm with {caption}";
+            }
+
+            string message;
+
+            if (e?.Argument.exception?.Message != null)
+                message = e.Argument.exception.Message;
+            else if (e.Argument.exception != null)
+                message = e.Argument.ToString();
+            else
+                message = "We could not find the error. Sorry this should not happen.";
+
+            await this.RunOnDispatcher(async () =>
+            {
+                var dialog = new MessageDialog(message, caption)
+                {
+                    Options = MessageDialogOptions.None
+                };
+                await dialog.ShowAsync();
+            });
+
         }
 
         private async void Network_OnError(object sender, EventArgs<Exception> e)
