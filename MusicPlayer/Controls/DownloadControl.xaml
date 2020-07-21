@@ -7,6 +7,7 @@
     xmlns:local="using:MusicPlayer.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:musicplayer="using:MusicPlayer"
+    xmlns:triggers="using:MusicPlayer.Triggers"
     d:DesignHeight="300"
     d:DesignWidth="400"
     mc:Ignorable="d">
@@ -14,43 +15,68 @@
         <converters:EmptyToBool x:Key="emptyConverter" OnNullValue="True" />
         <converters:VisibleCollapsedOnEmpty x:Key="emptyVisibilityConverter" OnNullValue="Collapsed" />
         <converters:ListConverter x:Key="listConverter" />
-
+        <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnEmpty" OnNullValue="Collapsed" />
+        <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnFilled" OnNullValue="Visible" />
     </UserControl.Resources>
-
+    <UserControl.DataContext>
+        <musicplayer:NetworkViewmodelAccessor />
+    </UserControl.DataContext>
     <Grid>
-        <ListView ItemsSource="{Binding Instance.AllQueued}">
-            <ListView.DataContext>
-                <musicplayer:NetworkViewmodelAccessor />
-            </ListView.DataContext>
-            <ListView.Header>
-                <StackPanel>
-                    <TextBlock>Nlaasldkj</TextBlock>
-                    <TextBlock
-                        Margin="0,0,0,8"
-                        Foreground="{ThemeResource ForgroundBrush3}"
-                        Visibility="{Binding Instance.AllQueued.Count, Converter={StaticResource emptyVisibilityConverter}}">
-                        <Run Text="{Binding Instance.AllQueued.Count, Mode=OneWay}" />
-                        <Run Text="Downloads queued." />
-                    </TextBlock>
-                    <Button
-                        HorizontalAlignment="Right"
-                        Command="{Binding Instance.CancelAllCommand}"
-                        Style="{StaticResource InvisibleButton}">
-                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                            <TextBlock
-                                Margin="0,0,8,0"
-                                VerticalAlignment="Center"
-                                Text="Cancle" />
-                            <SymbolIcon VerticalAlignment="Center" Symbol="Cancel" />
-                        </StackPanel>
-                    </Button>
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Visibility="{Binding Instance.AllQueued.Count, Converter={StaticResource collapsedOnFilled}}">
+            <TextBlock
+                MaxWidth="400"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="WrapWholeWords">
+                <Run
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Text="There are currently no downloads" />
+                <LineBreak />
+                <Run Foreground="{ThemeResource ForgroundBrush3}" Text="When you download a song or perform a sync operation it is displayed here. You can download songs per album in the Album tab. Or download all songs in a playlist using the playlist tab. Here you can also cancel any queued operation." />
+            </TextBlock>
+        </StackPanel>
 
-                </StackPanel>
+        <ListView
+            HorizontalContentAlignment="Stretch"
+            ItemsSource="{Binding Instance.AllQueued}"
+            SelectionMode="None"
+            Visibility="{Binding Instance.AllQueued.Count, Converter={StaticResource collapsedOnEmpty}}">
+
+            <ListView.Header>
+                <Border
+                    x:Name="HeaderPlaceholder"
+                    Height="250"
+                    Margin="0,0,0,24"
+                    Padding="24"
+                    BorderBrush="{ThemeResource AccentBrushDark3}"
+                    BorderThickness="4,0,0,0">
+                    <StackPanel VerticalAlignment="Bottom">
+
+                        <TextBlock
+                            Margin="0,0,0,8"
+                            Style="{ThemeResource HeaderTextBlockStyle}"
+                            Visibility="{Binding Instance.AllQueued.Count, Converter={StaticResource emptyVisibilityConverter}}">
+                            <Run Text="{Binding Instance.AllQueued.Count, Mode=OneWay}" />
+                            <Run Text="Downloads queued" />
+                        </TextBlock>
+                        <local:SymbolButton
+                            HorizontalAlignment="Left"
+                            Command="{Binding Instance.CancelAllCommand}"
+                            Content="Cancel All"
+                            Symbol="Cancel" />
+
+                    </StackPanel>
+                </Border>
             </ListView.Header>
 
 
             <ListView.ItemContainerStyle>
-                <Style TargetType="ContentPresenter">
+                <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalAlignment" Value="Stretch" />
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 </Style>
@@ -72,43 +98,54 @@
             </ListView.Resources>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Margin="0,0,0,24" HorizontalAlignment="Stretch">
-                        <TextBlock Text="{Binding Song.Title}" Visibility="{Binding Song, Converter={StaticResource emptyVisibilityConverter}}" />
-                        <TextBlock
-                            Foreground="{ThemeResource AccentBrush}"
-                            Text="{Binding Song.Interpreters, Converter={StaticResource listConverter}}"
-                            Visibility="{Binding Song, Converter={StaticResource emptyVisibilityConverter}}" />
-                        <TextBlock Text="{Binding Title}" Visibility="{Binding Title, Converter={StaticResource emptyVisibilityConverter}}" />
-                        <TextBlock Text="{Binding State}" Visibility="{Binding IsDownloading}" />
-                        <ProgressBar
+                    <Grid Margin="12,0,0,0" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel
+                            Grid.Column="1"
+                            Margin="0,0,0,24"
                             HorizontalAlignment="Stretch"
-                            IsIndeterminate="{Binding Downloaded, Converter={StaticResource emptyConverter}}"
-                            Maximum="1"
-                            Visibility="{Binding IsDownloading}"
-                            Value="{Binding Downloaded}" />
-                    </StackPanel>
+                            Orientation="Vertical">
+                            <TextBlock Text="{Binding Song.Title}" Visibility="{Binding Song, Converter={StaticResource emptyVisibilityConverter}}" />
+                            <TextBlock
+                                Foreground="{ThemeResource AccentBrush}"
+                                Text="{Binding Song.Interpreters, Converter={StaticResource listConverter}}"
+                                Visibility="{Binding Song, Converter={StaticResource emptyVisibilityConverter}}" />
+                            <TextBlock Text="{Binding Title}" Visibility="{Binding Title, Converter={StaticResource emptyVisibilityConverter}}" />
+                            <TextBlock Text="{Binding State}" Visibility="{Binding IsDownloading}" />
+                            <ProgressBar
+                                HorizontalAlignment="Stretch"
+                                IsIndeterminate="{Binding Downloaded, Converter={StaticResource emptyConverter}}"
+                                Maximum="1"
+                                Visibility="{Binding IsDownloading}"
+                                Value="{Binding Downloaded}" />
+                        </StackPanel>
+                        <local:SymbolButton
+                            VerticalAlignment="Top"
+                            Command="{Binding CancelCommand}"
+                            Content="Cancel song download"
+                            ShowText="False"
+                            Symbol="Cancel" />
+                    </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
 
         </ListView>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <triggers:DeviceFamilyTrigger DeviceFamily="Windows.Xbox" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
 
-
-        <!--<StackPanel >
-                <TextBlock Style="{StaticResource CaptionTextBlockStyle}">Downloads</TextBlock>
-                <Button  Command="{Binding Instance.CancelAllCommand}" Style="{StaticResource InvisibleButton}" HorizontalAlignment="Right" >
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="Cancle" VerticalAlignment="Center" Margin="0,0,8,0" />
-                        <SymbolIcon Symbol="Cancel"  VerticalAlignment="Center"/>
-                    </StackPanel>
-
-                </Button>
-                <ItemsControl HorizontalContentAlignment="Stretch" ItemsSource="{Binding Instance.Downloading}">
-
-                </ItemsControl>
-            </StackPanel>
-        </ScrollViewer>-->
-
-
-
+                        <Setter Target="HeaderPlaceholder.Height" Value="150" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </UserControl>

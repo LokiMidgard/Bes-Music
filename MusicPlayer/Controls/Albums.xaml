@@ -7,7 +7,8 @@
     xmlns:local="using:MusicPlayer.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:musicplayer="using:MusicPlayer"
-    xmlns:viewmodels="using:MusicPlayer.Viewmodels" xmlns:triggers="using:MusicPlayer.Triggers"
+    xmlns:triggers="using:MusicPlayer.Triggers"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
     x:Name="root"
     d:DesignHeight="300"
     d:DesignWidth="400"
@@ -42,17 +43,17 @@
                 <LineBreak />
                 <Run Foreground="{ThemeResource ForgroundBrush3}" Text="Syncronize your Music from OneDrive" />
             </TextBlock>
-            <Button
+            <local:SymbolButton
                 Margin="8"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Command="{Binding Instance.SyncronizeCommand, Converter={StaticResource ErrorHandler}}"
-                Content="Syncronize Now"
-                Style="{StaticResource ButtonStyleRectangle}">
+                Content="Syncronize Now!"
+                Symbol="Sync">
                 <Button.DataContext>
                     <viewmodels:OneDriveAccessor />
                 </Button.DataContext>
-            </Button>
+            </local:SymbolButton>
         </StackPanel>
         <GridView
             x:Name="toRender"
@@ -106,8 +107,46 @@
                 <Border
                     x:Name="header"
                     Height="250"
-                    HorizontalAlignment="Stretch">
-                    <Grid>
+                    Margin="0,0,0,24"
+                    Padding="24"
+                    HorizontalAlignment="Stretch"
+                    BorderBrush="{ThemeResource AccentBrushDark3}"
+                    BorderThickness="4,0,0,0">
+
+                    <StackPanel VerticalAlignment="Bottom">
+
+                        <TextBlock
+                            x:Name="PlaylistText"
+                            Margin="0,0,0,8"
+                            Style="{ThemeResource HeaderTextBlockStyle}">
+                            <Run Text="{Binding Path=AlbumViewmodel.Albums.Count, ElementName=root}" />
+                            <Run Text="Albums" />
+                        </TextBlock>
+                        <local:SymbolButton
+                            Margin="0,0,0,8"
+                            HorizontalAlignment="Left"
+                            Command="{Binding Instance.SyncronizeCommand, Converter={StaticResource ErrorHandler}}"
+                            Content="Syncronize Playlists"
+                            Symbol="Sync">
+                            <Button.DataContext>
+                                <viewmodels:OneDriveAccessor />
+                            </Button.DataContext>
+                        </local:SymbolButton>
+
+                        <local:SymbolButton
+                            HorizontalAlignment="Left"
+                            Command="{Binding Instance.DownloadDataCommand, Converter={StaticResource ErrorHandler}}"
+                            CommandParameter="{Binding ElementName=PlaylistList, Path=ItemsSource}"
+                            Content="Play All available songs"
+                            Symbol="Play">
+                            <Button.DataContext>
+                                <viewmodels:OneDriveAccessor />
+                            </Button.DataContext>
+                        </local:SymbolButton>
+
+                    </StackPanel>
+
+                    <!--<Grid>
                         <StackPanel
                             HorizontalAlignment="Left"
                             VerticalAlignment="Bottom"
@@ -138,7 +177,7 @@
                             </Button>
                         </StackPanel>
 
-                    </Grid>
+                    </Grid>-->
                 </Border>
             </GridView.Header>
             <!--<ItemsControl.ItemsPanel>

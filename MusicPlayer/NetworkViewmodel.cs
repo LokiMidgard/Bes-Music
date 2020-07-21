@@ -214,6 +214,9 @@ namespace MusicPlayer
             DependencyProperty.Register("IsDownloading", typeof(bool), typeof(DownloadItem), new PropertyMetadata(false));
 
         private readonly TaskCompletionSource<object> taskCompletionSource;
+
+        public ICommand CancelCommand { get; }
+
         public Task Finished => this.taskCompletionSource.Task;
 
         public DownloadItem(Song songToDownload, DownloadDelegate downloadFunction, CancellationToken cancel) : this(downloadFunction, cancel)
@@ -230,11 +233,11 @@ namespace MusicPlayer
             this.downloadFunction = downloadFunction;
             this.globalCancle = cancel;
             this.taskCompletionSource = new TaskCompletionSource<object>();
+            this.CancelCommand = new DelegateCommand(this.CancelDownload, () => !this.taskCompletionSource.Task.IsCompleted);
         }
 
         public async Task CancelDownload()
         {
-
             if (!this.Dispatcher.HasThreadAccess)
             {
                 var completionSource = new TaskCompletionSource<object>();
@@ -247,6 +250,9 @@ namespace MusicPlayer
                 return;
             }
             this.localCancle?.Cancel();
+            (this.CancelCommand as DelegateCommand).FireCanExecuteChanged();
+            this.taskCompletionSource.TrySetCanceled();
+
         }
 
         public async Task StartDownload()
@@ -295,17 +301,19 @@ namespace MusicPlayer
                     try
                     {
                         if (!actualCancel.Token.IsCancellationRequested)
+                        {
                             await this.downloadFunction(new Progress<(string state, double percentage)>(progress =>
                             {
                                 this.Downloaded = progress.percentage;
                                 this.State = progress.state ?? string.Empty;
                             }), actualCancel.Token);
+                        }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         // if the task is canceld the error is propably based on canceling, even if it is not an OperationCanceldException.
                         if (!actualCancel.Token.IsCancellationRequested)
-                            throw; 
+                            throw;
                     }
                 }
 
@@ -313,12 +321,11 @@ namespace MusicPlayer
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                this.taskCompletionSource.SetException(e);
+                this.taskCompletionSource.TrySetException(e);
             }
             this.IsDownloading = false;
             this.taskCompletionSource.TrySetResult(null);
-
-
+            (this.CancelCommand as DelegateCommand).FireCanExecuteChanged();
         }
 
 

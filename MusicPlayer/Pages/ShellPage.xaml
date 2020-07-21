@@ -54,20 +54,39 @@
         <!--<Image Width="{Binding ElementName=mediaPlayer, Path=ActualHeight}" Height="{Binding ElementName=mediaPlayer, Path=ActualHeight}" />
         <controls:TransportControls Grid.Row="1" />-->
 
-        <Frame x:Name="shellFrame" Grid.RowSpan="2" />
-        <TextBlock
+        <Frame x:Name="shellFrame" Grid.RowSpan="2">
+
+            <Frame.ContentTransitions>
+                <TransitionCollection>
+                    <RepositionThemeTransition />
+                </TransitionCollection>
+            </Frame.ContentTransitions>
+        </Frame>
+        <StackPanel
             x:Name="DownloadText"
+            Height="24"
+            Margin="0,-24,0,0"
+            HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            FontSize="10">
-            <TextBlock.RenderTransform>
-                <TranslateTransform x:Name="DownloadTransfrom" Y="-48" />
-            </TextBlock.RenderTransform>
-            <TextBlock.DataContext>
+            Orientation="Horizontal">
+            <StackPanel.Transitions>
+                <TransitionCollection>
+                    <RepositionThemeTransition />
+                </TransitionCollection>
+            </StackPanel.Transitions>
+
+            <StackPanel.DataContext>
                 <musicplayer:NetworkViewmodelAccessor />
-            </TextBlock.DataContext>
-            <Run Text="Downloading" />
-            <Run Text="{Binding Instance.AllQueued.Count}" />
-        </TextBlock>
+            </StackPanel.DataContext>
+            <ProgressRing Margin="8,0,8,0" IsActive="True" />
+            <TextBlock VerticalAlignment="Center" FontSize="10">
+
+
+                <Run Text="Downloading" />
+                <Run Text="{Binding Instance.AllQueued.Count}" />
+                <Run Text="Songs" />
+            </TextBlock>
+        </StackPanel>
         <Border
             Grid.Row="1"
             VerticalAlignment="Bottom"
@@ -117,39 +136,6 @@
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
-                <VisualStateGroup.Transitions>
-                    <VisualTransition From="Vis" To="Non">
-                        <Storyboard>
-                            <DoubleAnimation
-                                Storyboard.TargetName="DownloadTransfrom"
-                                Storyboard.TargetProperty="Y"
-                                To="-48"
-                                Duration="0:0:1" />
-
-                        </Storyboard>
-                    </VisualTransition>
-                    <VisualTransition From="Non" To="Vis">
-                        <Storyboard>
-                            <DoubleAnimation
-                                Storyboard.TargetName="DownloadTransfrom"
-                                Storyboard.TargetProperty="Y"
-                                To="48"
-                                Duration="0:0:1" />
-
-                        </Storyboard>
-                    </VisualTransition>
-                </VisualStateGroup.Transitions>
-                <VisualState x:Name="Non">
-                    <VisualState.StateTriggers>
-                        <trigger:EqualsTrigger
-                            Input="{Binding ElementName=DownloadText, Path=DataContext.Instance.AllQueued.Count}"
-                            Reference="0"
-                            TriggerOnEquals="True" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="DownloadTransfrom.Y" Value="-48" />
-                    </VisualState.Setters>
-                </VisualState>
                 <VisualState x:Name="Vis">
                     <VisualState.StateTriggers>
                         <trigger:EqualsTrigger
@@ -158,9 +144,9 @@
                             TriggerOnEquals="False" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="DownloadTransfrom.Y" Value="48" />
+                        <Setter Target="DownloadText.Margin" Value="0,0,0,0" />
+                        <Setter Target="shellFrame.Padding" Value="0,24,0,0" />
                     </VisualState.Setters>
-                    <Storyboard />
                 </VisualState>
             </VisualStateGroup>
 

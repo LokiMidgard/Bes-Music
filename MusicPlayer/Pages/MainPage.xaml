@@ -9,7 +9,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:musicplayer="using:MusicPlayer"
     xmlns:services="using:MusicPlayer.Services"
-    xmlns:viewmodels="using:MusicPlayer.Viewmodels" xmlns:triggers="using:MusicPlayer.Triggers"
+    xmlns:triggers="using:MusicPlayer.Triggers"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
     x:Name="root"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
@@ -171,19 +172,12 @@
                                         Grid.Row="2"
                                         Grid.Column="0"
                                         Grid.ColumnSpan="2"
-                                        Margin="0,24,0,0">
-                                        <Button Style="{StaticResource InvisibleButton}">
+                                        Margin="0,80,0,0">
+                                        <controls:SymbolButton Content="Add to a playlist" Symbol="Add">
                                             <Button.Flyout>
                                                 <MenuFlyout controls:AddToPlayList.IsPlaylistMenue="{Binding Instance.CurrentPlaylist}" controls:AddToPlayList.SupressCurrentPlayList="True" />
                                             </Button.Flyout>
-                                            <StackPanel Orientation="Horizontal">
-                                                <SymbolIcon Margin="0,0,8,0" Symbol="Add" />
-                                                <TextBlock>
-                                                    <Run>Add To Playlist</Run>
-                                                </TextBlock>
-                                            </StackPanel>
-
-                                        </Button>
+                                        </controls:SymbolButton>
 
                                     </StackPanel>
                                 </Grid>
