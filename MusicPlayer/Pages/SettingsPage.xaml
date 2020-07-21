@@ -32,98 +32,108 @@
             Grid.Row="1"
             Grid.ColumnSpan="50"
             MaxWidth="800"
-            
             ScrollViewer.VerticalScrollBarVisibility="Visible">
             <ScrollViewer.Style>
-                
-            <Style TargetType="ScrollViewer">
-                <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
-            </Style>
+
+                <Style TargetType="ScrollViewer">
+                    <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
+                </Style>
             </ScrollViewer.Style>
 
             <Grid Padding="0,0,0,48">
-                    <Grid.Resources>
-                        <Style x:Key="centerButton" TargetType="FrameworkElement">
-                            <Setter Property="Margin" Value="0,0,0,12" />
-                            <Setter Property="HorizontalAlignment" Value="Stretch" />
-                            <Setter Property="VerticalAlignment" Value="Stretch" />
-                        </Style>
+                <Grid.Resources>
+                    <Style x:Key="centerButton" TargetType="FrameworkElement">
+                        <Setter Property="Margin" Value="0,0,0,12" />
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="VerticalAlignment" Value="Stretch" />
+                    </Style>
 
-                        <Style x:Key="leftButton" TargetType="FrameworkElement">
-                            <Setter Property="Margin" Value="0,0,6,12" />
-                            <Setter Property="HorizontalAlignment" Value="Stretch" />
-                            <Setter Property="VerticalAlignment" Value="Stretch" />
-                        </Style>
-                        <Style x:Key="rightButton" TargetType="FrameworkElement">
-                            <Setter Property="Margin" Value="6,0,0,12" />
-                            <Setter Property="HorizontalAlignment" Value="Stretch" />
-                            <Setter Property="VerticalAlignment" Value="Stretch" />
-                        </Style>
-                        <Visibility x:Key="collapsed">Collapsed</Visibility>
-                    </Grid.Resources>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
+                    <Style x:Key="leftButton" TargetType="FrameworkElement">
+                        <Setter Property="Margin" Value="0,0,6,12" />
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="VerticalAlignment" Value="Stretch" />
+                    </Style>
+                    <Style x:Key="rightButton" TargetType="FrameworkElement">
+                        <Setter Property="Margin" Value="6,0,0,12" />
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="VerticalAlignment" Value="Stretch" />
+                    </Style>
+                    <Visibility x:Key="collapsed">Collapsed</Visibility>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-                    <graphControls:AadLogin
-                        x:Name="Login"
-                        Grid.ColumnSpan="2"
-                        Margin="0,48,0,12"
-                        HorizontalAlignment="Stretch"
-                        AllowSignInAsDifferentUser="False"
-                        SignInCompleted="Login_SignInCompleted"
-                        SignOutCompleted="Login_SignOutCompleted"
-                        View="SmallProfilePhotoLeft" />
+                <graphControls:AadLogin
+                    x:Name="Login"
+                    Grid.ColumnSpan="2"
+                    Margin="0,48,0,12"
+                    HorizontalAlignment="Stretch"
+                    AllowSignInAsDifferentUser="False"
+                    SignInCompleted="Login_SignInCompleted"
+                    SignOutCompleted="Login_SignOutCompleted"
+                    View="SmallProfilePhotoLeft" />
 
-                    <TextBlock Grid.Row="1" Grid.ColumnSpan="2" TextWrapping="WrapWholeWords">
-                        Syncronize will download the metadata of your songs and one cover per album. It will also donwload your Playlists and update all local changes to your playlists to the remote storage. Most chages can be merged, so you shold not have problems when changing playlists on multiple devices.</TextBlock>
+                <TextBlock
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    TextWrapping="WrapWholeWords">
+                    Syncronize will download the metadata of your songs and one cover per album. It will also donwload your Playlists and update all local changes to your playlists to the remote storage. Most chages can be merged, so you shold not have problems when changing playlists on multiple devices.
+                </TextBlock>
 
-                    <Button
-                        Grid.Row="2"
-                        Grid.ColumnSpan="2"
-                        Grid.Column="0"
-                        Command="{Binding SyncronizeCommand, Converter={StaticResource ErrorHandler}}"
-                        Style="{StaticResource centerButton}">
-                        Syncronize Data
-                    </Button>
-                    <Button
-                        Grid.Row="4"
-                        Grid.Column="0"
-                        Command="{Binding DownloadAllMusic, Converter={StaticResource ErrorHandler}}"
-                        Style="{StaticResource leftButton}">
-                        Download all Music
-                    </Button>
-                    <Button
-                        Grid.Row="4"
-                        Grid.Column="1"
-                        Command="{Binding ClearDataCommand, Converter={StaticResource ErrorHandler}}"
-                        Style="{StaticResource rightButton}">
-                        Clear Data
-                    </Button>
+                <Button
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Command="{Binding SyncronizeCommand, Converter={StaticResource ErrorHandler}}"
+                    Style="{StaticResource centerButton}">
+                    Syncronize Data
+                </Button>
+                <Button
+                    Grid.Row="4"
+                    Grid.Column="0"
+                    Command="{Binding DownloadAllMusic, Converter={StaticResource ErrorHandler}}"
+                    Style="{StaticResource leftButton}">
+                    Download all Music
+                </Button>
+                <Button
+                    Grid.Row="4"
+                    Grid.Column="1"
+                    Command="{Binding ClearDataCommand, Converter={StaticResource ErrorHandler}}"
+                    Style="{StaticResource rightButton}">
+                    Clear Data
+                </Button>
 
-                    <TextBlock TextWrapping="WrapWholeWords" Grid.Row="5" Grid.ColumnSpan="2" >Decide where the downloaded music should be saved. In AppData it will be removed when the App is uninstalled. Through it can be stored in your Music library this app will not replicate folder structure or correct file names.</TextBlock>
-                    
-                    <ComboBox
-                        Grid.Row="6"
-                        Grid.ColumnSpan="2"
-                        ItemsSource="{x:Bind PossiblePlcations}"
-                        SelectedItem="{Binding StorageLocation, Mode=TwoWay}"
-                        Style="{StaticResource centerButton}" />
-                
-                </Grid>
+                <TextBlock
+                    x:Name="StorageLocationText"
+                    Grid.Row="5"
+                    Grid.ColumnSpan="2"
+                    TextWrapping="WrapWholeWords">
+                    Decide where the downloaded music should be saved. In AppData it will be removed when the App is uninstalled. Through it can be stored in your Music library this app will not replicate folder structure or correct file names.
+                </TextBlock>
+
+                <ComboBox
+                    x:Name="StorageLocationCombobox"
+                    Grid.Row="6"
+                    Grid.ColumnSpan="2"
+                    ItemsSource="{x:Bind PossiblePlcations}"
+                    SelectedItem="{Binding StorageLocation, Mode=TwoWay}"
+                    Style="{StaticResource centerButton}" />
+
+            </Grid>
             <!--<ListView.Style>
                 <Style TargetType="ListView">
                     <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
@@ -140,6 +150,18 @@
                 </DataTemplate>
             </ListView.ItemTemplate>-->
         </ScrollViewer>
-
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <musicplayer:DeviceFamilyTrigger DeviceFamily="Windows.Xbox" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="StorageLocationCombobox.Visibility" Value="Collapsed" />
+                        <Setter Target="StorageLocationText.Visibility" Value="Collapsed" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </Page>
