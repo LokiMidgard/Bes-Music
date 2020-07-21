@@ -10,6 +10,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -98,7 +99,17 @@ namespace MusicPlayer.Controls
             {
                 OneDriveLibrary.Instance.DownloadDataCommand.Execute(playList);
             }
-            
+
+        }
+
+        private void ItemsStackPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (ApiInformation.IsEventPresent("Windows.UI.Xaml.UIElement", nameof(this.PreviewKeyDown)))
+            {
+                var panel = sender as UIElement;
+                panel.BringIntoViewRequested += this.ItemsStackPanel_BringIntoViewRequested;
+            }
+
         }
     }
 }

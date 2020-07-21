@@ -6,10 +6,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:MusicPlayer.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="using:MusicPlayer.Viewmodels" xmlns:musicplayer="using:MusicPlayer"
+    xmlns:musicplayer="using:MusicPlayer"
+    xmlns:viewmodels="using:MusicPlayer.Viewmodels"
+    x:Name="root"
     d:DesignHeight="300"
     d:DesignWidth="400"
-    x:Name="root"
     SizeChanged="UserControl_SizeChanged"
     mc:Ignorable="d">
 
@@ -18,38 +19,52 @@
             x:Name="groupInfoCVS"
             IsSourceGrouped="true"
             Source="{x:Bind AlbumViewmodel.AlphabetGrouped}" />
-        <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnEmpty" OnNullValue="Collapsed"/>
+        <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnEmpty" OnNullValue="Collapsed" />
         <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnFilled" OnNullValue="Visible" />
         <converters:ExceptionHandlerConverter x:Key="ErrorHandler" OnError="ExceptionHandlerConverter_OnError" />
-        
+
     </UserControl.Resources>
     <Grid>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" 
-                    Visibility="{Binding Path=AlbumViewmodel.AlphabetGrouped.Count, ElementName=root, Converter={StaticResource collapsedOnFilled}}">
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWholeWords" TextAlignment="Center" MaxWidth="400">
-            <Run Text="Its Empty here!" FontSize="18" FontWeight="Bold"/>
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Visibility="{Binding Path=AlbumViewmodel.AlphabetGrouped.Count, ElementName=root, Converter={StaticResource collapsedOnFilled}}">
+            <TextBlock
+                MaxWidth="400"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="WrapWholeWords">
+                <Run
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Text="Its Empty here!" />
                 <LineBreak />
-            <Run Foreground="{ThemeResource ForgroundBrush3}" Text="Syncronize your Music from OneDrive"/>
+                <Run Foreground="{ThemeResource ForgroundBrush3}" Text="Syncronize your Music from OneDrive" />
             </TextBlock>
-            <Button VerticalAlignment="Center"
-                     Command="{Binding Instance.SyncronizeCommand, Converter={StaticResource ErrorHandler}}"
-                    HorizontalAlignment="Center" Margin="8" Content="Syncronize Now" Style="{StaticResource ButtonStyleRectangle}" >
+            <Button
+                Margin="8"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Command="{Binding Instance.SyncronizeCommand, Converter={StaticResource ErrorHandler}}"
+                Content="Syncronize Now"
+                Style="{StaticResource ButtonStyleRectangle}">
                 <Button.DataContext>
                     <viewmodels:OneDriveAccessor />
                 </Button.DataContext>
             </Button>
         </StackPanel>
-        <GridView 
-        x:Name="toRender"
-        ContainerContentChanging="ToRender_ContainerContentChanging"
-        IsItemClickEnabled="True"
-        Visibility="{Binding Path=AlbumViewmodel.AlphabetGrouped.Count, ElementName=root,  Converter={StaticResource collapsedOnEmpty}}"
-        ItemClick="AlbumClicked"
-        HorizontalContentAlignment="Stretch"
-        ItemsSource="{Binding Source={StaticResource groupInfoCVS}}">
+        <GridView
+            x:Name="toRender"
+            HorizontalContentAlignment="Stretch"
+            ContainerContentChanging="ToRender_ContainerContentChanging"
+            IsItemClickEnabled="True"
+            ItemClick="AlbumClicked"
+            ItemsSource="{Binding Source={StaticResource groupInfoCVS}}"
+            Visibility="{Binding Path=AlbumViewmodel.AlphabetGrouped.Count, ElementName=root, Converter={StaticResource collapsedOnEmpty}}">
             <GridView.ItemsPanel>
-                <ItemsPanelTemplate >
-                    <ItemsWrapGrid BringIntoViewRequested="ItemsWrapGrid_BringIntoViewRequested" Orientation="Horizontal"/>
+                <ItemsPanelTemplate>
+                    <ItemsWrapGrid Loaded="ItemsPanel_Loaded" Orientation="Horizontal" />
                 </ItemsPanelTemplate>
 
             </GridView.ItemsPanel>
@@ -73,51 +88,52 @@
                 </GroupStyle>
             </GridView.GroupStyle>
             <GridView.ItemContainerStyle>
-                <Style TargetType="GridViewItem" >
+                <Style TargetType="GridViewItem">
                     <!--<Setter Target="HorizontalAlignment" Value="Right"/>-->
                 </Style>
             </GridView.ItemContainerStyle>
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:AlbumViewmodel">
-                    <local:AlbumControl 
-                    DataContext="{x:Bind }" 
-                    IsDisplayedLarge="{Binding ElementName=root, Path=IsAlbumDisplayedLarge}" 
-                    Width="{Binding ElementName=root, Path=AlbumWidth}"
-                    MinWidth="{Binding ElementName=root, Path=AlbumWidth}"
-                    MaxWidth="{Binding ElementName=root, Path=AlbumWidth}"></local:AlbumControl>
+                    <local:AlbumControl
+                        Width="{Binding ElementName=root, Path=AlbumWidth}"
+                        MinWidth="{Binding ElementName=root, Path=AlbumWidth}"
+                        MaxWidth="{Binding ElementName=root, Path=AlbumWidth}"
+                        DataContext="{x:Bind}"
+                        IsDisplayedLarge="{Binding ElementName=root, Path=IsAlbumDisplayedLarge}" />
                 </DataTemplate>
             </GridView.ItemTemplate>
             <GridView.Header>
-                <Border x:Name="header" Height="250" HorizontalAlignment="Stretch" >
+                <Border
+                    x:Name="header"
+                    Height="250"
+                    HorizontalAlignment="Stretch">
                     <Grid>
                         <StackPanel
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Left" 
-                                VerticalAlignment="Bottom"
-                                >
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Bottom"
+                            Orientation="Horizontal">
 
-                            <Button Style="{StaticResource SmalButtonStyle}"
-                                HorizontalAlignment="Left" 
+                            <Button
+                                HorizontalAlignment="Left"
                                 VerticalAlignment="Bottom"
                                 Click="Button_Click"
-                                >
+                                Style="{StaticResource SmalButtonStyle}">
                                 <StackPanel Orientation="Horizontal">
-                                    <SymbolIcon Symbol="Play" Margin="0,0,8,0" />
-                                    <TextBlock Text="Play All"></TextBlock>
+                                    <SymbolIcon Margin="0,0,8,0" Symbol="Play" />
+                                    <TextBlock Text="Play All" />
                                 </StackPanel>
                             </Button>
-                            <Button Style="{StaticResource SmalButtonStyle}"
-                                HorizontalAlignment="Left" 
+                            <Button
+                                HorizontalAlignment="Left"
                                 VerticalAlignment="Bottom"
                                 Command="{Binding Instance.DownloadAllMusic, Converter={StaticResource ErrorHandler}}"
-
-                                >
+                                Style="{StaticResource SmalButtonStyle}">
                                 <Button.DataContext>
                                     <viewmodels:OneDriveAccessor />
                                 </Button.DataContext>
                                 <StackPanel Orientation="Horizontal">
-                                    <SymbolIcon Symbol="Download" Margin="0,0,8,0" />
-                                    <TextBlock Text="Download All Songs"></TextBlock>
+                                    <SymbolIcon Margin="0,0,8,0" Symbol="Download" />
+                                    <TextBlock Text="Download All Songs" />
                                 </StackPanel>
                             </Button>
                         </StackPanel>
@@ -136,14 +152,13 @@
             <VisualStateGroup>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <musicplayer:DeviceFamilyTrigger DeviceFamily="Windows.Xbox"/>
+                        <musicplayer:DeviceFamilyTrigger DeviceFamily="Windows.Xbox" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="header.Height" Value="Auto"/>
+                        <Setter Target="header.Height" Value="Auto" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-        
     </Grid>
 </UserControl>

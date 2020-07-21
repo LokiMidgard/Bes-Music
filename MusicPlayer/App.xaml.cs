@@ -121,7 +121,8 @@ namespace MusicPlayer
                     height: 400
                     ));
 
-            applicationView.SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
+            if (this.IsXBox) // Only do this on XBox, on phone the ui will be behind system app bar otherwise.
+                applicationView.SetDesiredBoundsMode(Windows.UI.ViewManagement.ApplicationViewBoundsMode.UseCoreWindow);
         }
 
         private bool isTouchMode;

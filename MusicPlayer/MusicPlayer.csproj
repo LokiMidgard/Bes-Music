@@ -140,6 +140,9 @@
     </Compile>
     <Compile Include="Controls\DelegateCommand.cs" />
     <Compile Include="Controls\DisabledCommand.cs" />
+    <Compile Include="Controls\DownloadControl.xaml.cs">
+      <DependentUpon>DownloadControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\FullScreenViewmodel.cs" />
     <Compile Include="Controls\NowPlayingDisk.xaml.cs">
       <DependentUpon>NowPlayingDisk.xaml</DependentUpon>
@@ -336,6 +339,10 @@
     <Page Include="base.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\DownloadControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\NowPlayingDisk.xaml">
       <SubType>Designer</SubType>

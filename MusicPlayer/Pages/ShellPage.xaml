@@ -1,5 +1,5 @@
 ﻿<Page
-    PreviewKeyDown="Page_PreviewKeyDown"
+    
     x:Class="MusicPlayer.Pages.ShellPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -50,61 +50,7 @@
 
         <Frame x:Name="shellFrame" Grid.RowSpan="2" />
 
-        <ScrollViewer 
-            Visibility="{Binding Instance.Downloading.Count, Converter={StaticResource emptyVisibilityConverter}}"
-            BorderBrush="{ThemeResource ForgroundBrush1}"
-                        BorderThickness="1,0,0,1" 
-                        Padding="15" 
-                        Background="{ThemeResource BackgroundBrush1}" 
-            Width="300" MaxHeight="250" VerticalAlignment="Top" HorizontalAlignment="Right">
-            <ScrollViewer.DataContext>
-                <musicplayer:NetworkViewmodelAccessor />
-            </ScrollViewer.DataContext>
-            <StackPanel >
-                <TextBlock Style="{StaticResource CaptionTextBlockStyle}">Downloads</TextBlock>
-                <Button  Command="{Binding Instance.CancelAllCommand}" Style="{StaticResource InvisibleButton}" HorizontalAlignment="Right" >
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="Cancle" VerticalAlignment="Center" Margin="0,0,8,0" />
-                        <SymbolIcon Symbol="Cancel"  VerticalAlignment="Center"/>
-                    </StackPanel>
-
-                </Button>
-                <TextBlock Margin="0,0,0,8" Foreground="{ThemeResource ForgroundBrush3}" Visibility="{Binding Instance.WaitForDownloads.Count, Converter={StaticResource emptyVisibilityConverter}}" > <Run Text="Wait in cue" /> <Run Text="{Binding Instance.WaitForDownloads.Count, Mode=OneWay}"></Run></TextBlock>
-                <ItemsControl HorizontalContentAlignment="Stretch" ItemsSource="{Binding Instance.Downloading}">
-                    <ItemsControl.ItemContainerStyle>
-                        <Style TargetType="ContentPresenter">
-                            <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-                        </Style>
-                    </ItemsControl.ItemContainerStyle>
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel  HorizontalAlignment="Stretch"></StackPanel>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel HorizontalAlignment="Stretch" Margin="0,0,0,24">
-                                <TextBlock Text="{Binding Song.Title}"
-                                           Visibility="{Binding Song, Converter={StaticResource emptyVisibilityConverter}}"
-                                           ></TextBlock>
-                                <TextBlock Foreground="{ThemeResource AccentBrush}"
-                                           Visibility="{Binding Song, Converter={StaticResource emptyVisibilityConverter}}"
-                                           Text="{Binding Song.Interpreters, Converter={StaticResource listConverter}}"></TextBlock>
-                                <TextBlock 
-                                    Visibility="{Binding Title, Converter={StaticResource emptyVisibilityConverter}}"
-                                    Text="{Binding Title}"></TextBlock>
-                                <TextBlock Text="{Binding State}"></TextBlock>
-                                <ProgressBar HorizontalAlignment="Stretch" Value="{Binding Downloaded}" Maximum="1" IsIndeterminate="{Binding Downloaded, Converter={StaticResource emptyConverter}}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </ScrollViewer>
-
-
-        <Border
+      <Border
             
             Background="{StaticResource BackgroundBrush1}"
             Grid.Row="1"

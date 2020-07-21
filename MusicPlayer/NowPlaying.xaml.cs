@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
 using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
@@ -71,7 +72,8 @@ namespace MusicPlayer
 
             this.supportIntensety = Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.Composition.IAmbientLight2");
 
-            this.PreviewKeyDown += this.NowPlaying_PreviewKeyDown;
+            if (ApiInformation.IsEventPresent("Windows.UI.Xaml.UIElement", nameof(this.PreviewKeyDown)))
+                this.PreviewKeyDown += this.NowPlaying_PreviewKeyDown;
 
         }
 

@@ -19,6 +19,7 @@
     <Page.Resources>
         <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnEmpty" OnNullValue="Collapsed" />
         <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnFilled" OnNullValue="Visible" />
+        <converters:VisibleCollapsedOnEmpty x:Key="emptyVisibilityConverter" OnNullValue="Collapsed" />
 
         <converters:StringFormatConverter x:Key="stringFormat" />
         <converters:ListConverter x:Key="listConverter" />
@@ -31,8 +32,8 @@
                 </Button>
             </Grid>
         </DataTemplate>
-        
-       
+
+
     </Page.Resources>
 
     <Grid>
@@ -64,18 +65,16 @@
 
 
                     <ListView
-                        
                         HorizontalContentAlignment="Stretch"
                         IsItemClickEnabled="False"
-                        x:Name="CurrentPlayingList"
                         ItemsSource="{Binding Instance.CurrentPlaylist}"
                         SelectedIndex="{Binding Instance.CurrentPlayingIndex, Mode=TwoWay}"
                         SelectionMode="Single"
                         SingleSelectionFollowsFocus="False"
                         Visibility="{Binding Instance.CurrentPlaylist.Count, Converter={StaticResource collapsedOnEmpty}}">
                         <ListView.ItemsPanel>
-                            <ItemsPanelTemplate >
-                                <ItemsStackPanel BringIntoViewRequested="ListView_BringIntoViewRequested" Orientation="Vertical"/>
+                            <ItemsPanelTemplate>
+                                <ItemsStackPanel Loaded="ItemsStackPanel_Loaded" Orientation="Vertical" />
                             </ItemsPanelTemplate>
                         </ListView.ItemsPanel>
                         <ListView.Style>
@@ -101,7 +100,10 @@
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition x:Name="FirstColumn" Width="*" MaxWidth="100" />
+                                        <ColumnDefinition
+                                            x:Name="FirstColumn"
+                                            Width="*"
+                                            MaxWidth="100" />
                                         <ColumnDefinition
                                             x:Name="SongInfoSpaceColumn"
                                             Width="*"
@@ -191,7 +193,10 @@
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition x:Name="FirstColumn2" Width="*" MaxWidth="100" />
+                                        <ColumnDefinition
+                                            x:Name="FirstColumn2"
+                                            Width="*"
+                                            MaxWidth="100" />
                                         <ColumnDefinition
                                             Width="*"
                                             MinWidth="160"
@@ -202,8 +207,8 @@
                                             MaxWidth="100" />
                                     </Grid.ColumnDefinitions>
                                     <Viewbox
+                                        x:Name="NowPlayingDisk"
                                         Grid.Column="1"
-                                                x:Name="NowPlayingDisk"
                                         MaxWidth="300"
                                         HorizontalAlignment="Left">
 
@@ -376,23 +381,33 @@
             <PivotItem Header="Albums">
                 <controls:Albums HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             </PivotItem>
+            <PivotItem>
+                <!--  Visibility="{Binding Instance.Downloading.Count, Converter={StaticResource emptyVisibilityConverter}}"  -->
+                <PivotItem.Header>
+                    <TextBlock Visibility="Visible">Download</TextBlock>
+                </PivotItem.Header>
+                <PivotItem.DataContext>
+                    <musicplayer:NetworkViewmodelAccessor />
+                </PivotItem.DataContext>
+                <controls:DownloadControl />
+            </PivotItem>
         </Pivot>
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <musicplayer:DeviceFamilyTrigger DeviceFamily="Windows.Xbox"/>
+                        <musicplayer:DeviceFamilyTrigger DeviceFamily="Windows.Xbox" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="SongInfoSpaceColumn.Width" Value="160"/>
-                        <Setter Target="NowPlayingDisk.Width" Value="160"/>
-                        <Setter Target="NowPlayingDisk.Height" Value="160"/>
-                        <Setter Target="NowPlayingProxy.Width" Value="160"/>
-                        <Setter Target="NowPlayingProxy.Height" Value="160"/>
-                        <Setter Target="root.Margin" Value="48,27,48,0"/>
-                        <Setter Target="FirstColumn2.Width" Value="0"/>
-                        <Setter Target="FirstColumn.Width" Value="0"/>
+                        <Setter Target="SongInfoSpaceColumn.Width" Value="160" />
+                        <Setter Target="NowPlayingDisk.Width" Value="160" />
+                        <Setter Target="NowPlayingDisk.Height" Value="160" />
+                        <Setter Target="NowPlayingProxy.Width" Value="160" />
+                        <Setter Target="NowPlayingProxy.Height" Value="160" />
+                        <Setter Target="root.Margin" Value="48,27,48,0" />
+                        <Setter Target="FirstColumn2.Width" Value="0" />
+                        <Setter Target="FirstColumn.Width" Value="0" />
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>

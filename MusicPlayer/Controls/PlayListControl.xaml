@@ -61,7 +61,7 @@
             </ListView.Header>
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <ItemsStackPanel Orientation="Vertical" BringIntoViewRequested="ItemsStackPanel_BringIntoViewRequested"/>
+                    <ItemsStackPanel Orientation="Vertical" Loaded="ItemsStackPanel_Loaded"/>
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
             <ListView.ItemContainerStyle>

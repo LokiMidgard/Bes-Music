@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Foundation.Metadata;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -86,6 +87,16 @@ namespace MusicPlayer.Pages
             }
            
         }
+
+        private void ItemsStackPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (ApiInformation.IsEventPresent("Windows.UI.Xaml.UIElement", nameof(this.PreviewKeyDown)))
+            {
+                var panel = sender as UIElement;
+                panel.BringIntoViewRequested += this.ListView_BringIntoViewRequested;
+            }
+        }
+
     }
 
 
