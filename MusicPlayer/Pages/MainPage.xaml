@@ -171,7 +171,7 @@
                                     <StackPanel
                                         Grid.Row="2"
                                         Grid.Column="0"
-                                        Grid.ColumnSpan="2"
+                                        Grid.ColumnSpan="3"
                                         Margin="0,80,0,0">
                                         <controls:SymbolButton Content="Add to a playlist" Symbol="Add">
                                             <Button.Flyout>
