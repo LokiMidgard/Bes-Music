@@ -2,6 +2,7 @@
 using MusicPlayer.Viewmodels;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -72,8 +73,17 @@ namespace MusicPlayer.Pages
 
         }
 
-        private void List_ItemClick(object sender, ItemClickEventArgs e)
+        private async void List_ItemClick(object sender, ItemClickEventArgs e)
         {
+            if (e.ClickedItem is SongGroup songGroup)
+            {
+                if (App.Current.IsXBox && songGroup.Availability == Availability.NotAvailable)
+                    OneDriveLibrary.Instance.DownloadDataCommand.Execute(songGroup);
+                else if (songGroup.Availability != Availability.NotAvailable)
+                {
+                    await MediaplayerViewmodel.Instance.ResetSongs(songGroup.Album.Songs.Select(x => x.PreferedSong).ToImmutableArray(), songGroup.PreferedSong);
+                }
+            }
 
         }
 

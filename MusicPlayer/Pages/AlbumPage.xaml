@@ -25,6 +25,11 @@
         <x:Double x:Key="LargeWindowSnapPoint">900</x:Double>
         <viewmodels:OneDriveAccessor x:Name="oneDrive" />
 
+        <core:Availability x:Key="NotAvailable">NotAvailable</core:Availability>
+        <core:Availability x:Key="UpdateAvailable">UpdateAvailable</core:Availability>
+        <core:Availability x:Key="InSync">InSync</core:Availability>
+
+
     </Page.Resources>
     <controls:StateListener>
 
@@ -44,7 +49,7 @@
                 SelectionMode="None">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <ItemsStackPanel Orientation="Vertical" Loaded="ItemsStackPanel_Loaded"  />
+                        <ItemsStackPanel Loaded="ItemsStackPanel_Loaded" Orientation="Vertical" />
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
                 <ListView.Header>
@@ -84,14 +89,14 @@
                                 </Button>
 
                                 <Button
-                        x:Name="AddButton"
-                        Grid.Column="1"
+                                    x:Name="AddButton"
+                                    Grid.Column="1"
                                     Width="{StaticResource MediumButtonSize}"
                                     Height="{StaticResource MediumButtonSize}"
                                     Margin="{StaticResource MediumButtonMargin}"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Bottom"
-                        Style="{StaticResource RoundButtonStyle}">
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Bottom"
+                                    Style="{StaticResource RoundButtonStyle}">
                                     <Button.Flyout>
                                         <MenuFlyout controls:AddToPlayList.IsPlaylistMenue="{Binding Model}" />
                                     </Button.Flyout>
@@ -243,25 +248,44 @@
                                 </Grid.RowDefinitions>
 
                                 <StackPanel
+                                    x:Name="XboxButtonPanel"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Stretch"
+                                    Orientation="Horizontal"
+                                    Visibility="Collapsed">
+                                    <SymbolIcon
+                                        Margin="4,0,4,0"
+                                        Symbol="Download"
+                                        Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource NotAvailable}}" />
+                                    <SymbolIcon
+                                        Margin="4,0,4,0"
+                                        Symbol="Refresh"
+                                        Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource UpdateAvailable}}" />
+                                    <SymbolIcon
+                                        Margin="4,0,4,0"
+                                        Symbol="Play"
+                                        Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource UpdateAvailable}}" />
+                                    <SymbolIcon
+                                        Margin="4,0,4,0"
+                                        Symbol="Play"
+                                        Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource InSync}}" />
+                                </StackPanel>
+                                <StackPanel
                                     x:Name="ButtonPanel"
                                     Grid.Column="1"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Stretch"
                                     Orientation="Horizontal">
-                                    <StackPanel.Resources>
-                                        <core:Availability x:Key="NotAvailable" >NotAvailable</core:Availability>
-                                        <core:Availability x:Key="UpdateAvailable" >UpdateAvailable</core:Availability>
-                                    </StackPanel.Resources>
                                     <Button
                                         x:Name="UpdateButton"
-                                        Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource NotAvailable}}"
-                                                                            Width="{StaticResource MediumButtonSize}"
-                                    Height="{StaticResource MediumButtonSize}"
-                                    Margin="{StaticResource MediumButtonMargin}"
-                                    CommandParameter="{Binding}"
-                                    Style="{StaticResource RoundButtonStyle}"
-                                    Command="{Binding Source={StaticResource oneDrive}, Path=Instance.DownloadDataCommand}"
-              >
+                                        Width="{StaticResource MediumButtonSize}"
+                                        Height="{StaticResource MediumButtonSize}"
+                                        Margin="{StaticResource MediumButtonMargin}"
+                                        Command="{Binding Source={StaticResource oneDrive}, Path=Instance.DownloadDataCommand}"
+                                        CommandParameter="{Binding}"
+                                        Style="{StaticResource RoundButtonStyle}"
+                                        Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource NotAvailable}}">
                                         <Viewbox>
                                             <SymbolIcon Symbol="Download" />
                                         </Viewbox>
@@ -269,15 +293,13 @@
 
                                     <Button
                                         x:Name="RefreshButton"
-                                        Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource UpdateAvailable}}"
-                                                                            Width="{StaticResource MediumButtonSize}"
-                                    Height="{StaticResource MediumButtonSize}"
-                                    Margin="{StaticResource MediumButtonMargin}"
-                                    CommandParameter="{Binding}"
-                                    Style="{StaticResource RoundButtonStyle}"
-                                    Command="{Binding Source={StaticResource oneDrive}, Path=Instance.DownloadDataCommand}"
-                                        
-                                     >
+                                        Width="{StaticResource MediumButtonSize}"
+                                        Height="{StaticResource MediumButtonSize}"
+                                        Margin="{StaticResource MediumButtonMargin}"
+                                        Command="{Binding Source={StaticResource oneDrive}, Path=Instance.DownloadDataCommand}"
+                                        CommandParameter="{Binding}"
+                                        Style="{StaticResource RoundButtonStyle}"
+                                        Visibility="{Binding Availability, Mode=OneWay, Converter={StaticResource EqualsConverter}, ConverterParameter={StaticResource UpdateAvailable}}">
                                         <Viewbox>
                                             <SymbolIcon Symbol="Refresh" />
                                         </Viewbox>
@@ -285,11 +307,10 @@
 
                                     <Button
                                         x:Name="AddButton"
- Width="{StaticResource MediumButtonSize}"
-                                    Height="{StaticResource MediumButtonSize}"
-                                    Margin="{StaticResource MediumButtonMargin}"
-                                    Style="{StaticResource RoundButtonStyle}"
-                       >
+                                        Width="{StaticResource MediumButtonSize}"
+                                        Height="{StaticResource MediumButtonSize}"
+                                        Margin="{StaticResource MediumButtonMargin}"
+                                        Style="{StaticResource RoundButtonStyle}">
                                         <Button.Flyout>
                                             <MenuFlyout controls:AddToPlayList.IsPlaylistMenue="{x:Bind PreferedSong}" />
                                         </Button.Flyout>
@@ -301,16 +322,12 @@
 
                                     <Button
                                         x:Name="PlayButton"
-                                        
-                                         Width="{StaticResource MediumButtonSize}"
-                                    Height="{StaticResource MediumButtonSize}"
-                                    Margin="{StaticResource MediumButtonMargin}"
-                                    
-                                    Style="{StaticResource RoundButtonStyle}"
-                                        
+                                        Width="{StaticResource MediumButtonSize}"
+                                        Height="{StaticResource MediumButtonSize}"
+                                        Margin="{StaticResource MediumButtonMargin}"
                                         Command="{Binding DataContext.PlayAlbumCommand, ElementName=root}"
                                         CommandParameter="{x:Bind PreferedSong}"
-                >
+                                        Style="{StaticResource RoundButtonStyle}">
                                         <Viewbox>
                                             <SymbolIcon Symbol="Play" />
                                         </Viewbox>
@@ -485,12 +502,15 @@
                                                 <Setter Target="GridMenuFlyout.MenuFlyoutPresenterStyle" Value="{ThemeResource MenuFlyoutPresenterShowItem}" />
                                                 <Setter Target="rowGrid.IsRightTapEnabled" Value="true" />
                                                 <Setter Target="rowGrid.Margin" Value="48,0,48,0" />
+                                                <Setter Target="ButtonPanel.Visibility" Value="Collapsed" />
+                                                <Setter Target="XboxButtonPanel.Visibility" Value="Visible" />
                                             </VisualState.Setters>
                                         </VisualState>
                                         <VisualState x:Name="Touch">
                                             <VisualState.Setters>
                                                 <Setter Target="GridMenuFlyout.MenuFlyoutPresenterStyle" Value="{ThemeResource MenuFlyoutPresenterShowItem}" />
                                                 <Setter Target="rowGrid.IsRightTapEnabled" Value="true" />
+                                                <Setter Target="ButtonPanel.Visibility" Value="Collapsed" />
                                             </VisualState.Setters>
                                         </VisualState>
 
