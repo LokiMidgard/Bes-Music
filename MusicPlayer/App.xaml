@@ -8,11 +8,11 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="base.xaml"/>
-                <ResourceDictionary Source="themeresources.xaml"/>
-                <ResourceDictionary Source="Controls/UWPToolkit/ProfileCard/ProfileCard.xaml"/>
-                <ResourceDictionary Source="Controls/UWPToolkit/AadLogin/AadLogin.xaml"/>
-                <ResourceDictionary Source="statics.xaml"/>
+                <ResourceDictionary Source="base.xaml" />
+                <ResourceDictionary Source="themeresources.xaml" />
+                <ResourceDictionary Source="Controls/UWPToolkit/ProfileCard/ProfileCard.xaml" />
+                <ResourceDictionary Source="Controls/UWPToolkit/AadLogin/AadLogin.xaml" />
+                <ResourceDictionary Source="statics.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
 
@@ -106,16 +106,16 @@
             <SolidColorBrush x:Key="AccentBrushLight3" Color="{ThemeResource SystemAccentColorLight3}" />
 
 
-            <ThemeResource x:Key="AccentColor"       ResourceKey="SystemAccentColor" />
-            <ThemeResource x:Key="AccentColorDark1"  ResourceKey="SystemAccentColorDark1" />
-            <ThemeResource x:Key="AccentColorDark2"  ResourceKey="SystemAccentColorDark2" />
-            <ThemeResource x:Key="AccentColorDark3"  ResourceKey="SystemAccentColorDark3" />
+            <ThemeResource x:Key="AccentColor" ResourceKey="SystemAccentColor" />
+            <ThemeResource x:Key="AccentColorDark1" ResourceKey="SystemAccentColorDark1" />
+            <ThemeResource x:Key="AccentColorDark2" ResourceKey="SystemAccentColorDark2" />
+            <ThemeResource x:Key="AccentColorDark3" ResourceKey="SystemAccentColorDark3" />
             <ThemeResource x:Key="AccentColorLight1" ResourceKey="SystemAccentColorLight1" />
             <ThemeResource x:Key="AccentColorLight2" ResourceKey="SystemAccentColorLight2" />
             <ThemeResource x:Key="AccentColorLight3" ResourceKey="SystemAccentColorLight3" />
 
 
-   
+
 
             <SolidColorBrush x:Key="ForgroundBrush1" Color="{StaticResource ForgroundColor1}" />
             <SolidColorBrush x:Key="ForgroundBrush2" Color="{StaticResource ForgroundColor2}" />
@@ -134,7 +134,7 @@
             <SolidColorBrush x:Key="BackgroundBrush2" Color="{StaticResource BackgroundColor2}" />
             <SolidColorBrush x:Key="BackgroundBrush1" Color="{StaticResource BackgroundColor1}" />
 
-            <SolidColorBrush x:Key="SystemControlTransparentBackgroundBrush" Color="#c0888888"></SolidColorBrush>
+            <SolidColorBrush x:Key="SystemControlTransparentBackgroundBrush" Color="#c0888888" />
             <SolidColorBrush x:Key="SystemControlTransparentBorderBrush" Color="#c0989898" />
 
             <helpers:ConstantsHelper x:Key="const" />
@@ -162,21 +162,20 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
                             <Grid
-                            x:Name="RootGrid"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="0">
+                                x:Name="RootGrid"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="0">
                                 <ContentPresenter
-                                x:Name="ContentPresenter"
-                                Padding="{TemplateBinding Padding}"
-                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                AutomationProperties.AccessibilityView="Raw"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Content="{TemplateBinding Content}"
-                                ContentTemplate="{TemplateBinding ContentTemplate}"
-                                ContentTransitions="{TemplateBinding ContentTransitions}"
-                            />
+                                    x:Name="ContentPresenter"
+                                    Padding="{TemplateBinding Padding}"
+                                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    AutomationProperties.AccessibilityView="Raw"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Content="{TemplateBinding Content}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    ContentTransitions="{TemplateBinding ContentTransitions}" />
 
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">
@@ -242,21 +241,21 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
                             <Grid
-                            x:Name="RootGrid"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="0">
+                                x:Name="RootGrid"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="0">
                                 <ContentPresenter
-                                x:Name="ContentPresenter"
-                                Padding="{TemplateBinding Padding}"
-                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                AutomationProperties.AccessibilityView="Raw"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Content="{TemplateBinding Content}"
-                                ContentTemplate="{TemplateBinding ContentTemplate}"
-                                ContentTransitions="{TemplateBinding ContentTransitions}"
-                                CornerRadius="0" />
+                                    x:Name="ContentPresenter"
+                                    Padding="{TemplateBinding Padding}"
+                                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    AutomationProperties.AccessibilityView="Raw"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Content="{TemplateBinding Content}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    ContentTransitions="{TemplateBinding ContentTransitions}"
+                                    CornerRadius="0" />
 
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">
@@ -323,21 +322,21 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="Button">
                             <Grid
-                            x:Name="RootGrid"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="{StaticResource IninitCornerRadius}">
+                                x:Name="RootGrid"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{StaticResource IninitCornerRadius}">
                                 <ContentPresenter
-                                x:Name="ContentPresenter"
-                                Padding="{TemplateBinding Padding}"
-                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                AutomationProperties.AccessibilityView="Raw"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Content="{TemplateBinding Content}"
-                                ContentTemplate="{TemplateBinding ContentTemplate}"
-                                ContentTransitions="{TemplateBinding ContentTransitions}"
-                                CornerRadius="{StaticResource IninitCornerRadius}" />
+                                    x:Name="ContentPresenter"
+                                    Padding="{TemplateBinding Padding}"
+                                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    AutomationProperties.AccessibilityView="Raw"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Content="{TemplateBinding Content}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    ContentTransitions="{TemplateBinding ContentTransitions}"
+                                    CornerRadius="{StaticResource IninitCornerRadius}" />
 
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">
@@ -403,23 +402,22 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="ToggleButton">
                             <Grid
-                            x:Name="RootGrid"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="{StaticResource IninitCornerRadius}">
+                                x:Name="RootGrid"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{StaticResource IninitCornerRadius}">
                                 <ContentPresenter
-                                x:Name="ContentPresenter"
-                                Padding="{TemplateBinding Padding}"
-                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                Foreground="{TemplateBinding Foreground}" 
-
+                                    x:Name="ContentPresenter"
+                                    Padding="{TemplateBinding Padding}"
+                                    HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                                     AutomationProperties.AccessibilityView="Raw"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Content="{TemplateBinding Content}"
-                                ContentTemplate="{TemplateBinding ContentTemplate}"
-                                ContentTransitions="{TemplateBinding ContentTransitions}"
-                                CornerRadius="{StaticResource IninitCornerRadius}" />
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Content="{TemplateBinding Content}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    ContentTransitions="{TemplateBinding ContentTransitions}"
+                                    CornerRadius="{StaticResource IninitCornerRadius}"
+                                    Foreground="{TemplateBinding Foreground}" />
 
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">
@@ -569,16 +567,16 @@
                 <Setter Property="TextLineBounds" Value="Full" />
             </Style>
             <Style
-            x:Key="BodyTextBlockStyle"
-            BasedOn="{StaticResource BaseTextBlockStyle}"
-            TargetType="TextBlock">
+                x:Key="BodyTextBlockStyle"
+                BasedOn="{StaticResource BaseTextBlockStyle}"
+                TargetType="TextBlock">
                 <Setter Property="FontWeight" Value="Normal" />
                 <Setter Property="FontSize" Value="14" />
             </Style>
             <Style
-            x:Key="CaptionTextBlockStyle"
-            BasedOn="{StaticResource BaseTextBlockStyle}"
-            TargetType="TextBlock">
+                x:Key="CaptionTextBlockStyle"
+                BasedOn="{StaticResource BaseTextBlockStyle}"
+                TargetType="TextBlock">
                 <Setter Property="FontSize" Value="12" />
                 <Setter Property="FontWeight" Value="Normal" />
             </Style>
@@ -598,16 +596,16 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="AppBarButton">
                             <Grid
-                            x:Name="Root"
-                            MinWidth="{TemplateBinding MinWidth}"
-                            MaxWidth="{TemplateBinding MaxWidth}"
-                            Margin="1,0"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="{TemplateBinding CornerRadius}">
+                                x:Name="Root"
+                                MinWidth="{TemplateBinding MinWidth}"
+                                MaxWidth="{TemplateBinding MaxWidth}"
+                                Margin="1,0"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{TemplateBinding CornerRadius}">
                                 <Grid
-                                x:Name="ContentRoot"
-                                MinHeight="{ThemeResource AppBarThemeMinHeight}"
-                                Margin="-1,0">
+                                    x:Name="ContentRoot"
+                                    MinHeight="{ThemeResource AppBarThemeMinHeight}"
+                                    Margin="-1,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
@@ -617,62 +615,62 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
                                     <Viewbox
-                                    x:Name="ContentViewbox"
-                                    Height="16"
-                                    Margin="{StaticResource AppBarButtonContentViewboxCollapsedMargin}"
-                                    HorizontalAlignment="Stretch"
-                                    AutomationProperties.AccessibilityView="Raw">
+                                        x:Name="ContentViewbox"
+                                        Height="16"
+                                        Margin="{StaticResource AppBarButtonContentViewboxCollapsedMargin}"
+                                        HorizontalAlignment="Stretch"
+                                        AutomationProperties.AccessibilityView="Raw">
                                         <ContentPresenter
-                                        x:Name="Content"
-                                        Content="{TemplateBinding Icon}"
-                                        Foreground="{TemplateBinding Foreground}" />
+                                            x:Name="Content"
+                                            Content="{TemplateBinding Icon}"
+                                            Foreground="{TemplateBinding Foreground}" />
                                     </Viewbox>
                                     <TextBlock
-                                    x:Name="TextLabel"
-                                    Grid.Row="1"
-                                    Margin="2,0,2,6"
-                                    AutomationProperties.AccessibilityView="Raw"
-                                    FontFamily="{TemplateBinding FontFamily}"
-                                    FontSize="12"
-                                    Foreground="{TemplateBinding Foreground}"
-                                    Text="{TemplateBinding Label}"
-                                    TextAlignment="Center"
-                                    TextWrapping="Wrap" />
+                                        x:Name="TextLabel"
+                                        Grid.Row="1"
+                                        Margin="2,0,2,6"
+                                        AutomationProperties.AccessibilityView="Raw"
+                                        FontFamily="{TemplateBinding FontFamily}"
+                                        FontSize="12"
+                                        Foreground="{TemplateBinding Foreground}"
+                                        Text="{TemplateBinding Label}"
+                                        TextAlignment="Center"
+                                        TextWrapping="Wrap" />
                                     <TextBlock
-                                    x:Name="OverflowTextLabel"
-                                    Margin="12,0,12,0"
-                                    Padding="{StaticResource AppBarButtonOverflowTextLabelPadding}"
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Center"
-                                    AutomationProperties.AccessibilityView="Raw"
-                                    FontFamily="{TemplateBinding FontFamily}"
-                                    FontSize="15"
-                                    Foreground="{TemplateBinding Foreground}"
-                                    Text="{TemplateBinding Label}"
-                                    TextAlignment="Left"
-                                    TextTrimming="Clip"
-                                    TextWrapping="NoWrap"
-                                    Visibility="Collapsed" />
+                                        x:Name="OverflowTextLabel"
+                                        Margin="12,0,12,0"
+                                        Padding="{StaticResource AppBarButtonOverflowTextLabelPadding}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Center"
+                                        AutomationProperties.AccessibilityView="Raw"
+                                        FontFamily="{TemplateBinding FontFamily}"
+                                        FontSize="15"
+                                        Foreground="{TemplateBinding Foreground}"
+                                        Text="{TemplateBinding Label}"
+                                        TextAlignment="Left"
+                                        TextTrimming="Clip"
+                                        TextWrapping="NoWrap"
+                                        Visibility="Collapsed" />
                                     <TextBlock
-                                    x:Name="KeyboardAcceleratorTextLabel"
-                                    Grid.Column="1"
-                                    MinWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                    Margin="24,0,12,0"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    AutomationProperties.AccessibilityView="Raw"
-                                    Foreground="{ThemeResource AppBarButtonKeyboardAcceleratorTextForeground}"
-                                    Style="{ThemeResource CaptionTextBlockStyle}"
-                                    Text="{TemplateBinding KeyboardAcceleratorTextOverride}"
-                                    Visibility="Collapsed" />
+                                        x:Name="KeyboardAcceleratorTextLabel"
+                                        Grid.Column="1"
+                                        MinWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                        Margin="24,0,12,0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        AutomationProperties.AccessibilityView="Raw"
+                                        Foreground="{ThemeResource AppBarButtonKeyboardAcceleratorTextForeground}"
+                                        Style="{ThemeResource CaptionTextBlockStyle}"
+                                        Text="{TemplateBinding KeyboardAcceleratorTextOverride}"
+                                        Visibility="Collapsed" />
                                     <Border
-                                    x:Name="Border"
-                                    Grid.RowSpan="2"
-                                    Grid.ColumnSpan="2"
-                                    Margin="1,0"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="{TemplateBinding CornerRadius}" />
+                                        x:Name="Border"
+                                        Grid.RowSpan="2"
+                                        Grid.ColumnSpan="2"
+                                        Margin="1,0"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="{TemplateBinding CornerRadius}" />
                                 </Grid>
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="ApplicationViewStates">
@@ -882,20 +880,20 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="AppBarToggleButton">
                             <Grid
-                            x:Name="Root"
-                            MinWidth="{TemplateBinding MinWidth}"
-                            MaxWidth="{TemplateBinding MaxWidth}"
-                            Margin="1,0"
-                            CornerRadius="{TemplateBinding CornerRadius}">
+                                x:Name="Root"
+                                MinWidth="{TemplateBinding MinWidth}"
+                                MaxWidth="{TemplateBinding MaxWidth}"
+                                Margin="1,0"
+                                CornerRadius="{TemplateBinding CornerRadius}">
                                 <Rectangle
-                                x:Name="CheckedHighlightBackground"
-                                Fill="{ThemeResource AppBarToggleButtonBackgroundChecked}"
-                                Opacity="0" />
+                                    x:Name="CheckedHighlightBackground"
+                                    Fill="{ThemeResource AppBarToggleButtonBackgroundChecked}"
+                                    Opacity="0" />
                                 <Rectangle x:Name="AccentOverlayBackground" Fill="{ThemeResource AppBarToggleButtonBackgroundHighLightOverlay}" />
                                 <Grid
-                                x:Name="ContentRoot"
-                                MinHeight="{ThemeResource AppBarThemeMinHeight}"
-                                Margin="-1,0">
+                                    x:Name="ContentRoot"
+                                    MinHeight="{ThemeResource AppBarThemeMinHeight}"
+                                    Margin="-1,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
@@ -905,76 +903,76 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
                                     <TextBlock
-                                    x:Name="OverflowCheckGlyph"
-                                    Width="14"
-                                    Height="14"
-                                    Margin="{StaticResource AppBarToggleButtonOverflowCheckMargin}"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    AutomationProperties.AccessibilityView="Raw"
-                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                                    FontSize="16"
-                                    Foreground="{ThemeResource AppBarToggleButtonCheckGlyphForeground}"
-                                    Opacity="0"
-                                    Text="&#xE73E;"
-                                    Visibility="Collapsed" />
+                                        x:Name="OverflowCheckGlyph"
+                                        Width="14"
+                                        Height="14"
+                                        Margin="{StaticResource AppBarToggleButtonOverflowCheckMargin}"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        AutomationProperties.AccessibilityView="Raw"
+                                        FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                        FontSize="16"
+                                        Foreground="{ThemeResource AppBarToggleButtonCheckGlyphForeground}"
+                                        Opacity="0"
+                                        Text="&#xE73E;"
+                                        Visibility="Collapsed" />
                                     <Viewbox
-                                    x:Name="ContentViewbox"
-                                    Height="16"
-                                    Margin="{StaticResource AppBarButtonContentViewboxCollapsedMargin}"
-                                    HorizontalAlignment="Stretch"
-                                    AutomationProperties.AccessibilityView="Raw">
+                                        x:Name="ContentViewbox"
+                                        Height="16"
+                                        Margin="{StaticResource AppBarButtonContentViewboxCollapsedMargin}"
+                                        HorizontalAlignment="Stretch"
+                                        AutomationProperties.AccessibilityView="Raw">
                                         <ContentPresenter
-                                        x:Name="Content"
-                                        Content="{TemplateBinding Icon}"
-                                        Foreground="{TemplateBinding Foreground}" />
+                                            x:Name="Content"
+                                            Content="{TemplateBinding Icon}"
+                                            Foreground="{TemplateBinding Foreground}" />
                                     </Viewbox>
                                     <TextBlock
-                                    x:Name="TextLabel"
-                                    Grid.Row="1"
-                                    Margin="2,0,2,6"
-                                    AutomationProperties.AccessibilityView="Raw"
-                                    FontFamily="{TemplateBinding FontFamily}"
-                                    FontSize="12"
-                                    Foreground="{TemplateBinding Foreground}"
-                                    Text="{TemplateBinding Label}"
-                                    TextAlignment="Center"
-                                    TextWrapping="Wrap" />
+                                        x:Name="TextLabel"
+                                        Grid.Row="1"
+                                        Margin="2,0,2,6"
+                                        AutomationProperties.AccessibilityView="Raw"
+                                        FontFamily="{TemplateBinding FontFamily}"
+                                        FontSize="12"
+                                        Foreground="{TemplateBinding Foreground}"
+                                        Text="{TemplateBinding Label}"
+                                        TextAlignment="Center"
+                                        TextWrapping="Wrap" />
                                     <TextBlock
-                                    x:Name="OverflowTextLabel"
-                                    Margin="38,0,12,0"
-                                    Padding="{StaticResource AppBarToggleButtonOverflowTextLabelPadding}"
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Center"
-                                    AutomationProperties.AccessibilityView="Raw"
-                                    FontFamily="{TemplateBinding FontFamily}"
-                                    FontSize="15"
-                                    Foreground="{TemplateBinding Foreground}"
-                                    Text="{TemplateBinding Label}"
-                                    TextAlignment="Left"
-                                    TextTrimming="Clip"
-                                    TextWrapping="NoWrap"
-                                    Visibility="Collapsed" />
+                                        x:Name="OverflowTextLabel"
+                                        Margin="38,0,12,0"
+                                        Padding="{StaticResource AppBarToggleButtonOverflowTextLabelPadding}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Center"
+                                        AutomationProperties.AccessibilityView="Raw"
+                                        FontFamily="{TemplateBinding FontFamily}"
+                                        FontSize="15"
+                                        Foreground="{TemplateBinding Foreground}"
+                                        Text="{TemplateBinding Label}"
+                                        TextAlignment="Left"
+                                        TextTrimming="Clip"
+                                        TextWrapping="NoWrap"
+                                        Visibility="Collapsed" />
                                     <TextBlock
-                                    x:Name="KeyboardAcceleratorTextLabel"
-                                    Grid.Column="1"
-                                    MinWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                    Margin="24,0,12,0"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    AutomationProperties.AccessibilityView="Raw"
-                                    Foreground="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForeground}"
-                                    Style="{ThemeResource CaptionTextBlockStyle}"
-                                    Text="{TemplateBinding KeyboardAcceleratorTextOverride}"
-                                    Visibility="Collapsed" />
+                                        x:Name="KeyboardAcceleratorTextLabel"
+                                        Grid.Column="1"
+                                        MinWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                        Margin="24,0,12,0"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        AutomationProperties.AccessibilityView="Raw"
+                                        Foreground="{ThemeResource AppBarToggleButtonKeyboardAcceleratorTextForeground}"
+                                        Style="{ThemeResource CaptionTextBlockStyle}"
+                                        Text="{TemplateBinding KeyboardAcceleratorTextOverride}"
+                                        Visibility="Collapsed" />
                                     <Border
-                                    x:Name="Border"
-                                    Grid.RowSpan="2"
-                                    Grid.ColumnSpan="2"
-                                    Margin="1,0"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="{TemplateBinding CornerRadius}" />
+                                        x:Name="Border"
+                                        Grid.RowSpan="2"
+                                        Grid.ColumnSpan="2"
+                                        Margin="1,0"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="{TemplateBinding CornerRadius}" />
                                 </Grid>
                                 <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="ApplicationViewStates">
