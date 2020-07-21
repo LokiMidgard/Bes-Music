@@ -1,5 +1,6 @@
 ﻿using MusicPlayer.Controls;
 using MusicPlayer.Core;
+
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -9,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+
 using Windows.Graphics.Printing;
 using Windows.UI.Xaml;
 
@@ -39,16 +41,18 @@ namespace MusicPlayer
         private readonly ObservableCollection<DownloadItem> downloading;
         public ReadonlyObservableQueue<DownloadItem> WaitForDownloads { get; }
         private readonly ObservableQueue<DownloadItem> waitForDownloads;
+        public ReadOnlyObservableCollection<DownloadItem> AllQueued { get; }
+        private readonly ObservableCollection<DownloadItem> allQueued;
 
         public ICommand CancelAllCommand { get; }
-
-        public event EventHandler<EventArgs<Exception>> OnError;
-
 
         private NetworkViewmodel()
         {
             this.downloading = new ObservableCollection<DownloadItem>();
             this.Downloading = new ReadOnlyObservableCollection<DownloadItem>(this.downloading);
+
+            this.allQueued = new ObservableCollection<DownloadItem>();
+            this.AllQueued = new ReadOnlyObservableCollection<DownloadItem>(this.allQueued);
 
             this.waitForDownloads = new ObservableQueue<DownloadItem>();
             this.WaitForDownloads = new ReadonlyObservableQueue<DownloadItem>(this.waitForDownloads);
@@ -98,7 +102,6 @@ namespace MusicPlayer
                     displayRequest.RequestActive();
 
                 this.downloading.Add(current);
-                current.OnError += this.Download_OnError;
                 _ = Task.Run(() =>
                    current.StartDownload().ContinueWith(async t =>
                   {
@@ -106,18 +109,19 @@ namespace MusicPlayer
                       {
                           this.concurrentSemaphore.Release();
                           this.downloading.Remove(current);
-                          current.OnError -= this.Download_OnError;
+                          this.allQueued.Remove(current);
+
+                          if (current.Finished.IsFaulted)
+                          {
+                              App.Current.NotifyError(current, current.Finished.Exception);
+                          }
+
                           if (this.downloading.Count == 0)
                               displayRequest.RequestRelease();
                       });
 
                   })); ;
             }
-        }
-
-        private void Download_OnError(object sender, EventArgs<Exception> e)
-        {
-            this.OnError?.Invoke(sender, e);
         }
 
         public async Task AddDownload(Song songToDOwnload, DownloadDelegate downloadMethod)
@@ -136,18 +140,9 @@ namespace MusicPlayer
 
             var item = new DownloadItem(songToDOwnload, downloadMethod, this.cancellation.Token);
             this.waitForDownloads.Enqueue(item);
+            this.allQueued.Add(item);
             this.addSemaphore.Release();
             await item.Finished;
-        }
-
-        /// <summary>
-        /// Allows to raise network related errors from other classes.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        internal void ThrowNetworkError(object sender, Exception e)
-        {
-            this.OnError?.Invoke(sender, new EventArgs<Exception>(e));
         }
 
         public async Task AddDownload(string title, DownloadDelegate downloadMethod)
@@ -173,6 +168,7 @@ namespace MusicPlayer
 
             var item = new DownloadItem(title, downloadMethod, this.cancellation.Token);
             this.waitForDownloads.Enqueue(item);
+            this.allQueued.Add(item);
             this.addSemaphore.Release();
             await item.Finished;
         }
@@ -194,8 +190,6 @@ namespace MusicPlayer
 
         public Song Song { get; }
         public string Title { get; }
-
-        public event EventHandler<EventArgs<Exception>> OnError;
 
         public string State
         {
@@ -298,19 +292,28 @@ namespace MusicPlayer
                 using (this.localCancle = new CancellationTokenSource())
                 using (var actualCancel = CancellationTokenSource.CreateLinkedTokenSource(this.localCancle.Token, this.globalCancle))
                 {
-                    if (!actualCancel.Token.IsCancellationRequested)
-                        await this.downloadFunction(new Progress<(string state, double percentage)>(progress =>
-                        {
-                            this.Downloaded = progress.percentage;
-                            this.State = progress.state ?? string.Empty;
-                        }), actualCancel.Token);
+                    try
+                    {
+                        if (!actualCancel.Token.IsCancellationRequested)
+                            await this.downloadFunction(new Progress<(string state, double percentage)>(progress =>
+                            {
+                                this.Downloaded = progress.percentage;
+                                this.State = progress.state ?? string.Empty;
+                            }), actualCancel.Token);
+                    }
+                    catch (Exception e)
+                    {
+                        // if the task is canceld the error is propably based on canceling, even if it is not an OperationCanceldException.
+                        if (!actualCancel.Token.IsCancellationRequested)
+                            throw; 
+                    }
                 }
 
             }
             catch (OperationCanceledException) { }
             catch (Exception e)
             {
-                taskCompletionSource.SetException(e);
+                this.taskCompletionSource.SetException(e);
             }
             this.IsDownloading = false;
             this.taskCompletionSource.TrySetResult(null);

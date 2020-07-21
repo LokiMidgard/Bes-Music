@@ -18,7 +18,7 @@
     </UserControl.Resources>
 
     <Grid>
-        <ListView ItemsSource="{Binding Instance.Downloading}">
+        <ListView ItemsSource="{Binding Instance.AllQueued}">
             <ListView.DataContext>
                 <musicplayer:NetworkViewmodelAccessor />
             </ListView.DataContext>
@@ -28,7 +28,10 @@
                     <TextBlock
                         Margin="0,0,0,8"
                         Foreground="{ThemeResource ForgroundBrush3}"
-                        Visibility="{Binding Instance.WaitForDownloads.Count, Converter={StaticResource emptyVisibilityConverter}}"> <Run Text="Wait in cue" /> <Run Text="{Binding Instance.WaitForDownloads.Count, Mode=OneWay}" /></TextBlock>
+                        Visibility="{Binding Instance.AllQueued.Count, Converter={StaticResource emptyVisibilityConverter}}">
+                        <Run Text="{Binding Instance.AllQueued.Count, Mode=OneWay}" />
+                        <Run Text="Downloads queued." />
+                    </TextBlock>
                     <Button
                         HorizontalAlignment="Right"
                         Command="{Binding Instance.CancelAllCommand}"
@@ -57,6 +60,16 @@
                     <ItemsStackPanel Loaded="ItemsStackPanel_Loaded" Orientation="Vertical" />
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
+            <ListView.Style>
+                <Style TargetType="ListView">
+                    <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
+                </Style>
+            </ListView.Style>
+            <ListView.Resources>
+                <Style TargetType="ScrollBar">
+                    <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />
+                </Style>
+            </ListView.Resources>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="0,0,0,24" HorizontalAlignment="Stretch">
@@ -66,11 +79,12 @@
                             Text="{Binding Song.Interpreters, Converter={StaticResource listConverter}}"
                             Visibility="{Binding Song, Converter={StaticResource emptyVisibilityConverter}}" />
                         <TextBlock Text="{Binding Title}" Visibility="{Binding Title, Converter={StaticResource emptyVisibilityConverter}}" />
-                        <TextBlock Text="{Binding State}" />
+                        <TextBlock Text="{Binding State}" Visibility="{Binding IsDownloading}" />
                         <ProgressBar
                             HorizontalAlignment="Stretch"
                             IsIndeterminate="{Binding Downloaded, Converter={StaticResource emptyConverter}}"
                             Maximum="1"
+                            Visibility="{Binding IsDownloading}"
                             Value="{Binding Downloaded}" />
                     </StackPanel>
                 </DataTemplate>

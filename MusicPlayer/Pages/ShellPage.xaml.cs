@@ -94,7 +94,6 @@ namespace MusicPlayer.Pages
             await Core.MusicStore.Instance.Init();
             await MusicStore.Instance.SetUITask(this.RunOnDispatcher);
 
-            NetworkViewmodel.Instance.OnError += this.Network_OnError;
             App.Current.ErrorOccured += this.App_ErrorOccured; ;
 
             this.ShowPlayUi = true;
@@ -170,58 +169,6 @@ namespace MusicPlayer.Pages
 
         }
 
-        private async void Network_OnError(object sender, EventArgs<Exception> e)
-        {
-
-            string caption = null;
-
-            if (sender is DownloadItem downloadItem)
-            {
-                var albumName = downloadItem.Song?.AlbumName;
-                var songTitle = downloadItem.Song?.Title;
-                if (albumName is null && songTitle is null)
-                {
-                    caption = downloadItem.Title;
-                    if (caption is null)
-                        caption = "a download";
-
-                }
-                else
-                {
-                    if (albumName is null)
-                        caption = songTitle;
-                    if (songTitle is null)
-                        caption = albumName;
-                    else
-                        caption = $"{albumName} - {songTitle}";
-                }
-            }
-
-            if (caption is null)
-                caption = "There was some problem with the Network.";
-            else
-            {
-                caption = $"There was some probelm with {caption}";
-            }
-
-            string message;
-
-            if (e?.Argument?.Message != null)
-                message = e.Argument.Message;
-            else if (e.Argument != null)
-                message = e.Argument.ToString();
-            else
-                message = "We could not find the error. Sorry this should not happen.";
-
-            await this.RunOnDispatcher(async () =>
-            {
-                var dialog = new MessageDialog(message, caption)
-                {
-                    Options = MessageDialogOptions.None
-                };
-                await dialog.ShowAsync();
-            });
-        }
 
         private Task RunOnDispatcher(Func<Task> f)
         {

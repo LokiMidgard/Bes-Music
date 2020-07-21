@@ -83,7 +83,7 @@ namespace MusicPlayer
                 }
                 catch (Exception e)
                 {
-                    NetworkViewmodel.Instance.ThrowNetworkError(this, e);
+                    App.Current.NotifyError(this, e);
                 }
                 finally
                 {
@@ -144,7 +144,7 @@ namespace MusicPlayer
                         }
                         catch (Exception e)
                         {
-                            NetworkViewmodel.Instance.ThrowNetworkError(this, e);
+                            App.Current.NotifyError(this, e);
                         }
                     }, TaskContinuationOptions.OnlyOnFaulted);
                 }
@@ -173,7 +173,7 @@ namespace MusicPlayer
                         }
                         catch (Exception e)
                         {
-                            NetworkViewmodel.Instance.ThrowNetworkError(this, e);
+                            App.Current.NotifyError(this, e);
                         }
                     }, TaskContinuationOptions.OnlyOnFaulted);
                 }
