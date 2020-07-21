@@ -171,7 +171,6 @@ namespace MusicPlayer.Controls
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-
             var songs = MusicStore.Instance.Albums
               .SelectMany(x => x.Songs)
               .Where(x => x.Availability != Availability.NotAvailable)

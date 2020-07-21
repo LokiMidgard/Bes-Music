@@ -88,11 +88,6 @@
                     </GroupStyle.HeaderTemplate>
                 </GroupStyle>
             </GridView.GroupStyle>
-            <GridView.ItemContainerStyle>
-                <Style TargetType="GridViewItem">
-                    <!--<Setter Target="HorizontalAlignment" Value="Right"/>-->
-                </Style>
-            </GridView.ItemContainerStyle>
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:AlbumViewmodel">
                     <local:AlbumControl
@@ -112,9 +107,7 @@
                     HorizontalAlignment="Stretch"
                     BorderBrush="{ThemeResource AccentBrushDark3}"
                     BorderThickness="4,0,0,0">
-
                     <StackPanel VerticalAlignment="Bottom">
-
                         <TextBlock
                             x:Name="PlaylistText"
                             Margin="0,0,0,8"
@@ -135,57 +128,12 @@
 
                         <local:SymbolButton
                             HorizontalAlignment="Left"
-                            Command="{Binding Instance.DownloadDataCommand, Converter={StaticResource ErrorHandler}}"
-                            CommandParameter="{Binding ElementName=PlaylistList, Path=ItemsSource}"
+                            Click="Button_Click"
                             Content="Play All available songs"
-                            Symbol="Play">
-                            <Button.DataContext>
-                                <viewmodels:OneDriveAccessor />
-                            </Button.DataContext>
-                        </local:SymbolButton>
-
+                            Symbol="Play" />
                     </StackPanel>
-
-                    <!--<Grid>
-                        <StackPanel
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Bottom"
-                            Orientation="Horizontal">
-
-                            <Button
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Bottom"
-                                Click="Button_Click"
-                                Style="{StaticResource SmalButtonStyle}">
-                                <StackPanel Orientation="Horizontal">
-                                    <SymbolIcon Margin="0,0,8,0" Symbol="Play" />
-                                    <TextBlock Text="Play All" />
-                                </StackPanel>
-                            </Button>
-                            <Button
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Bottom"
-                                Command="{Binding Instance.DownloadAllMusic, Converter={StaticResource ErrorHandler}}"
-                                Style="{StaticResource SmalButtonStyle}">
-                                <Button.DataContext>
-                                    <viewmodels:OneDriveAccessor />
-                                </Button.DataContext>
-                                <StackPanel Orientation="Horizontal">
-                                    <SymbolIcon Margin="0,0,8,0" Symbol="Download" />
-                                    <TextBlock Text="Download All Songs" />
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
-
-                    </Grid>-->
                 </Border>
             </GridView.Header>
-            <!--<ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <ItemsWrapGrid Orientation="Horizontal" ></ItemsWrapGrid>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>-->
-
         </GridView>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
