@@ -20,6 +20,8 @@ namespace MusicPlayer.Services
 
         internal static async Task ShowIfAppropriateAsync()
         {
+            var complete = new TaskCompletionSource<object>();
+
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal, async () =>
                 {
@@ -32,7 +34,10 @@ namespace MusicPlayer.Services
                         var dialog = new WhatsNewDialog();
                         await dialog.ShowAsync();
                     }
+                        complete.SetResult(null);
+
                 });
+            await complete.Task;
         }
     }
 }

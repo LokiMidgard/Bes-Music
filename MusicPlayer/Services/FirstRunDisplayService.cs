@@ -15,6 +15,7 @@ namespace MusicPlayer.Services
 
         internal static async Task ShowIfAppropriateAsync()
         {
+            var complete = new TaskCompletionSource<object>();
             await App.Shell.Dispatcher.RunAsync(
                 CoreDispatcherPriority.Normal, async () =>
                 {
@@ -24,7 +25,9 @@ namespace MusicPlayer.Services
                         var dialog = new FirstRunDialog();
                         await dialog.ShowAsync();
                     }
+                        complete.SetResult(null);
                 });
+            await complete.Task;
         }
     }
 
