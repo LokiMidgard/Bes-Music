@@ -52,6 +52,26 @@
                 VerticalAlignment="Top">
 
                 <Border
+                    x:Name="fallbackCover"
+                    Width="150"
+                    Height="150"
+                    VerticalAlignment="Bottom"
+                    Background="{ThemeResource BackgroundBrush2}">
+                    <Grid>
+
+                        <Ellipse
+                            Margin="16"
+                            Fill="{ThemeResource BackgroundBrush4}"
+                            Stroke="{ThemeResource ForgroundBrush4}"
+                            StrokeThickness="3" />
+                        <Ellipse
+                            Margin="60"
+                            Fill="{ThemeResource BackgroundBrush2}"
+                            Stroke="{ThemeResource ForgroundBrush4}"
+                            StrokeThickness="12" />
+                    </Grid>
+                </Border>
+                <Border
                     x:Name="coverBorder"
                     Width="150"
                     Height="150"

@@ -153,14 +153,37 @@
                                     </EventTrigger>
                                 </Border.Triggers>
 
-                                <Image
-                                    x:Name="cover"
-                                    Width="200"
-                                    Height="200"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    ImageOpened="Cover_Loaded"
-                                    Stretch="UniformToFill" />
+                                <Grid>
+                                    <Border
+                                        x:Name="fallbackCover"
+                                        Width="200"
+                                        Height="200"
+                                        VerticalAlignment="Bottom"
+                                        Background="{ThemeResource BackgroundBrush2}">
+                                        <Grid>
+
+                                            <Ellipse
+                                                Margin="16"
+                                                Fill="{ThemeResource BackgroundBrush4}"
+                                                Stroke="{ThemeResource ForgroundBrush4}"
+                                                StrokeThickness="3" />
+                                            <Ellipse
+                                                Margin="75"
+                                                Fill="{ThemeResource BackgroundBrush2}"
+                                                Stroke="{ThemeResource ForgroundBrush4}"
+                                                StrokeThickness="20" />
+                                        </Grid>
+                                    </Border>
+
+                                    <Image
+                                        x:Name="cover"
+                                        Width="200"
+                                        Height="200"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Top"
+                                        ImageOpened="Cover_Loaded"
+                                        Stretch="UniformToFill" />
+                                </Grid>
                             </Border>
                             <StackPanel
                                 x:Name="CaptionBox"
