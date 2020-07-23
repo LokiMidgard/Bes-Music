@@ -103,7 +103,15 @@ namespace MusicPlayer.Pages
         private async void App_ErrorOccured(object sender, EventArgs<(Exception exception, ErroType erroType)> e)
         {
             string caption = null;
+            if (!this.Dispatcher.HasThreadAccess)
+            {
 
+                await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    this.App_ErrorOccured(sender, e);
+                });
+                return;
+            }
             if (sender is DownloadItem downloadItem)
             {
                 var albumName = downloadItem.Song?.AlbumName;
@@ -158,14 +166,13 @@ namespace MusicPlayer.Pages
             else
                 message = "We could not find the error. Sorry this should not happen.";
 
-            await this.RunOnDispatcher(async () =>
+
+            var dialog = new MessageDialog(message, caption)
             {
-                var dialog = new MessageDialog(message, caption)
-                {
-                    Options = MessageDialogOptions.None
-                };
-                await dialog.ShowAsync();
-            });
+                Options = MessageDialogOptions.None
+            };
+            await dialog.ShowAsync();
+
 
         }
 
