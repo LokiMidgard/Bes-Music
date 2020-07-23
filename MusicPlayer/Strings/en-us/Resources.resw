@@ -132,7 +132,12 @@ To get startet Sync your Music. (OneDrive Account required)</value>
     <comment>First use prompt message primary button text</comment>
   </data>
   <data name="WhatsNew_Body.Text" xml:space="preserve">
-    <value>**We improved usability for XBox users** 🎉
+    <value>A minor update after some crash report.
+
+## Resolved issues
+
+- [Bug #6](https://github.com/LokiMidgard/Bes-Music/issues/6) The app could crash occasionally when an error message was shown.
+- [Enhancement #7](https://github.com/LokiMidgard/Bes-Music/issues/7) Albums that do not have any cover will now display a placeholder image.
 
 ## Known issues
 
@@ -142,21 +147,6 @@ To get startet Sync your Music. (OneDrive Account required)</value>
   in the system suspending the App quickly.
 
   On other systems there seems to be no drawback besides a high memory foot print.
-
-## Fixed issues
-
-- [Bug #4](https://github.com/LokiMidgard/Bes-Music/issues/4) On XBox we don't get access to the 
-  Music folder. The resulting error was not handled and crashed the App
-    - We now handle the errors and show an *(more or less)* appropriate message
-    - The option is no longer available on XBox since it never worked anyway
-- [Bug #3](https://github.com/LokiMidgard/Bes-Music/issues/3) The *Now Playing full screen* View
-  did not render correctly.
-- On Xbox there were UI and usability problems. Ranging from inconvenient to nightmarish.
-  Most of those have been addressed. But there is still room for improvement.
-   - No longer using cursor input
-   - Lists can now be scrolled to the bottom without occlusion of the last elements
-   - UI extends to the borders of the screen. *(We still must not display any info near the edges)*
-   - Changed the Download UI to be a tab on the Main screen
 
 The memory issue is not easy to fix. So it may take some time. It doesn't mean the issue is ignored,
 If it's not in the next version. It just takes more time.</value>
