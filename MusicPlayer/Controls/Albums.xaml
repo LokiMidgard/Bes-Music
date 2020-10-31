@@ -119,7 +119,7 @@
                             Margin="0,0,0,8"
                             HorizontalAlignment="Left"
                             Command="{Binding Instance.SyncronizeCommand, Converter={StaticResource ErrorHandler}}"
-                            Content="Syncronize Playlists"
+                            Content="Syncronize Albums"
                             Symbol="Sync">
                             <Button.DataContext>
                                 <viewmodels:OneDriveAccessor />
