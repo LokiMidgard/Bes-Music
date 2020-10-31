@@ -368,7 +368,16 @@ namespace MusicPlayer
                 IDriveItemDeltaCollectionPage lastResponse = null;
                 while (deltaRequest != null)
                 {
-                    var response = await deltaRequest.GetAsync(cancellationToken);
+                    IDriveItemDeltaCollectionPage response;
+                    try
+                    {
+                        response = await deltaRequest.GetAsync(cancellationToken);
+                    }
+                    catch (Microsoft.Graph.ServiceException e) when (e.StatusCode == System.Net.HttpStatusCode.Gone) // if the last Id was to old we need go from screatch. We should find out what exception is actually thrown here.
+                    {
+                        deltaRequest = MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Items[playlistFolder.Id].Delta().Request().Select("name,deleted,description");
+                        response = await deltaRequest.GetAsync(cancellationToken);
+                    }
                     //[driveItem.Id] = driveItem.CTag;
 
                     var toAdd = response;
@@ -864,6 +873,7 @@ namespace MusicPlayer
 
         private async Task SyncronizeData(IProgress<(string state, double percentage)> progress, CancellationToken cancel)
         {
+
             progress.Report(("Authenticating", 0));
             if (!MicrosoftGraphService.Instance.IsAuthenticated)
                 if (!await MicrosoftGraphService.Instance.TryLoginAsync())
@@ -892,7 +902,16 @@ namespace MusicPlayer
             IDriveItemDeltaCollectionPage lastResponse = null;
             while (deltaRequest != null)
             {
-                var response = await deltaRequest.GetAsync(cancel);
+                IDriveItemDeltaCollectionPage response;
+                try
+                {
+                    response = await deltaRequest.GetAsync(cancel);
+                }
+                catch (Microsoft.Graph.ServiceException e) when (e.StatusCode == System.Net.HttpStatusCode.Gone) // if the last Id was to old we need go from screatch.
+                {
+                    deltaRequest = MicrosoftGraphService.Instance.GraphProvider.Me.Drive.Special.MusicFolder().Delta().Request().Expand("thumbnails").Select("name,audio,id,deleted,cTag,size,thumbnails");
+                    response = await deltaRequest.GetAsync(cancel);
+                }
                 //[driveItem.Id] = driveItem.CTag;
 
                 var toAdd = response.Where(x => x.Audio != null && !(container.Values.ContainsKey(x.Id) && container.Values[x.Id]?.ToString() == x.CTag));
