@@ -24,6 +24,7 @@
         <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnEmpty" OnNullValue="Collapsed" />
         <converters:VisibleCollapsedOnEmpty x:Name="collapsedOnFilled" OnNullValue="Visible" />
         <converters:ExceptionHandlerConverter x:Key="ErrorHandler" OnError="ExceptionHandlerConverter_OnError" />
+        <converters:FontCoverter x:Key="FontConverter" />
 
     </UserControl.Resources>
     <Grid>
@@ -86,7 +87,7 @@
                         <GroupStyle>
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Key}" />
+                                    <TextBlock FontFamily="{Binding Key, Converter={StaticResource FontConverter}}" Text="{Binding Key}" />
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
                         </GroupStyle>
@@ -163,6 +164,7 @@
                                 <TextBlock
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
+                                    FontFamily="{Binding Group.Key, Converter={StaticResource FontConverter}}"
                                     Style="{StaticResource SubtitleTextBlockStyle}"
                                     Text="{Binding Group.Key}"
                                     TextWrapping="Wrap" />

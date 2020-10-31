@@ -40,7 +40,17 @@ namespace MusicPlayer.Viewmodels
                 if (c >= '0' && c <= '9')
                     return '#';
 
-                return '';
+
+                // hiragana or kattakana
+                if (c >= 0x3040 && c <= 0x309F) // hiragana codepage
+                    return c;
+                if (c >= 0x30A0 && c <= 0x30FF) // katakanna codepage
+                    return c;
+
+                if (char.IsLetter(c))
+                    return '\uE774';
+
+                return '\uF6BA';
             }, Comparer<char>.Default, new AlbumViewmodelComparer());
             this.AlphabetGrouped = new ReadOnlyObservableCollection<SortedGroup<char, AlbumViewmodel>>(this.alphabetGrouped);
 
@@ -67,7 +77,7 @@ namespace MusicPlayer.Viewmodels
             InitAsync();
         }
 
-        private  void InitAsync()
+        private void InitAsync()
         {
         }
 
