@@ -132,12 +132,12 @@ To get startet Sync your Music. (OneDrive Account required)</value>
     <comment>First use prompt message primary button text</comment>
   </data>
   <data name="WhatsNew_Body.Text" xml:space="preserve">
-    <value>A minor update after some crash report.
+    <value>A minor update for small fixes and improvements.
 
 ## Resolved issues
 
-- [Bug #6](https://github.com/LokiMidgard/Bes-Music/issues/6) The app could crash occasionally when an error message was shown.
-- [Enhancement #7](https://github.com/LokiMidgard/Bes-Music/issues/7) Albums that do not have any cover will now display a placeholder image.
+- [Bug #9](https://github.com/LokiMidgard/Bes-Music/issues/9) It was not possible to update the Albums and Playlists after some time.
+- [Enhancement #10](https://github.com/LokiMidgard/Bes-Music/issues/10) Added a jump list to jump to a specific group in the albums list.
 
 ## Known issues
 

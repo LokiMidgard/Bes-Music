@@ -9,6 +9,7 @@
     xmlns:musicplayer="using:MusicPlayer"
     xmlns:triggers="using:MusicPlayer.Triggers"
     xmlns:viewmodels="using:MusicPlayer.Viewmodels"
+    xmlns:wuxdata="using:Windows.UI.Xaml.Data"
     x:Name="root"
     d:DesignHeight="300"
     d:DesignWidth="400"
@@ -55,86 +56,122 @@
                 </Button.DataContext>
             </local:SymbolButton>
         </StackPanel>
-        <GridView
-            x:Name="toRender"
-            HorizontalContentAlignment="Stretch"
-            ContainerContentChanging="ToRender_ContainerContentChanging"
-            IsItemClickEnabled="True"
-            ItemClick="AlbumClicked"
-            ItemsSource="{Binding Source={StaticResource groupInfoCVS}}"
-            Visibility="{Binding Path=AlbumViewmodel.AlphabetGrouped.Count, ElementName=root, Converter={StaticResource collapsedOnEmpty}}">
-            <GridView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <ItemsWrapGrid Loaded="ItemsPanel_Loaded" Orientation="Horizontal" />
-                </ItemsPanelTemplate>
+        <SemanticZoom>
+            <SemanticZoom.ZoomedInView>
+                <GridView
+                    x:Name="toRender"
+                    HorizontalContentAlignment="Stretch"
+                    ContainerContentChanging="ToRender_ContainerContentChanging"
+                    IsItemClickEnabled="True"
+                    ItemClick="AlbumClicked"
+                    ItemsSource="{Binding Source={StaticResource groupInfoCVS}}"
+                    Visibility="{Binding Path=AlbumViewmodel.AlphabetGrouped.Count, ElementName=root, Converter={StaticResource collapsedOnEmpty}}">
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid Loaded="ItemsPanel_Loaded" Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
 
-            </GridView.ItemsPanel>
-            <GridView.Resources>
-                <Style TargetType="ScrollBar">
-                    <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />
-                </Style>
-            </GridView.Resources>
-            <GridView.Style>
-                <Style TargetType="GridView">
-                    <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
-                </Style>
-            </GridView.Style>
-            <GridView.GroupStyle>
-                <GroupStyle>
-                    <GroupStyle.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Key}" />
+                    </GridView.ItemsPanel>
+                    <GridView.Resources>
+                        <Style TargetType="ScrollBar">
+                            <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />
+                        </Style>
+                    </GridView.Resources>
+                    <GridView.Style>
+                        <Style TargetType="GridView">
+                            <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
+                        </Style>
+                    </GridView.Style>
+                    <GridView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Key}" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </GridView.GroupStyle>
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:AlbumViewmodel">
+                            <local:AlbumControl
+                                Width="{Binding ElementName=root, Path=AlbumWidth}"
+                                MinWidth="{Binding ElementName=root, Path=AlbumWidth}"
+                                MaxWidth="{Binding ElementName=root, Path=AlbumWidth}"
+                                DataContext="{x:Bind}"
+                                IsDisplayedLarge="{Binding ElementName=root, Path=IsAlbumDisplayedLarge}" />
                         </DataTemplate>
-                    </GroupStyle.HeaderTemplate>
-                </GroupStyle>
-            </GridView.GroupStyle>
-            <GridView.ItemTemplate>
-                <DataTemplate x:DataType="viewmodels:AlbumViewmodel">
-                    <local:AlbumControl
-                        Width="{Binding ElementName=root, Path=AlbumWidth}"
-                        MinWidth="{Binding ElementName=root, Path=AlbumWidth}"
-                        MaxWidth="{Binding ElementName=root, Path=AlbumWidth}"
-                        DataContext="{x:Bind}"
-                        IsDisplayedLarge="{Binding ElementName=root, Path=IsAlbumDisplayedLarge}" />
-                </DataTemplate>
-            </GridView.ItemTemplate>
-            <GridView.Header>
-                <Border
-                    x:Name="header"
-                    Height="250"
-                    Margin="0,0,0,24"
-                    Padding="24"
-                    HorizontalAlignment="Stretch"
-                    BorderBrush="{ThemeResource AccentBrushDark3}"
-                    BorderThickness="4,0,0,0">
-                    <StackPanel VerticalAlignment="Bottom">
-                        <TextBlock
-                            x:Name="PlaylistText"
-                            Margin="0,0,0,8"
-                            Style="{ThemeResource HeaderTextBlockStyle}">
-                            <Run Text="{Binding Path=AlbumViewmodel.Albums.Count, ElementName=root}" />
-                            <Run Text="Albums" />
-                        </TextBlock>
-                        <local:SymbolButton
-                            Margin="0,0,0,8"
-                            HorizontalAlignment="Left"
-                            Command="{Binding Instance.SyncronizeCommand, Converter={StaticResource ErrorHandler}}"
-                            Content="Syncronize Albums"
-                            Symbol="Sync">
-                            <Button.DataContext>
-                                <viewmodels:OneDriveAccessor />
-                            </Button.DataContext>
-                        </local:SymbolButton>
+                    </GridView.ItemTemplate>
+                    <GridView.Header>
+                        <Border
+                            x:Name="header"
+                            Height="250"
+                            Margin="0,0,0,24"
+                            Padding="24"
+                            HorizontalAlignment="Stretch"
+                            BorderBrush="{ThemeResource AccentBrushDark3}"
+                            BorderThickness="4,0,0,0">
+                            <StackPanel VerticalAlignment="Bottom">
+                                <TextBlock
+                                    x:Name="PlaylistText"
+                                    Margin="0,0,0,8"
+                                    Style="{ThemeResource HeaderTextBlockStyle}">
+                                    <Run Text="{Binding Path=AlbumViewmodel.Albums.Count, ElementName=root}" />
+                                    <Run Text="Albums" />
+                                </TextBlock>
+                                <local:SymbolButton
+                                    Margin="0,0,0,8"
+                                    HorizontalAlignment="Left"
+                                    Command="{Binding Instance.SyncronizeCommand, Converter={StaticResource ErrorHandler}}"
+                                    Content="Syncronize Albums"
+                                    Symbol="Sync">
+                                    <Button.DataContext>
+                                        <viewmodels:OneDriveAccessor />
+                                    </Button.DataContext>
+                                </local:SymbolButton>
 
-                        <local:SymbolButton
-                            HorizontalAlignment="Left"
-                            Click="Button_Click"
-                            Content="Play All available songs"
-                            Symbol="Play" />
-                    </StackPanel>
-                </Border>
-            </GridView.Header>
-        </GridView>
+                                <local:SymbolButton
+                                    HorizontalAlignment="Left"
+                                    Click="Button_Click"
+                                    Content="Play All available songs"
+                                    Symbol="Play" />
+                            </StackPanel>
+                        </Border>
+                    </GridView.Header>
+                </GridView>
+            </SemanticZoom.ZoomedInView>
+            <SemanticZoom.ZoomedOutView>
+                <GridView ItemsSource="{Binding Source={StaticResource groupInfoCVS}, Path=CollectionGroups}">
+
+                    <GridView.Resources>
+                        <Style TargetType="ScrollBar">
+                            <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Margin,Bottom" />
+                        </Style>
+                    </GridView.Resources>
+                    <GridView.Style>
+                        <Style TargetType="GridView">
+                            <Setter Property="converters:ThiknessConverter.ConstBindThickness" Value="Padding,Bottom" />
+                        </Style>
+                    </GridView.Style>
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="wuxdata:ICollectionViewGroup">
+                            <!--<TextBlock Text="{x:Bind ((data:ControlInfoDataGroup)Group).Title}" Style="{StaticResource SubtitleTextBlockStyle}" TextWrapping="Wrap"/>-->
+                            <Border
+                                Width="60"
+                                Height="60"
+                                Margin="20"
+                                Background="{StaticResource AccentBrush}">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource SubtitleTextBlockStyle}"
+                                    Text="{Binding Group.Key}"
+                                    TextWrapping="Wrap" />
+                            </Border>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+            </SemanticZoom.ZoomedOutView>
+        </SemanticZoom>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState>
