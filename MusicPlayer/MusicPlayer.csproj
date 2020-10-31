@@ -28,8 +28,7 @@
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <Use64BitCompiler>true</Use64BitCompiler>
-    <PackageCertificateThumbprint>
-    </PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>6297434729B2719D7AEE784B5C811D245C05DFED</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <PackageCertificateKeyFile>MusicPlayer_TemporaryKey.pfx</PackageCertificateKeyFile>
     <!-- <ShortcutGenericAnalysis>true</ShortcutGenericAnalysis> -->
@@ -186,6 +185,7 @@
     <Compile Include="Controls\UWPToolkit\ProfileCard\ProfileDisplayModeTemplateSelector.cs" />
     <Compile Include="Controls\UWPToolkit\ProfileCard\ViewType.cs" />
     <Compile Include="Converters\BottomThiknessConverter.cs" />
+    <Compile Include="Converters\FontCoverter.cs" />
     <Compile Include="Converters\ToTransparent.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Converters\VisibleCollapsedOnEmpty.cs" />
