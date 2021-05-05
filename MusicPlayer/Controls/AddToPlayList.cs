@@ -1,5 +1,6 @@
 ﻿using MusicPlayer.Core;
 using MusicPlayer.Viewmodels;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -219,25 +221,46 @@ namespace MusicPlayer.Controls
                         Text = playList.Name
                     };
 
-                    addToPlaylist.Click += async (sender, e) =>
+                    if (
+                        (song != null && !playList.Songs.Contains(song))
+                        || (album != null && !album.Songs.All(x => x.Songs.Any(y => playList.Songs.Contains(y))))
+                        || (songs != null && !songs.All(x => playList.Songs.Contains(x)))
+                        || (albums != null && !albums.All(z => z.Songs.All(x => x.Songs.Any(y => playList.Songs.Contains(y)))))
+                        || (playListSong != null && !playList.Songs.Contains(playListSong.Song))
+                        || (playListSongs != null && !playListSongs.All(x => playList.Songs.Contains(x.Song)))
+                        )
                     {
-                        if (song != null)
-                            await MusicStore.Instance.AddPlaylistSong(playList, song);
-                        if (album != null)
-                            foreach (var s in album.Songs)
-                                await MusicStore.Instance.AddPlaylistSong(playList, s.Songs.First());
-                        if (songs != null)
-                            foreach (var s in songs)
-                                await MusicStore.Instance.AddPlaylistSong(playList, song);
-                        if (albums != null)
-                            foreach (var s in albums.SelectMany(x => x.Songs))
-                                await MusicStore.Instance.AddPlaylistSong(playList, s.Songs.First());
-                        if (playListSong != null)
-                            await MusicStore.Instance.AddPlaylistSong(playList, playListSong.Song);
-                        if (playListSongs != null)
-                            foreach (var item in playListSongs.Select(x => x.Song))
-                                await MusicStore.Instance.AddPlaylistSong(playList, item);
-                    };
+
+
+
+                        addToPlaylist.Click += async (sender, e) =>
+                        {
+                            try
+                            {
+                                if (song != null)
+                                    await MusicStore.Instance.AddPlaylistSong(playList, song);
+                                if (album != null)
+                                    foreach (var s in album.Songs.Where(x => !x.Songs.Any(y => playList.Songs.Contains(y))))
+                                        await MusicStore.Instance.AddPlaylistSong(playList, s.Songs.First());
+                                if (songs != null)
+                                    foreach (var s in songs.Where(x => !playList.Songs.Contains(x)))
+                                        await MusicStore.Instance.AddPlaylistSong(playList, song);
+                                if (albums != null)
+                                    foreach (var s in albums.SelectMany(x => x.Songs.Where(z => !z.Songs.Any(y => playList.Songs.Contains(y)))))
+                                        await MusicStore.Instance.AddPlaylistSong(playList, s.Songs.First());
+                                if (playListSong != null)
+                                    await MusicStore.Instance.AddPlaylistSong(playList, playListSong.Song);
+                                if (playListSongs != null)
+                                    foreach (var item in playListSongs.Select(x => x.Song).Where(x => !playList.Songs.Contains(x)))
+                                        await MusicStore.Instance.AddPlaylistSong(playList, item);
+                            }
+                            catch (Exception ex)
+                            {
+                                App.Current.NotifyError(null, ex);
+                            }
+                        };
+                    }
+                    else addToPlaylist.IsEnabled = false;
 
                     items.Add(addToPlaylist);
 

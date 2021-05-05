@@ -136,8 +136,7 @@ To get startet Sync your Music. (OneDrive Account required)</value>
 
 ## Resolved issues
 
-- [Bug #9](https://github.com/LokiMidgard/Bes-Music/issues/9) It was not possible to update the Albums and Playlists after some time.
-- [Enhancement #10](https://github.com/LokiMidgard/Bes-Music/issues/10) Added a jump list to jump to a specific group in the albums list.
+- [Bug #12](https://github.com/LokiMidgard/Bes-Music/issues/12) The application crashed when a song was added to a playlist it already was part of.
 
 ## Known issues
 
