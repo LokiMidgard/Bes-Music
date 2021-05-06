@@ -137,6 +137,7 @@ To get startet Sync your Music. (OneDrive Account required)</value>
 ## Resolved issues
 
 - [Bug #12](https://github.com/LokiMidgard/Bes-Music/issues/12) The application crashed when a song was added to a playlist it already was part of.
+- [Bug #13](https://github.com/LokiMidgard/Bes-Music/issues/13) Only covers of downloaded music was displayed in the Now Playing background.
 
 ## Known issues
 

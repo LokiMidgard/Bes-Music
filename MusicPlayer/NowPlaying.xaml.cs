@@ -277,11 +277,14 @@ namespace MusicPlayer
 
 
 
-        private Task InitAsync()
+        private async Task InitAsync()
         {
-            var covers = Core.MusicStore.Instance.LibraryImages.Distinct().Select(x => new CoverData() { Id = x.imageId, Provider = x.providerId });
+            var storage = await CoverExtension.GetAlbumStorageFolder();
+            var files = await storage.GetFilesAsync();
+            var covers = files.Select(x => new CoverData() { Id = x.Name, Provider = null });
+            //var covers = ; Core.MusicStore.Instance.LibraryImages.Distinct().Select(x => new CoverData() { Id = x.imageId, Provider = x.providerId });
             this.backgroundLarge.Covers = covers;
-            return Task.CompletedTask;
+
         }
 
         private DispatcherTimer fadeOutTimer;

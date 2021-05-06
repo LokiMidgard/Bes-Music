@@ -1,10 +1,12 @@
 ﻿using Microsoft.Graphics.Canvas.Effects;
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.Storage.FileProperties;
@@ -190,11 +192,21 @@ namespace MusicPlayer.Controls
                         do
                         {
                             var cover = this.covers.Next();
-                            if (cover.Id is null || cover.Provider is null)
+                            if (cover.Id is null)
                                 continue;
                             toUpdate.Id = cover.Id;
                             toUpdate.Provider = cover.Provider;
-                            thumbnail = await library.GetImage(toUpdate.Id, (int)(toUpdate.Size * this.ActualTileSize), default);
+                            if (toUpdate.Provider == library.Id)
+                                thumbnail = await library.GetImage(toUpdate.Id, (int)(toUpdate.Size * this.ActualTileSize), default);
+                            else if (toUpdate.Provider == null)
+                            {
+                                var coverFolder = await CoverExtension.GetAlbumStorageFolder();
+                                var storageItem = await coverFolder.GetFileAsync(toUpdate.Id);
+
+                                thumbnail = new Uri(storageItem.Path);
+
+                            }
+
                         } while (thumbnail == null);
                         var imageSource = new BitmapImage(thumbnail);
                         toUpdate.Image.Source = imageSource;
